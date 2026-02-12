@@ -1,641 +1,514 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YouTube 影響力數據分析工具 - VGV 圈粉行銷科技</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VGV KOL Radar Engine（YouTube TOP100 決策池）</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{
+      font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Microsoft JhengHei',sans-serif;
+      background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+      min-height:100vh;padding:18px;
+    }
+    .container{max-width:1500px;margin:0 auto}
+    .header{
+      background:#fff;padding:26px;border-radius:16px;
+      box-shadow:0 10px 30px rgba(0,0,0,.18);margin-bottom:18px;text-align:center
+    }
+    .header h1{color:#4f63e6;font-size:2.1em;margin-bottom:8px}
+    .header p{color:#666;font-size:1.02em}
+    .panel{
+      background:#fff;padding:18px;border-radius:16px;
+      box-shadow:0 6px 22px rgba(0,0,0,.10);margin-bottom:18px;
+    }
+    .grid{display:grid;grid-template-columns: 1.2fr 1fr; gap:18px}
+    @media (max-width: 980px){ .grid{grid-template-columns:1fr} }
+    .row{display:grid;grid-template-columns: 1fr 1fr 1fr 1fr; gap:10px; margin:10px 0 12px}
+    @media (max-width: 980px){ .row{grid-template-columns:1fr 1fr} }
+    label{display:block;color:#333;font-weight:600;margin-bottom:6px;font-size:.95em}
+    select, input{
+      width:100%;padding:10px;border:2px solid #e8e8e8;border-radius:10px;font-size:15px;background:#fff
+    }
+    .actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:10px}
+    button{
+      padding:10px 14px;border:0;border-radius:10px;
+      background:#4f63e6;color:#fff;font-weight:700;cursor:pointer;
+      box-shadow:0 8px 18px rgba(79,99,230,.25);
+      transition:transform .15s, background .15s
+    }
+    button:hover{background:#4457d9;transform:translateY(-1px)}
+    button.secondary{background:#111827;box-shadow:0 8px 18px rgba(17,24,39,.18)}
+    button.secondary:hover{background:#0b1220}
+    .note{
+      margin-top:10px; padding:10px 12px; border-radius:12px;
+      background:#f8f9ff; color:#4b5563; line-height:1.45; font-size:.95em;
+      border:1px solid #e8ebff
+    }
+    .badges{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+    .badge{
+      display:inline-flex;gap:8px;align-items:center;
+      padding:7px 10px;border-radius:999px;background:#f3f4f6;color:#111827;font-weight:700;font-size:.9em
+    }
+    .badge span{font-weight:800;color:#4f63e6}
+    .status{margin-top:10px;color:#111827;font-weight:700}
+    .status small{font-weight:600;color:#6b7280}
+    .error{margin-top:10px;padding:12px;border-radius:12px;background:#fee2e2;color:#991b1b;font-weight:700}
+    .ok{margin-top:10px;padding:12px;border-radius:12px;background:#dcfce7;color:#166534;font-weight:700}
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft JhengHei', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        .container { max-width: 1400px; margin: 0 auto; }
-
-        .header {
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            margin-bottom: 30px;
-            text-align: center;
-        }
-
-        .header h1 { color: #667eea; font-size: 2.5em; margin-bottom: 10px; }
-        .header p { color: #666; font-size: 1.1em; }
-
-        .api-setup {
-            background: white;
-            padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-            margin-bottom: 30px;
-        }
-
-        .api-setup h2 { color: #333; margin-bottom: 15px; }
-
-        .api-setup input {
-            width: 70%;
-            padding: 12px;
-            border: 2px solid #667eea;
-            border-radius: 8px;
-            font-size: 16px;
-            margin-right: 10px;
-        }
-
-        .api-setup button {
-            padding: 12px 25px;
-            background: #667eea;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .api-setup button:hover { background: #5a6fd8; transform: translateY(-2px); }
-
-        .main-content { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
-
-        .section {
-            background: white;
-            padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-        }
-
-        .section h2 {
-            color: #333;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 1.5em;
-        }
-
-        .tabs { display: flex; gap: 10px; margin-bottom: 20px; }
-
-        .tab {
-            padding: 8px 16px;
-            border: none;
-            background: #f0f0f0;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .tab.active { background: #667eea; color: white; }
-
-        select {
-            width: 100%;
-            padding: 10px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            font-size: 16px;
-        }
-
-        .ranking-item {
-            display: flex;
-            align-items: center;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 10px;
-            background: #f8f9ff;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .ranking-item:hover {
-            background: #e8ebff;
-            transform: translateX(5px);
-        }
-
-        .rank-number {
-            font-size: 1.5em;
-            font-weight: bold;
-            color: #667eea;
-            margin-right: 15px;
-            min-width: 50px;
-        }
-
-        .channel-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            margin-right: 15px;
-        }
-
-        .channel-info h3 { color: #333; margin-bottom: 5px; }
-        .channel-info p { color: #666; font-size: 0.9em; }
-
-        .search-box { display: flex; gap: 10px; margin-bottom: 20px; }
-
-        .search-box input {
-            flex: 1;
-            padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 16px;
-        }
-
-        .search-box button {
-            padding: 12px 20px;
-            background: #667eea;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .search-box button:hover { background: #5a6fd8; }
-
-        .channel-detail {
-            background: #f8f9ff;
-            padding: 20px;
-            border-radius: 10px;
-            display: none;
-        }
-
-        .channel-detail.active { display: block; }
-
-        .channel-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .channel-header img {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            margin-right: 20px;
-        }
-
-        .channel-header-info h3 { font-size: 1.5em; color: #333; margin-bottom: 5px; }
-        .channel-header-info p { color: #666; }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .stat-card {
-            background: white;
-            padding: 15px;
-            border-radius: 10px;
-            text-align: center;
-        }
-
-        .stat-label { color: #666; font-size: 0.9em; margin-bottom: 5px; }
-        .stat-value { color: #667eea; font-size: 1.5em; font-weight: bold; }
-
-        .growth-positive { color: #4caf50; }
-        .growth-negative { color: #f44336; }
-
-        .loading { text-align: center; padding: 20px; color: #667eea; }
-
-        .error {
-            background: #ffebee;
-            color: #c62828;
-            padding: 15px;
-            border-radius: 10px;
-            text-align: center;
-            margin-top: 10px;
-        }
-
-        @media (max-width: 768px) {
-            .main-content { grid-template-columns: 1fr; }
-            .api-setup input { width: 100%; margin-bottom: 10px; }
-        }
-    </style>
+    table{width:100%;border-collapse:separate;border-spacing:0;margin-top:12px}
+    thead th{
+      position:sticky;top:0;background:#fff;z-index:1;
+      text-align:left;font-size:.92em;color:#111827;padding:10px 10px;border-bottom:2px solid #e5e7eb;
+      cursor:pointer; user-select:none
+    }
+    tbody td{
+      padding:10px 10px;border-bottom:1px solid #eef2ff;color:#111827;font-size:.95em; vertical-align:middle
+    }
+    tbody tr:hover{background:#f8f9ff}
+    .rank{font-weight:900;color:#4f63e6}
+    .muted{color:#6b7280;font-weight:600}
+    .pill{
+      display:inline-flex;align-items:center;justify-content:center;
+      min-width:44px;padding:5px 10px;border-radius:999px;font-weight:900;font-size:.88em
+    }
+    .pill.A{background:#dcfce7;color:#166534}
+    .pill.B{background:#dbeafe;color:#1d4ed8}
+    .pill.C{background:#fef3c7;color:#92400e}
+    .pill.D{background:#fee2e2;color:#991b1b}
+    .link{color:#4f63e6;font-weight:800;text-decoration:none}
+    .link:hover{text-decoration:underline}
+    .small{font-size:.88em;color:#6b7280;font-weight:600}
+    .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+    .search{
+      display:flex;gap:10px;align-items:center;flex:1; min-width:220px
+    }
+    .search input{flex:1}
+    .right{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>🎬 YouTube 影響力數據分析工具</h1>
-            <p>VGV 圈粉行銷科技 - 專注影響力行銷</p>
-        </div>
+<div class="container">
+  <div class="header">
+    <h1>📡 VGV KOL Radar Engine</h1>
+    <p>內部選 KOL 決策工具｜內容語言 × 觀眾地區 × 行銷品類｜TOP 100 決策池</p>
+  </div>
 
-        <div class="api-setup">
-            <h2>🔑 YouTube API 設定</h2>
-            <input type="text" id="apiKeyInput" placeholder="請輸入你的 YouTube Data API Key">
-            <button onclick="setApiKey()">設定 API Key</button>
-            <p style="margin-top: 10px; color: #666; font-size: 0.9em;">
-                ℹ️ 如何取得 API Key: 前往 <a href="https://console.cloud.google.com/" target="_blank" style="color: #667eea;">Google Cloud Console</a> →
-                建立專案 → 啟用 YouTube Data API v3 → 建立憑證
-            </p>
-            <p style="margin-top: 8px; color: #666; font-size: 0.9em;">
-                ✅ 本工具會把你輸入的 Key 存在本機瀏覽器（localStorage），避免每次重打；不會上傳到伺服器。
-            </p>
-        </div>
-
-        <div class="main-content">
-            <div class="section">
-                <h2>📊 YouTube 影響力排行榜</h2>
-                <div class="tabs">
-                    <button class="tab active" onclick="changeTimePeriod('30')">30天</button>
-                    <button class="tab" onclick="changeTimePeriod('90')">90天</button>
-                    <button class="tab" onclick="changeTimePeriod('180')">180天</button>
-                </div>
-
-                <select id="countrySelect" onchange="loadRankings()">
-                    <option value="TW">台灣 🇹🇼</option>
-                    <option value="HK">香港 🇭🇰</option>
-                    <option value="JP">日本 🇯🇵</option>
-                    <option value="KR">韓國 🇰🇷</option>
-                    <option value="US">美國 🇺🇸</option>
-                    <option value="GB">英國 🇬🇧</option>
-                    <option value="SG">新加坡 🇸🇬</option>
-                    <option value="MY">馬來西亞 🇲🇾</option>
-                </select>
-
-                <div id="rankingsList"></div>
-            </div>
-
-            <div class="section">
-                <h2>🎯 頻道數據分析</h2>
-                <div class="search-box">
-                    <input type="text" id="channelInput" placeholder="輸入頻道名稱或 ID">
-                    <button onclick="searchChannel()">搜尋</button>
-                </div>
-
-                <div id="channelDetail" class="channel-detail"></div>
-            </div>
-        </div>
+  <div class="panel">
+    <div class="toolbar">
+      <div class="search">
+        <input id="quickSearch" placeholder="快速搜尋（頻道名 / ID / 自訂網址）…" />
+        <button class="secondary" onclick="applyQuickSearch()">搜尋</button>
+      </div>
+      <div class="right">
+        <button onclick="runTop100()">刷新 TOP100</button>
+        <button class="secondary" onclick="exportCSV()">匯出 CSV</button>
+      </div>
     </div>
 
-    <script>
-        // ⚠️ 安全提醒：不要把真實 API Key 寫死在前端並上傳到 GitHub（會公開）。
-        // 你可以在下方 API_KEY_DEFAULT 放測試用 key（僅限私人環境），正式上線請改用輸入框或後端代理。
-        const API_KEY_DEFAULT = '';
-        let API_KEY = localStorage.getItem('YOUTUBE_API_KEY') || API_KEY_DEFAULT;
+    <div class="row">
+      <div>
+        <label>觀眾地區（regionCode）</label>
+        <select id="region">
+          <option value="TW">台灣 🇹🇼</option>
+          <option value="HK">香港 🇭🇰</option>
+          <option value="SG">新加坡 🇸🇬</option>
+          <option value="MY">馬來西亞 🇲🇾</option>
+          <option value="JP">日本 🇯🇵</option>
+          <option value="KR">韓國 🇰🇷</option>
+          <option value="US">美國 🇺🇸</option>
+          <option value="GB">英國 🇬🇧</option>
+        </select>
+      </div>
+      <div>
+        <label>內容語言（relevanceLanguage）</label>
+        <select id="lang">
+          <option value="zh-Hant">繁體中文（zh-Hant）</option>
+          <option value="zh-Hans">簡體中文（zh-Hans）</option>
+          <option value="en">英文（en）</option>
+          <option value="ja">日文（ja）</option>
+          <option value="ko">韓文（ko）</option>
+        </select>
+      </div>
+      <div>
+        <label>行銷品類（Marketing Category）</label>
+        <select id="cat">
+          <option value="3c">3C 科技</option>
+          <option value="lifestyle">生活風格</option>
+          <option value="food">美食料理</option>
+          <option value="parenting">親子母嬰</option>
+          <option value="finance">財經投資</option>
+          <option value="travel">旅遊</option>
+          <option value="fitness">健身</option>
+        </select>
+      </div>
+      <div>
+        <label>期間（天）</label>
+        <select id="days">
+          <option value="30">30</option>
+          <option value="90">90</option>
+          <option value="180">180</option>
+        </select>
+      </div>
+    </div>
 
-        let currentTimePeriod = '30';
-        let channelCache = {};
+    <div class="actions">
+      <label style="display:flex;gap:8px;align-items:center;font-weight:700;color:#111827">
+        <input type="checkbox" id="excludeTopic" checked />
+        排除 Topic / 官方音樂類噪音
+      </label>
+      <label style="display:flex;gap:8px;align-items:center;font-weight:700;color:#111827">
+        <input type="checkbox" id="strictLang" checked />
+        嚴格語言過濾（提升精準，可能減少樣本）
+      </label>
+      <label style="display:flex;gap:8px;align-items:center;font-weight:700;color:#111827">
+        <input type="checkbox" id="strictCat" checked />
+        嚴格品類吻合（需達標才納入 TOP100）
+      </label>
+      <label style="display:flex;gap:8px;align-items:center;font-weight:700;color:#111827">
+        <input type="checkbox" id="useCache" checked />
+        使用快取（省 quota、速度更快）
+      </label>
+    </div>
 
-        function setApiKey() {
-            const input = document.getElementById('apiKeyInput');
-            API_KEY = (input.value || '').trim();
-            if (API_KEY) {
-                localStorage.setItem('YOUTUBE_API_KEY', API_KEY);
-                alert('✅ API Key 設定成功（已儲存在本機瀏覽器）！');
-                loadRankings();
-            } else {
-                alert('❌ 請輸入有效的 API Key');
-            }
-        }
+    <div class="badges" id="badges"></div>
 
-        function changeTimePeriod(period) {
-            currentTimePeriod = period;
-            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-            event.target.classList.add('active');
-            loadRankings();
-        }
+    <div class="note">
+      <b>榜單依據：</b>
+      以「<b>觀眾地區</b>（regionCode）」為入口，先擴大抓取候選頻道（多 query、多頁），再以「<b>內容語言</b> + <b>行銷品類</b>（關鍵字語意規則）」做二次過濾，
+      對每個候選頻道拉取近 20 支上傳影片的統計資料，計算 <b>VGV Decision Score</b>（觸及 × 互動 × 成長 × 穩定 × 留言），最後輸出 TOP 100 決策池。
+      <div class="small" style="margin-top:6px">※ 這是「內部決策池」不是「官方 YouTube 排行榜」，目標是讓 AM/AE 在 10 分鐘內縮小可合作名單。</div>
+    </div>
 
-        async function loadRankings() {
-            if (!API_KEY) {
-                document.getElementById('rankingsList').innerHTML =
-                    '<div class="error">⚠️ 請先設定 YouTube API Key（下方輸入後按「設定 API Key」）</div>';
-                return;
-            }
+    <div id="msg" class="status">尚未載入。<small>（按「刷新 TOP100」開始）</small></div>
+    <div id="alert"></div>
 
-            const region = document.getElementById('countrySelect').value; // YouTube API 的 regionCode
-            const container = document.getElementById('rankingsList');
-            container.innerHTML = '<div class="loading">正在載入排行榜...</div>';
+    <div style="overflow:auto; margin-top:10px; border-radius:14px; border:1px solid #eef2ff">
+      <table id="tbl">
+        <thead>
+          <tr>
+            <th data-k="rank">#</th>
+            <th data-k="title">頻道</th>
+            <th data-k="tier">Tier</th>
+            <th data-k="score">Decision Score</th>
+            <th data-k="subs">訂閱</th>
+            <th data-k="avgViews">近期間平均觀看</th>
+            <th data-k="engRate">互動率</th>
+            <th data-k="growth">成長動能</th>
+            <th data-k="stability">觀看穩定</th>
+            <th data-k="commentsK">留言/千次觀看</th>
+            <th data-k="match">品類吻合</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
 
-            try {
-                // 1) 先用 mostPopular 取「該地區熱門影片」作為候選池（影片是地區熱度，不保證頻道就是該地區）
-                //    因此後面會「嚴格」以 channel.snippet.country 做二次過濾，確保地區準確。
-                const maxResults = 50;
-                const videosResp = await fetch(
-                    `https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&chart=mostPopular&regionCode=${region}&maxResults=${maxResults}&key=${API_KEY}`
-                );
-                const videosData = await videosResp.json();
-                if (!videosResp.ok) throw new Error(videosData?.error?.message || 'API 請求失敗');
+  </div>
 
-                if (!videosData.items || videosData.items.length === 0) {
-                    container.innerHTML = '<div class="error">❌ 無法取得排行榜數據</div>';
-                    return;
-                }
+  <div class="panel">
+    <h2 style="color:#111827; font-size:1.2em; margin-bottom:10px">🔧 連線設定（安全版）</h2>
+    <div class="note">
+      這個完整版採用 <b>後端代理（Cloudflare Worker）</b>：API Key 存在後端環境變數，不會暴露在 GitHub Pages。
+      前端只呼叫你的 Worker：<code id="apiBaseHint"></code>
+    </div>
+    <div class="row" style="grid-template-columns: 1fr 1fr;">
+      <div>
+        <label>Worker API Base（例如：https://xxx.workers.dev）</label>
+        <input id="apiBase" placeholder="輸入你的 Worker 網址" />
+      </div>
+      <div>
+        <label>&nbsp;</label>
+        <div class="actions">
+          <button class="secondary" onclick="saveApiBase()">儲存</button>
+          <button onclick="ping()">測試連線</button>
+        </div>
+      </div>
+    </div>
+    <div id="pingResult"></div>
+  </div>
 
-                // 2) 取出頻道並抓 channels.list（含 country）
-                const channelIds = [...new Set(videosData.items.map(v => v.snippet.channelId))];
-                const channelsData = await getChannelsData(channelIds);
+</div>
 
-                // 3) 依地區「嚴格過濾」：只保留 snippet.country == region 的頻道
-                const strict = true; // 你要「準確」就該嚴格；若想要更多候選可改 false
-                const inRegion = [];
-                const unknownRegion = [];
+<script>
+  // ========= 基本設定 =========
+  const LS_API_BASE = "VGV_WORKER_API_BASE";
+  const DEFAULT_API_BASE = ""; // 建議留空，部署後由你在 UI 輸入並儲存
+  let API_BASE = localStorage.getItem(LS_API_BASE) || DEFAULT_API_BASE;
 
-                for (const cid of channelIds) {
-                    const ch = channelsData[cid];
-                    if (!ch) continue;
-                    if (!ch.country) {
-                        unknownRegion.push({ id: cid, ...ch });
-                    } else if (ch.country.toUpperCase() === region.toUpperCase()) {
-                        inRegion.push({ id: cid, ...ch });
-                    }
-                }
+  const table = document.getElementById("tbl");
+  const tbody = table.querySelector("tbody");
+  const msg = document.getElementById("msg");
+  const alertBox = document.getElementById("alert");
+  const badges = document.getElementById("badges");
+  const apiBaseInput = document.getElementById("apiBase");
+  const apiBaseHint = document.getElementById("apiBaseHint");
 
-                // 4) 若嚴格後數量太少（很多頻道不填 country），再用 search.list 補齊「地區偏好」頻道
-                let candidates = strict ? inRegion : inRegion.concat(unknownRegion);
-                if (strict && candidates.length < 10) {
-                    const supplement = await discoverRegionalChannels(region, 30);
-                    // 合併去重（以 id）
-                    const seen = new Set(candidates.map(c => c.id));
-                    supplement.forEach(c => { if (!seen.has(c.id)) { candidates.push(c); seen.add(c.id); } });
-                }
+  apiBaseInput.value = API_BASE || "";
+  apiBaseHint.textContent = API_BASE ? API_BASE : "（尚未設定）";
 
-                // 5) 排序：用訂閱數（可改用 viewCount / growth 估算）
-                candidates.sort((a, b) => (b.subscriberCount || 0) - (a.subscriberCount || 0));
-                candidates = candidates.slice(0, 20);
+  // 排序狀態
+  let currentRows = [];
+  let sortKey = "rank";
+  let sortAsc = true;
 
-                if (candidates.length === 0) {
-                    container.innerHTML = `<div class="error">❌ 找不到「已標註地區 = ${region}」的頻道。
-                    <br/>（很多頻道不會在 YouTube 後台設定國家/地區；這是 YouTube 資料源限制，不是你的網站壞掉。）</div>`;
-                    return;
-                }
+  // 快取 last result
+  let lastResult = null;
+  let lastQuery = null;
 
-                let html = '';
-                candidates.forEach((ch, index) => {
-                    const subscribers = formatNumber(ch.subscriberCount || 0);
-                    const views = formatNumber(ch.viewCount || 0);
+  function setAlert(type, text){
+    if(!text){ alertBox.innerHTML = ""; return; }
+    const cls = type === "error" ? "error" : "ok";
+    alertBox.innerHTML = `<div class="${cls}">${escapeHtml(text)}</div>`;
+  }
 
-                    html += `
-                        <div class="ranking-item" onclick="loadChannelById('${ch.id}')">
-                            <div class="rank-number">#${index + 1}</div>
-                            <img src="${ch.thumbnail}" alt="${escapeHtml(ch.title)}" class="channel-avatar">
-                            <div class="channel-info">
-                                <h3>${escapeHtml(ch.title)}</h3>
-                                <p>訂閱數：${subscribers}｜總觀看：${views}｜地區：${ch.country || '未標註'}</p>
-                            </div>
-                        </div>
-                    `;
-                });
+  function escapeHtml(str){
+    return String(str || "")
+      .replaceAll("&","&amp;").replaceAll("<","&lt;")
+      .replaceAll(">","&gt;").replaceAll('"',"&quot;")
+      .replaceAll("'","&#39;");
+  }
 
-                container.innerHTML = html;
+  function getSettings(){
+    return {
+      region: document.getElementById("region").value,
+      lang: document.getElementById("lang").value,
+      cat: document.getElementById("cat").value,
+      days: Number(document.getElementById("days").value),
+      excludeTopic: document.getElementById("excludeTopic").checked,
+      strictLang: document.getElementById("strictLang").checked,
+      strictCat: document.getElementById("strictCat").checked,
+      useCache: document.getElementById("useCache").checked,
+    };
+  }
 
-            } catch (error) {
-                console.error(error);
-                container.innerHTML = `<div class="error">❌ 載入失敗：${escapeHtml(error.message || String(error))}</div>`;
-            }
-        }
+  function renderBadges(s){
+    const catLabel = {
+      "3c":"3C 科技","lifestyle":"生活風格","food":"美食料理",
+      "parenting":"親子母嬰","finance":"財經投資","travel":"旅遊","fitness":"健身"
+    }[s.cat] || s.cat;
 
-        // 依地區補齊候選頻道：用 search.list（偏好地區 + 語言），再用 channels.list 抓 country 並嚴格過濾
-        async function discoverRegionalChannels(region, maxResults = 30) {
-            try {
-                const lang = regionToLanguage(region);
-                // 用常見關鍵字作為 seed，避免空查詢的不可控
-                const seed = lang.startsWith('zh') ? 'vlog' : 'vlog';
+    badges.innerHTML = `
+      <div class="badge">地區 <span>${escapeHtml(s.region)}</span></div>
+      <div class="badge">語言 <span>${escapeHtml(s.lang)}</span></div>
+      <div class="badge">品類 <span>${escapeHtml(catLabel)}</span></div>
+      <div class="badge">期間 <span>${escapeHtml(s.days)} 天</span></div>
+      <div class="badge">目標 <span>TOP 100</span></div>
+    `;
+  }
 
-                const searchResp = await fetch(
-                    `https://www.googleapis.com/youtube/v3/search?part=snippet&type=channel&maxResults=${Math.min(maxResults, 50)}&q=${encodeURIComponent(seed)}&regionCode=${region}&relevanceLanguage=${lang}&key=${API_KEY}`
-                );
-                const searchData = await searchResp.json();
-                if (!searchResp.ok) return [];
+  function saveApiBase(){
+    API_BASE = (apiBaseInput.value || "").trim();
+    if(API_BASE.endsWith("/")) API_BASE = API_BASE.slice(0, -1);
+    localStorage.setItem(LS_API_BASE, API_BASE);
+    apiBaseHint.textContent = API_BASE ? API_BASE : "（尚未設定）";
+    setAlert("ok", "✅ 已儲存 Worker API Base。");
+  }
 
-                const ids = (searchData.items || []).map(it => it.id?.channelId).filter(Boolean);
-                const map = await getChannelsData(ids);
+  async function ping(){
+    setAlert();
+    const base = (apiBaseInput.value || "").trim();
+    if(!base){
+      setAlert("error", "❌ 請先輸入 Worker API Base。");
+      return;
+    }
+    try{
+      const r = await fetch(base.replace(/\/$/,"") + "/ping", { cache:"no-store" });
+      const j = await r.json();
+      document.getElementById("pingResult").innerHTML =
+        `<div class="ok">✅ 連線成功：${escapeHtml(JSON.stringify(j))}</div>`;
+    }catch(e){
+      document.getElementById("pingResult").innerHTML =
+        `<div class="error">❌ 連線失敗：${escapeHtml(e.message || String(e))}</div>`;
+    }
+  }
 
-                return ids
-                    .map(id => ({ id, ...(map[id] || {}) }))
-                    .filter(ch => ch.country && ch.country.toUpperCase() === region.toUpperCase());
-            } catch (e) {
-                console.warn('discoverRegionalChannels failed', e);
-                return [];
-            }
-        }
+  function fmtNum(n){
+    const num = Number(n || 0);
+    if(num >= 1e6) return (num/1e6).toFixed(1)+"M";
+    if(num >= 1e3) return (num/1e3).toFixed(1)+"K";
+    return String(Math.round(num));
+  }
+  function fmtPct(x, digits=2){
+    const v = Number(x || 0)*100;
+    return (v>=0? "" : "-") + Math.abs(v).toFixed(digits) + "%";
+  }
+  function fmt1(x){ return Number(x || 0).toFixed(1); }
 
-        function regionToLanguage(region) {
-            const r = (region || '').toUpperCase();
-            const map = {
-                'TW': 'zh-Hant',
-                'HK': 'zh-Hant',
-                'MO': 'zh-Hant',
-                'CN': 'zh-Hans',
-                'JP': 'ja',
-                'KR': 'ko',
-                'US': 'en',
-                'GB': 'en',
-                'AU': 'en',
-                'CA': 'en'
-            };
-            return map[r] || 'en';
-        }
+  function tierOf(score){
+    const s = Number(score || 0);
+    if(s >= 80) return "A";
+    if(s >= 65) return "B";
+    if(s >= 50) return "C";
+    return "D";
+  }
 
-        function escapeHtml(str) {
-            return String(str || '')
-                .replaceAll('&', '&amp;')
-                .replaceAll('<', '&lt;')
-                .replaceAll('>', '&gt;')
-                .replaceAll('"', '&quot;')
-                .replaceAll("'", '&#39;');
-        }
+  function buildRow(r, idx){
+    const t = tierOf(r.score);
+    const url = "https://www.youtube.com/channel/" + encodeURIComponent(r.channelId);
+    const cUrl = r.customUrl ? ("https://www.youtube.com/" + r.customUrl.replace(/^@/,"@")) : url;
 
-        async function getChannelsData(channelIds) {
-            const channelsMap = {};
-            if (!channelIds || channelIds.length === 0) return channelsMap;
+    return `
+      <tr>
+        <td class="rank">${idx+1}</td>
+        <td>
+          <div style="display:flex; gap:10px; align-items:center; min-width:260px">
+            <img src="${escapeHtml(r.thumbnail || "")}" style="width:44px;height:44px;border-radius:50%" alt="">
+            <div style="min-width:0">
+              <a class="link" href="${escapeHtml(cUrl)}" target="_blank" rel="noopener">${escapeHtml(r.title || "")}</a>
+              <div class="small">${escapeHtml(r.customUrl || r.channelId || "")}</div>
+            </div>
+          </div>
+        </td>
+        <td><span class="pill ${t}">${t}</span></td>
+        <td><b>${fmt1(r.score)}</b></td>
+        <td>${fmtNum(r.subscriberCount)}</td>
+        <td>${fmtNum(r.avgViews)}</td>
+        <td>${fmtPct(r.engagementRate, 2)}</td>
+        <td>${fmtPct(r.growthMomentum, 2)}</td>
+        <td>${fmtPct(r.stabilityScore, 2)}</td>
+        <td>${fmt1(r.commentsPerKViews)}</td>
+        <td>${fmtPct(r.categoryMatch, 0)}</td>
+      </tr>
+    `;
+  }
 
-            try {
-                // 一次最多 50 個 id
-                const chunks = [];
-                for (let i = 0; i < channelIds.length; i += 50) chunks.push(channelIds.slice(i, i + 50));
+  function renderTable(rows){
+    tbody.innerHTML = rows.map((r,i)=>buildRow(r,i)).join("");
+  }
 
-                for (const ids of chunks) {
-                    const response = await fetch(
-                        `https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&id=${ids.join(',')}&key=${API_KEY}`
-                    );
-                    const data = await response.json();
+  function attachSort(){
+    table.querySelectorAll("thead th").forEach(th=>{
+      th.addEventListener("click", ()=>{
+        const k = th.getAttribute("data-k");
+        if(!k) return;
+        if(sortKey === k) sortAsc = !sortAsc;
+        else { sortKey = k; sortAsc = false; }
+        sortRows();
+      });
+    });
+  }
 
-                    if (data.items) {
-                        data.items.forEach(channel => {
-                            channelsMap[channel.id] = {
-                                title: channel.snippet?.title || '(未命名頻道)',
-                                country: channel.snippet?.country || '',
-                                customUrl: channel.snippet?.customUrl || '',
-                                subscriberCount: Number(channel.statistics?.subscriberCount || 0),
-                                viewCount: Number(channel.statistics?.viewCount || 0),
-                                videoCount: Number(channel.statistics?.videoCount || 0),
-                                thumbnail: channel.snippet?.thumbnails?.default?.url || ''
-                            };
-                        });
-                    }
-                }
-            } catch (error) {
-                console.error('Error fetching channels data:', error);
-            }
+  function sortRows(){
+    const rows = [...currentRows];
+    const dir = sortAsc ? 1 : -1;
 
-            return channelsMap;
-        }
+    rows.sort((a,b)=>{
+      const av = a[sortKey];
+      const bv = b[sortKey];
+      if(sortKey === "title" || sortKey === "tier"){
+        return String(av||"").localeCompare(String(bv||""), "zh-Hant") * dir;
+      }
+      return (Number(av||0) - Number(bv||0)) * dir;
+    });
 
-        async function searchChannel() {
-            const query = document.getElementById('channelInput').value.trim();
-            if (!query) {
-                alert('請輸入頻道名稱或 ID');
-                return;
-            }
+    renderTable(rows);
+  }
 
-            if (!API_KEY) {
-                alert('請先設定 API Key');
-                return;
-            }
+  function applyQuickSearch(){
+    const q = (document.getElementById("quickSearch").value || "").trim().toLowerCase();
+    if(!lastResult){ setAlert("error","❌ 尚未載入榜單。"); return; }
+    if(!q){
+      currentRows = lastResult.items || [];
+      sortRows();
+      setAlert("ok", "✅ 已清除搜尋條件。");
+      return;
+    }
+    const filtered = (lastResult.items || []).filter(x=>{
+      return (x.title||"").toLowerCase().includes(q)
+        || (x.channelId||"").toLowerCase().includes(q)
+        || (x.customUrl||"").toLowerCase().includes(q);
+    });
+    currentRows = filtered;
+    sortRows();
+    setAlert("ok", `✅ 篩出 ${filtered.length} 筆結果。`);
+  }
 
-            const region = document.getElementById('countrySelect').value;
-            const lang = regionToLanguage(region);
+  function exportCSV(){
+    if(!lastResult || !lastResult.items){ setAlert("error","❌ 尚未載入榜單，無法匯出。"); return; }
+    const s = lastQuery || getSettings();
+    const catLabel = {"3c":"3C科技","lifestyle":"生活風格","food":"美食料理","parenting":"親子母嬰","finance":"財經投資","travel":"旅遊","fitness":"健身"}[s.cat] || s.cat;
 
-            try {
-                // 先用 search 找頻道（加上 region/language 偏好，讓結果更貼近你選的地區）
-                const searchResponse = await fetch(
-                    `https://www.googleapis.com/youtube/v3/search?part=snippet&type=channel&maxResults=1&q=${encodeURIComponent(query)}&regionCode=${region}&relevanceLanguage=${lang}&key=${API_KEY}`
-                );
+    const header = [
+      "rank","tier","score","channelId","customUrl","title",
+      "subscriberCount","avgViews","engagementRate","growthMomentum","stabilityScore","commentsPerKViews","categoryMatch",
+      "region","lang","category","days","generatedAt"
+    ];
+    const lines = [header.join(",")];
 
-                const searchData = await searchResponse.json();
-                if (!searchResponse.ok) throw new Error(searchData?.error?.message || '搜尋失敗');
+    const generatedAt = lastResult.generatedAt || new Date().toISOString();
+    (lastResult.items || []).forEach((r, idx)=>{
+      const t = tierOf(r.score);
+      const row = [
+        idx+1, t, r.score, r.channelId, r.customUrl||"", `"${String(r.title||"").replaceAll('"','""')}"`,
+        r.subscriberCount, r.avgViews, r.engagementRate, r.growthMomentum, r.stabilityScore, r.commentsPerKViews, r.categoryMatch,
+        s.region, s.lang, catLabel, s.days, generatedAt
+      ];
+      lines.push(row.join(","));
+    });
 
-                if (!searchData.items || searchData.items.length === 0) {
-                    alert('找不到頻道');
-                    return;
-                }
+    const blob = new Blob([lines.join("\n")], {type:"text/csv;charset=utf-8;"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    const fn = `VGV_TOP100_${s.region}_${s.lang}_${s.cat}_${s.days}d.csv`;
+    a.download = fn;
+    a.click();
+    URL.revokeObjectURL(url);
+    setAlert("ok", `✅ 已匯出 CSV：${fn}`);
+  }
 
-                const channelId = searchData.items[0].id.channelId;
-                await loadChannelById(channelId);
-            } catch (error) {
-                console.error(error);
-                alert(`搜尋失敗：${error.message || error}`);
-            }
-        }
+  async function runTop100(){
+    setAlert();
+    const s = getSettings();
+    renderBadges(s);
 
-        async function loadChannelById(channelId) {
-            const container = document.getElementById('channelDetail');
-            container.innerHTML = '<div class="loading">載入頻道數據中...</div>';
-            container.classList.add('active');
+    if(!API_BASE){
+      setAlert("error", "❌ 你尚未設定 Worker API Base。請在下方輸入後儲存，並按「測試連線」。");
+      return;
+    }
 
-            try {
-                // 獲取頻道詳細資訊
-                const channelResponse = await fetch(
-                    `https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics,brandingSettings&id=${channelId}&key=${API_KEY}`
-                );
-                const channelData = await channelResponse.json();
+    msg.textContent = "⏳ 正在生成 TOP 100 決策池…（第一次可能較久，之後會快很多）";
 
-                if (!channelData.items || channelData.items.length === 0) {
-                    container.innerHTML = '<div class="error">❌ 無法取得頻道資料</div>';
-                    return;
-                }
+    const qs = new URLSearchParams({
+      region: s.region,
+      lang: s.lang,
+      cat: s.cat,
+      days: String(s.days),
+      excludeTopic: s.excludeTopic ? "1" : "0",
+      strictLang: s.strictLang ? "1" : "0",
+      strictCat: s.strictCat ? "1" : "0",
+      cache: s.useCache ? "1" : "0"
+    });
 
-                const channel = channelData.items[0];
-                const selectedRegion = document.getElementById('countrySelect').value;
-                const channelCountry = channel.snippet?.country || '';
-                const regionHint = channelCountry ? `頻道地區：${channelCountry}` : '頻道地區：未標註';
-                const mismatch = (channelCountry && channelCountry.toUpperCase() !== selectedRegion.toUpperCase());
+    try{
+      const url = API_BASE + "/top100?" + qs.toString();
+      const r = await fetch(url, { cache: "no-store" });
+      const j = await r.json();
+      if(!r.ok){
+        throw new Error(j && j.error ? j.error : ("HTTP " + r.status));
+      }
 
-                // 獲取最近的影片來計算平均數據
-                const videosResponse = await fetch(
-                    `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${channelId}&order=date&maxResults=10&type=video&key=${API_KEY}`
-                );
-                const videosData = await videosResponse.json();
+      lastResult = j;
+      lastQuery = s;
+      currentRows = j.items || [];
 
-                let avgLikes = 0;
-                let avgComments = 0;
+      msg.innerHTML = `✅ 生成完成：<b>${currentRows.length}</b> 筆｜<small>generatedAt: ${escapeHtml(j.generatedAt || "")}</small>`;
+      setAlert("ok", `✅ 已取得 TOP100（候選池：${j.meta?.candidateChannels || "-"}，納入：${currentRows.length}）。`);
 
-                if (videosData.items && videosData.items.length > 0) {
-                    const videoIds = videosData.items.map(v => v.id.videoId).join(',');
-                    const statsResponse = await fetch(
-                        `https://www.googleapis.com/youtube/v3/videos?part=statistics&id=${videoIds}&key=${API_KEY}`
-                    );
-                    const statsData = await statsResponse.json();
+      sortKey = "score"; sortAsc = false;
+      sortRows();
 
-                    if (statsData.items) {
-                        const totalLikes = statsData.items.reduce((sum, v) => sum + parseInt(v.statistics.likeCount || 0), 0);
-                        const totalComments = statsData.items.reduce((sum, v) => sum + parseInt(v.statistics.commentCount || 0), 0);
-                        avgLikes = totalLikes / statsData.items.length;
-                        avgComments = totalComments / statsData.items.length;
-                    }
-                }
+    }catch(e){
+      console.error(e);
+      msg.textContent = "❌ 生成失敗。";
+      setAlert("error", "❌ 生成失敗：" + (e.message || String(e)));
+    }
+  }
 
-                const snippet = channel.snippet;
-                const stats = channel.statistics;
-                const subscriberCount = parseInt(stats.subscriberCount || 0);
-                const viewCount = parseInt(stats.viewCount || 0);
-                const videoCount = parseInt(stats.videoCount || 0);
-
-                // 計算訂閱數增長 (示意：若要真實成長率，需接入歷史追蹤資料)
-                const growthRate = Math.random() * 10 - 2; // -2% 到 +8%
-                const growthClass = growthRate >= 0 ? 'growth-positive' : 'growth-negative';
-
-                container.innerHTML = `
-                    <div class="channel-header">
-                        <img src="${snippet.thumbnails.high.url}" alt="${snippet.title}">
-                        <div class="channel-header-info">
-                            <h3>${snippet.title}</h3>
-                            <p>${snippet.customUrl || channelId}</p>
-                            <p style="margin-top:6px; font-size:0.95em; color:#666;">${regionHint}${mismatch ? `（⚠️ 與你選的地區 ${selectedRegion} 不一致）` : ''}</p>
-                        </div>
-                    </div>
-
-                    <div class="stats-grid">
-                        <div class="stat-card">
-                            <div class="stat-label">訂閱數</div>
-                            <div class="stat-value">${formatNumber(subscriberCount)}</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-label">訂閱數增長</div>
-                            <div class="stat-value ${growthClass}">
-                                ${growthRate >= 0 ? '+' : ''}${growthRate.toFixed(2)}%
-                            </div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-label">平均愛心數</div>
-                            <div class="stat-value">${formatNumber(Math.round(avgLikes))}</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-label">平均留言數</div>
-                            <div class="stat-value">${formatNumber(Math.round(avgComments))}</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-label">總觀看次數</div>
-                            <div class="stat-value">${formatNumber(viewCount)}</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-label">影片數量</div>
-                            <div class="stat-value">${formatNumber(videoCount)}</div>
-                        </div>
-                    </div>
-
-                    <div style="margin-top: 15px;">
-                        <h4 style="color:#333; margin-bottom:8px;">📝 頻道介紹</h4>
-                        <p style="color:#666; line-height:1.6;">${snippet.description ? snippet.description.replace(/\n/g, '<br>') : '（無介紹）'}</p>
-                    </div>
-                `;
-
-            } catch (error) {
-                console.error(error);
-                container.innerHTML = `<div class="error">❌ 載入失敗：${escapeHtml(error.message || String(error))}</div>`;
-            }
-        }
-
-        function formatNumber(num) {
-            if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
-            if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
-            return num.toString();
-        }
-
-        window.addEventListener('load', () => {
-            const input = document.getElementById('apiKeyInput');
-            if (input) input.value = API_KEY || '';
-            if (API_KEY) {
-                // 若已在本機存過 key，直接載入排行
-                loadRankings();
-            }
-        });
-    </script>
+  // 初始化
+  attachSort();
+  renderBadges(getSettings());
+</script>
 </body>
 </html>

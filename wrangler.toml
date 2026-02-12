@@ -1,0 +1,8 @@
+name = "vgv-kol-radar"
+main = "worker.js"
+compatibility_date = "2025-01-01"
+
+# 你也可以使用 vars 來綁定環境變數（不要把 key 提交到 Git）
+# 在部署時用 wrangler secret put YT_API_KEY
+# [vars]
+# YT_API_KEY = "YOUR_KEY"
