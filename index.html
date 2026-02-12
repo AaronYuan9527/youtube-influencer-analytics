@@ -232,9 +232,10 @@
 
 <script>
   // ========= 基本設定 =========
-  const LS_API_BASE = "VGV_WORKER_API_BASE";
-  const DEFAULT_API_BASE = ""; // 建議留空，部署後由你在 UI 輸入並儲存
-  let API_BASE = localStorage.getItem(LS_API_BASE) || DEFAULT_API_BASE;
+const LS_API_BASE = "VGV_API_BASE";  
+const DEFAULT_API_BASE = "https://youtube.aaron-9b6.workers.dev";
+let API_BASE = localStorage.getItem(LS_API_BASE) || DEFAULT_API_BASE;
+
 
   const table = document.getElementById("tbl");
   const tbody = table.querySelector("tbody");
