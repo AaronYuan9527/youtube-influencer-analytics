@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VGV KOL Radar Engine（YouTube TOP100 決策池）</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{
+      font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Microsoft JhengHei',sans-serif;
+      background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+      min-height:100vh;padding:18px;
+    }
+    .container{max-width:1500px;margin:0 auto}
+    .header{
+      background:#fff;padding:26px;border-radius:16px;
+      box-shadow:0 10px 30px rgba(0,0,0,.18);margin-bottom:18px;text-align:center
+    }
+    .header h1{color:#4f63e6;font-size:2.1em;margin-bottom:8px}
+    .header p{color:#666;font-size:1.02em}
+    .panel{
+      background:#fff;padding:18px;border-radius:16px;
+      box-shadow:0 6px 22px rgba(0,0,0,.10);margin-bottom:18px;
+    }
+    .row{display:grid;grid-template-columns: 1fr 1fr 1fr 1fr; gap:10px; margin:10px 0 12px}
+    @media (max-width: 980px){ .row{grid-template-columns:1fr 1fr} }
+    label{display:block;color:#333;font-weight:600;margin-bottom:6px;font-size:.95em}
+    select, input{
+      width:100%;padding:10px;border:2px solid #e8e8e8;border-radius:10px;font-size:15px;background:#fff
+    }
+    .actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:10px}
+    button{
+      padding:10px 14px;border:0;border-radius:10px;
+      background:#4f63e6;color:#fff;font-weight:700;cursor:pointer;
+      box-shadow:0 8px 18px rgba(79,99,230,.25);
+      transition:transform .15s, background .15s
+    }
+    button:hover{background:#4457d9;transform:translateY(-1px)}
+    button.secondary{background:#111827;box-shadow:0 8px 18px rgba(17,24,39,.18)}
+    button.secondary:hover{background:#0b1220}
+    .note{
+      margin-top:10px; padding:10px 12px; border-radius:12px;
+      background:#f8f9ff; color:#4b5563; line-height:1.45; font-size:.95em;
+      border:1px solid #e8ebff
+    }
+    .badges{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+    .badge{
+      display:inline-flex;gap:8px;align-items:center;
+      padding:7px 10px;border-radius:999px;background:#f3f4f6;color:#111827;font-weight:700;font-size:.9em
+    }
+    .badge span{font-weight:800;color:#4f63e6}
+    .status{margin-top:10px;color:#111827;font-weight:700}
+    .status small{font-weight:600;color:#6b7280}
+    .error{margin-top:10px;padding:12px;border-radius:12px;background:#fee2e2;color:#991b1b;font-weight:700; white-space:pre-wrap}
+    .ok{margin-top:10px;padding:12px;border-radius:12px;background:#dcfce7;color:#166534;font-weight:700; white-space:pre-wrap}
+
+    table{width:100%;border-collapse:separate;border-spacing:0;margin-top:12px}
+    thead th{
+      position:sticky;top:0;background:#fff;z-index:1;
+      text-align:left;font-size:.92em;color:#111827;padding:10px 10px;border-bottom:2px solid #e5e7eb;
+      cursor:pointer; user-select:none
+    }
+    tbody td{
+      padding:10px 10px;border-bottom:1px solid #eef2ff;color:#111827;font-size:.95em; vertical-align:middle
+    }
+    tbody tr:hover{background:#f8f9ff}
+    .rank{font-weight:900;color:#4f63e6}
+    .pill{
+      display:inline-flex;align-items:center;justify-content:center;
+      min-width:44px;padding:5px 10px;border-radius:999px;font-weight:900;font-size:.88em
+    }
+    .pill.A{background:#dcfce7;color:#166534}
+    .pill.B{background:#dbeafe;color:#1d4ed8}
+    .pill.C{background:#fef3c7;color:#92400e}
+    .pill.D{background:#fee2e2;color:#991b1b}
+    .link{color:#4f63e6;font-weight:800;text-decoration:none}
+    .link:hover{text-decoration:underline}
+    .small{font-size:.88em;color:#6b7280;font-weight:600}
+    .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+    .search{
+      display:flex;gap:10px;align-items:center;flex:1; min-width:220px
+    }
+    .search input{flex:1}
+    .right{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    code{background:#f3f4f6;padding:2px 6px;border-radius:6px}
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>📡 VGV KOL Radar Engine</h1>
+    <p>內部選 KOL 決策工具｜內容語言 × 觀眾地區 × 行銷品類｜TOP 100 決策池</p>
+  </div>
+
+  <div class="panel">
+    <div class="toolbar">
+      <div class="search">
+        <input id="quickSearch" placeholder="快速搜尋（頻道名 / ID / 自訂網址）…" />
+        <button class="secondary" onclick="applyQuickSearch()">搜尋</button>
+      </div>
+      <div class="right">
+        <button onclick="runTop100()">刷新 TOP100</button>
+        <button class="secondary" onclick="exportCSV()">匯出 CSV</button>
+      </div>
+    </div>
+
+    <div class="row">
+      <div>
+        <label>觀眾地區（regionCode）</label>
+        <select id="region">
+          <option value="TW">台灣 🇹🇼</option>
+          <option value="HK">香港 🇭🇰</option>
+          <option value="SG">新加坡 🇸🇬</option>
+          <option value="MY">馬來西亞 🇲🇾</option>
+          <option value="JP">日本 🇯🇵</option>
+          <option value="KR">韓國 🇰🇷</option>
+          <option value="US">美國 🇺🇸</option>
+          <option value="GB">英國 🇬🇧</option>
+        </select>
+      </div>
+      <div>
+        <label>內容語言（relevanceLanguage）</label>
+        <select id="lang">
+          <option value="zh-Hant">繁體中文（zh-Hant）</option>
+          <option value="zh-Hans">簡體中文（zh-Hans）</option>
+          <option value="en">英文（en）</option>
+          <option value="ja">日文（ja）</option>
+          <option value="ko">韓文（ko）</option>
+        </select>
+      </div>
+      <div>
+        <label>行銷品類（Marketing Category）</label>
+        <select id="cat">
+          <option value="3c">3C 科技</option>
+          <option value="lifestyle">生活風格</option>
+          <option value="food">美食料理</option>
+          <option value="parenting">親子母嬰</option>
+          <option value="finance">財經投資</option>
+          <option value="travel">旅遊</option>
+          <option value="fitness">健身</option>
+        </select>
+      </div>
+      <div>
+        <label>期間（天）</label>
+        <select id="days">
+          <option value="30">30</option>
+          <option value="90">90</option>
+          <option value="180">180</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="actions">
+      <label style="display:flex;gap:8px;align-items:center;font-weight:700;color:#111827">
+        <input type="checkbox" id="excludeTopic" checked />
+        排除 Topic / 官方音樂類噪音
+      </label>
+      <label style="display:flex;gap:8px;align-items:center;font-weight:700;color:#111827">
+        <input type="checkbox" id="strictLang" checked />
+        嚴格語言過濾（提升精準，可能減少樣本）
+      </label>
+      <label style="display:flex;gap:8px;align-items:center;font-weight:700;color:#111827">
+        <input type="checkbox" id="strictCat" checked />
+        嚴格品類吻合（需達標才納入 TOP100）
+      </label>
+      <label style="display:flex;gap:8px;align-items:center;font-weight:700;color:#111827">
+        <input type="checkbox" id="useCache" checked />
+        使用快取（省 quota、速度更快）
+      </label>
+    </div>
+
+    <div class="badges" id="badges"></div>
+
+    <div class="note">
+      <b>榜單依據：</b>
+      以「<b>觀眾地區</b>（regionCode）」為入口，先擴大抓取候選頻道（多 query、多頁），再以「<b>內容語言</b> + <b>行銷品類</b>（關鍵字語意規則）」做二次過濾，
+      對每個候選頻道拉取近 20 支上傳影片的統計資料，計算 <b>VGV Decision Score</b>（觸及 × 互動 × 成長 × 穩定 × 留言），最後輸出 TOP 100 決策池。
+      <div class="small" style="margin-top:6px">※ 這是「內部決策池」不是「官方 YouTube 排行榜」。</div>
+    </div>
+
+    <div id="msg" class="status">尚未載入。<small>（按「刷新 TOP100」開始）</small></div>
+    <div id="alert"></div>
+
+    <div style="overflow:auto; margin-top:10px; border-radius:14px; border:1px solid #eef2ff">
+      <table id="tbl">
+        <thead>
+          <tr>
+            <th data-k="rank">#</th>
+            <th data-k="title">頻道</th>
+            <th data-k="tier">Tier</th>
+            <th data-k="score">Decision Score</th>
+            <th data-k="subscriberCount">訂閱</th>
+            <th data-k="avgViews">近期間平均觀看</th>
+            <th data-k="engagementRate">互動率</th>
+            <th data-k="growthMomentum">成長動能</th>
+            <th data-k="stabilityScore">觀看穩定</th>
+            <th data-k="commentsPerKViews">留言/千次觀看</th>
+            <th data-k="categoryMatch">品類吻合</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <div class="panel">
+    <h2 style="color:#111827; font-size:1.2em; margin-bottom:10px">🔧 連線設定（安全版）</h2>
+    <div class="note">
+      這個版本採用 <b>後端代理（Cloudflare Worker）</b>：API Key 存在 Worker 的環境變數（例如 <code>YT_API_KEY</code>），不會暴露在 GitHub Pages。
+      <div style="margin-top:6px">目前使用的 Worker Base：<code id="apiBaseHint"></code></div>
+    </div>
+    <div class="row" style="grid-template-columns: 1fr 1fr;">
+      <div>
+        <label>Worker API Base（例如：https://xxx.workers.dev）</label>
+        <input id="apiBase" placeholder="輸入你的 Worker 網址" />
+        <div class="small" style="margin-top:6px">提示：不要在尾端加 <code>/</code>；例如 <code>https://youtube.aaron-9b6.workers.dev</code></div>
+      </div>
+      <div>
+        <label>&nbsp;</label>
+        <div class="actions">
+          <button class="secondary" onclick="saveApiBase()">儲存</button>
+          <button onclick="ping()">測試連線</button>
+          <button class="secondary" onclick="resetApiBase()">重置（用預設）</button>
+        </div>
+      </div>
+    </div>
+    <div id="pingResult"></div>
+  </div>
+
+</div>
+
+<script>
+  // ========= 基本設定（重點：避免 API_BASE 變空字串，否則會打到 GitHub Pages 的 /top100 → 404 → 回 HTML） =========
+  const LS_API_BASE = "VGV_WORKER_API_BASE";
+  const DEFAULT_API_BASE = "https://youtube.aaron-9b6.workers.dev"; // ✅ 你的 Worker 網址（可改）
+  let API_BASE = (localStorage.getItem(LS_API_BASE) || "").trim() || DEFAULT_API_BASE;
+
+  const table = document.getElementById("tbl");
+  const tbody = table.querySelector("tbody");
+  const msg = document.getElementById("msg");
+  const alertBox = document.getElementById("alert");
+  const badges = document.getElementById("badges");
+  const apiBaseInput = document.getElementById("apiBase");
+  const apiBaseHint = document.getElementById("apiBaseHint");
+
+  apiBaseInput.value = API_BASE || "";
+  apiBaseHint.textContent = API_BASE ? API_BASE : "（尚未設定）";
+
+  let currentRows = [];
+  let sortKey = "score";
+  let sortAsc = false;
+
+  let lastResult = null;
+  let lastQuery = null;
+
+  function setAlert(type, text){
+    if(!text){ alertBox.innerHTML = ""; return; }
+    const cls = type === "error" ? "error" : "ok";
+    alertBox.innerHTML = `<div class="${cls}">${escapeHtml(text)}</div>`;
+  }
+
+  function escapeHtml(str){
+    return String(str || "")
+      .replaceAll("&","&amp;").replaceAll("<","&lt;")
+      .replaceAll(">","&gt;").replaceAll('"',"&quot;")
+      .replaceAll("'","&#39;");
+  }
+
+  function normalizeBase(base){
+    let b = (base || "").trim();
+    if(!b) return "";
+    if(b.endsWith("/")) b = b.slice(0, -1);
+    return b;
+  }
+
+  function getSettings(){
+    return {
+      region: document.getElementById("region").value,
+      lang: document.getElementById("lang").value,
+      cat: document.getElementById("cat").value,
+      days: Number(document.getElementById("days").value),
+      excludeTopic: document.getElementById("excludeTopic").checked,
+      strictLang: document.getElementById("strictLang").checked,
+      strictCat: document.getElementById("strictCat").checked,
+      useCache: document.getElementById("useCache").checked,
+    };
+  }
+
+  function renderBadges(s){
+    const catLabel = {
+      "3c":"3C 科技","lifestyle":"生活風格","food":"美食料理",
+      "parenting":"親子母嬰","finance":"財經投資","travel":"旅遊","fitness":"健身"
+    }[s.cat] || s.cat;
+
+    badges.innerHTML = `
+      <div class="badge">地區 <span>${escapeHtml(s.region)}</span></div>
+      <div class="badge">語言 <span>${escapeHtml(s.lang)}</span></div>
+      <div class="badge">品類 <span>${escapeHtml(catLabel)}</span></div>
+      <div class="badge">期間 <span>${escapeHtml(s.days)} 天</span></div>
+      <div class="badge">目標 <span>TOP 100</span></div>
+    `;
+  }
+
+  function saveApiBase(){
+    const v = normalizeBase(apiBaseInput.value);
+    if(!v){
+      setAlert("error", "❌ 不能儲存空白網址。請輸入 Worker URL，例如：https://xxx.workers.dev");
+      return;
+    }
+    API_BASE = v;
+    localStorage.setItem(LS_API_BASE, API_BASE);
+    apiBaseHint.textContent = API_BASE;
+    setAlert("ok", "✅ 已儲存 Worker API Base。");
+  }
+
+  function resetApiBase(){
+    localStorage.removeItem(LS_API_BASE);
+    API_BASE = DEFAULT_API_BASE;
+    apiBaseInput.value = API_BASE;
+    apiBaseHint.textContent = API_BASE;
+    setAlert("ok", "✅ 已重置為預設 Worker。");
+  }
+
+  async function safeFetchJson(url){
+    const r = await fetch(url, { cache: "no-store" });
+    const ct = (r.headers.get("content-type") || "").toLowerCase();
+    const text = await r.text();
+
+    if(!ct.includes("application/json")){
+      const head = text.slice(0, 160).replace(/\s+/g, " ");
+      throw new Error(`回應不是 JSON（可能 API_BASE 或路徑錯）。HTTP ${r.status} / content-type=${ct || "unknown"} / body前160字=${head}`);
+    }
+
+    let j;
+    try{ j = JSON.parse(text); }
+    catch(e){
+      const head = text.slice(0, 160).replace(/\s+/g, " ");
+      throw new Error(`JSON 解析失敗（HTTP ${r.status}）：${e.message} / body前160字=${head}`);
+    }
+
+    if(!r.ok){
+      throw new Error(j && j.error ? j.error : ("HTTP " + r.status));
+    }
+    return j;
+  }
+
+  async function ping(){
+    setAlert();
+    const base = normalizeBase(apiBaseInput.value);
+    if(!base){
+      setAlert("error", "❌ 請先輸入 Worker API Base。");
+      return;
+    }
+    try{
+      const j = await safeFetchJson(base + "/ping");
+      document.getElementById("pingResult").innerHTML =
+        `<div class="ok">✅ 連線成功：${escapeHtml(JSON.stringify(j))}</div>`;
+    }catch(e){
+      document.getElementById("pingResult").innerHTML =
+        `<div class="error">❌ 連線失敗：${escapeHtml(e.message || String(e))}</div>`;
+    }
+  }
+
+  function fmtNum(n){
+    const num = Number(n || 0);
+    if(num >= 1e6) return (num/1e6).toFixed(1)+"M";
+    if(num >= 1e3) return (num/1e3).toFixed(1)+"K";
+    return String(Math.round(num));
+  }
+  function fmtPct(x, digits=2){
+    const v = Number(x || 0)*100;
+    return (v>=0? "" : "-") + Math.abs(v).toFixed(digits) + "%";
+  }
+  function fmt1(x){ return Number(x || 0).toFixed(1); }
+
+  function tierOf(score){
+    const s = Number(score || 0);
+    if(s >= 80) return "A";
+    if(s >= 65) return "B";
+    if(s >= 50) return "C";
+    return "D";
+  }
+
+  function buildRow(r, idx){
+    const t = tierOf(r.score);
+    const url = "https://www.youtube.com/channel/" + encodeURIComponent(r.channelId || "");
+    const cUrl = r.customUrl ? ("https://www.youtube.com/" + r.customUrl.replace(/^@/,"@")) : url;
+
+    return `
+      <tr>
+        <td class="rank">${idx+1}</td>
+        <td>
+          <div style="display:flex; gap:10px; align-items:center; min-width:260px">
+            <img src="${escapeHtml(r.thumbnail || "")}" style="width:44px;height:44px;border-radius:50%" alt="">
+            <div style="min-width:0">
+              <a class="link" href="${escapeHtml(cUrl)}" target="_blank" rel="noopener">${escapeHtml(r.title || "")}</a>
+              <div class="small">${escapeHtml(r.customUrl || r.channelId || "")}</div>
+            </div>
+          </div>
+        </td>
+        <td><span class="pill ${t}">${t}</span></td>
+        <td><b>${fmt1(r.score)}</b></td>
+        <td>${fmtNum(r.subscriberCount)}</td>
+        <td>${fmtNum(r.avgViews)}</td>
+        <td>${fmtPct(r.engagementRate, 2)}</td>
+        <td>${fmtPct(r.growthMomentum, 2)}</td>
+        <td>${fmtPct(r.stabilityScore, 2)}</td>
+        <td>${fmt1(r.commentsPerKViews)}</td>
+        <td>${fmtPct(r.categoryMatch, 0)}</td>
+      </tr>
+    `;
+  }
+
+  function renderTable(rows){
+    tbody.innerHTML = rows.map((r,i)=>buildRow(r,i)).join("");
+  }
+
+  function attachSort(){
+    table.querySelectorAll("thead th").forEach(th=>{
+      th.addEventListener("click", ()=>{
+        const k = th.getAttribute("data-k");
+        if(!k) return;
+        if(sortKey === k) sortAsc = !sortAsc;
+        else { sortKey = k; sortAsc = false; }
+        sortRows();
+      });
+    });
+  }
+
+  function sortRows(){
+    const rows = [...currentRows];
+    const dir = sortAsc ? 1 : -1;
+
+    rows.sort((a,b)=>{
+      const av = a[sortKey];
+      const bv = b[sortKey];
+      if(sortKey === "title" || sortKey === "tier"){
+        return String(av||"").localeCompare(String(bv||""), "zh-Hant") * dir;
+      }
+      return (Number(av||0) - Number(bv||0)) * dir;
+    });
+
+    renderTable(rows);
+  }
+
+  function applyQuickSearch(){
+    const q = (document.getElementById("quickSearch").value || "").trim().toLowerCase();
+    if(!lastResult){ setAlert("error","❌ 尚未載入榜單。"); return; }
+    if(!q){
+      currentRows = lastResult.items || [];
+      sortRows();
+      setAlert("ok", "✅ 已清除搜尋條件。");
+      return;
+    }
+    const filtered = (lastResult.items || []).filter(x=>{
+      return (x.title||"").toLowerCase().includes(q)
+        || (x.channelId||"").toLowerCase().includes(q)
+        || (x.customUrl||"").toLowerCase().includes(q);
+    });
+    currentRows = filtered;
+    sortRows();
+    setAlert("ok", `✅ 篩出 ${filtered.length} 筆結果。`);
+  }
+
+  function exportCSV(){
+    if(!lastResult || !lastResult.items){ setAlert("error","❌ 尚未載入榜單，無法匯出。"); return; }
+    const s = lastQuery || getSettings();
+    const catLabel = {"3c":"3C科技","lifestyle":"生活風格","food":"美食料理","parenting":"親子母嬰","finance":"財經投資","travel":"旅遊","fitness":"健身"}[s.cat] || s.cat;
+
+    const header = [
+      "rank","tier","score","channelId","customUrl","title",
+      "subscriberCount","avgViews","engagementRate","growthMomentum","stabilityScore","commentsPerKViews","categoryMatch",
+      "region","lang","category","days","generatedAt"
+    ];
+    const lines = [header.join(",")];
+
+    const generatedAt = lastResult.generatedAt || new Date().toISOString();
+    (lastResult.items || []).forEach((r, idx)=>{
+      const t = tierOf(r.score);
+      const row = [
+        idx+1, t, r.score, r.channelId, r.customUrl||"", `"${String(r.title||"").replaceAll('"','""')}"`,
+        r.subscriberCount, r.avgViews, r.engagementRate, r.growthMomentum, r.stabilityScore, r.commentsPerKViews, r.categoryMatch,
+        s.region, s.lang, catLabel, s.days, generatedAt
+      ];
+      lines.push(row.join(","));
+    });
+
+    const blob = new Blob([lines.join("\n")], {type:"text/csv;charset=utf-8;"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    const fn = `VGV_TOP100_${s.region}_${s.lang}_${s.cat}_${s.days}d.csv`;
+    a.download = fn;
+    a.click();
+    URL.revokeObjectURL(url);
+    setAlert("ok", `✅ 已匯出 CSV：${fn}`);
+  }
+
+  async function runTop100(){
+    setAlert();
+    const s = getSettings();
+    renderBadges(s);
+
+    // 避免 API_BASE 被弄成空：localStorage > input > default
+    const base = normalizeBase(API_BASE) || normalizeBase(apiBaseInput.value) || DEFAULT_API_BASE;
+    API_BASE = base;
+    apiBaseHint.textContent = API_BASE;
+    apiBaseInput.value = API_BASE;
+
+    msg.textContent = "⏳ 正在生成 TOP 100 決策池…（第一次可能較久，之後會快很多）";
+
+    const qs = new URLSearchParams({
+      region: s.region,
+      lang: s.lang,
+      cat: s.cat,
+      days: String(s.days),
+      excludeTopic: s.excludeTopic ? "1" : "0",
+      strictLang: s.strictLang ? "1" : "0",
+      strictCat: s.strictCat ? "1" : "0",
+      cache: s.useCache ? "1" : "0"
+    });
+
+    try{
+      const url = API_BASE + "/top100?" + qs.toString();
+      const j = await safeFetchJson(url);
+
+      lastResult = j;
+      lastQuery = s;
+      currentRows = j.items || [];
+
+      msg.innerHTML = `✅ 生成完成：<b>${currentRows.length}</b> 筆｜<small>generatedAt: ${escapeHtml(j.generatedAt || "")}</small>`;
+      setAlert("ok", `✅ 已取得 TOP100（候選池：${j.meta?.candidateChannels || "-"}，納入：${currentRows.length}）。`);
+
+      sortKey = "score"; sortAsc = false;
+      sortRows();
+
+    }catch(e){
+      console.error(e);
+      msg.textContent = "❌ 生成失敗。";
+      setAlert("error",
+        "❌ 生成失敗：" + (e.message || String(e)) +
+        "\n\n檢查要點：\n1) Worker 是否有 /top100 路由\n2) API_BASE 是否正確（不要留空）\n3) 先按『測試連線』看 /ping 是否回 JSON"
+      );
+    }
+  }
+
+  // 初始化
+  attachSort();
+  renderBadges(getSettings());
+</script>
+</body>
+</html>
