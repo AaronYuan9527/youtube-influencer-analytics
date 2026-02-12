@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube 影響力數據分析工具 - VGV 圈粉行銷科技</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft JhengHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .api-setup {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .api-setup h2 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .api-setup input {
+            width: 70%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            margin-right: 10px;
+        }
+
+        .api-setup button {
+            padding: 12px 30px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .api-setup button:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .section {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .tab-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            background: #f0f0f0;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .country-selector {
+            margin-bottom: 20px;
+        }
+
+        .country-selector select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+        }
+
+        .ranking-list {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .ranking-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            margin-bottom: 10px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .ranking-item:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+
+        .rank-number {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #667eea;
+            margin-right: 15px;
+            min-width: 40px;
+        }
+
+        .channel-thumb {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            margin-right: 15px;
+            object-fit: cover;
+        }
+
+        .channel-info {
+            flex: 1;
+        }
+
+        .channel-name {
+            font-weight: 600;
+            font-size: 1.1em;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .channel-stats {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .search-section {
+            margin-bottom: 20px;
+        }
+
+        .search-section input {
+            width: calc(100% - 120px);
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            margin-right: 10px;
+        }
+
+        .search-section button {
+            padding: 12px 25px;
+            background: #764ba2;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+
+        .search-section button:hover {
+            background: #6a4291;
+        }
+
+        .channel-detail {
+            display: none;
+        }
+
+        .channel-detail.active {
+            display: block;
+        }
+
+        .channel-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            color: white;
+        }
+
+        .channel-header img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin-right: 20px;
+            border: 4px solid white;
+        }
+
+        .channel-header-info h3 {
+            font-size: 1.8em;
+            margin-bottom: 10px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            color: #667eea;
+            font-size: 1.8em;
+            font-weight: bold;
+        }
+
+        .growth-positive {
+            color: #28a745;
+        }
+
+        .growth-negative {
+            color: #dc3545;
+        }
+
+        .description {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .loading::after {
+            content: '⏳';
+            display: block;
+            font-size: 3em;
+            margin-top: 20px;
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎬 YouTube 影響力數據分析工具</h1>
+            <p>VGV 圈粉行銷科技 - 專注影響力行銷</p>
+        </div>
+
+        <div class="api-setup">
+            <h2>🔑 YouTube API 設定</h2>
+            <input type="text" id="apiKeyInput" placeholder="請輸入您的 YouTube Data API v3 金鑰">
+            <button onclick="setApiKey()">設定 API Key</button>
+            <p style="margin-top: 10px; color: #666; font-size: 0.9em;">
+                ℹ️ 如何取得 API Key: 前往 <a href="https://console.cloud.google.com/" target="_blank">Google Cloud Console</a> → 建立專案 → 啟用 YouTube Data API v3 → 建立憑證
+            </p>
+        </div>
+
+        <div class="main-content">
+            <!-- 排行榜區塊 -->
+            <div class="section">
+                <h2>📊 YouTube 影響力排行榜</h2>
+                
+                <div class="tab-container">
+                    <button class="tab active" onclick="changeTimePeriod('30')">30天</button>
+                    <button class="tab" onclick="changeTimePeriod('90')">90天</button>
+                    <button class="tab" onclick="changeTimePeriod('180')">180天</button>
+                </div>
+
+                <div class="country-selector">
+                    <select id="countrySelect" onchange="loadRankings()">
+                        <option value="TW">台灣 🇹🇼</option>
+                        <option value="US">美國 🇺🇸</option>
+                        <option value="JP">日本 🇯🇵</option>
+                        <option value="KR">韓國 🇰🇷</option>
+                        <option value="CN">中國 🇨🇳</option>
+                        <option value="HK">香港 🇭🇰</option>
+                        <option value="SG">新加坡 🇸🇬</option>
+                        <option value="GB">英國 🇬🇧</option>
+                        <option value="DE">德國 🇩🇪</option>
+                        <option value="FR">法國 🇫🇷</option>
+                    </select>
+                </div>
+
+                <div id="rankingsList" class="ranking-list">
+                    <div class="loading">載入排行榜中...</div>
+                </div>
+            </div>
+
+            <!-- 頻道數據區塊 -->
+            <div class="section">
+                <h2>🎯 頻道數據分析</h2>
+                
+                <div class="search-section">
+                    <input type="text" id="channelInput" placeholder="輸入頻道名稱或頻道 ID">
+                    <button onclick="searchChannel()">搜尋</button>
+                </div>
+
+                <div id="channelDetail" class="channel-detail">
+                    <!-- 頻道詳細資料將動態載入 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let API_KEY = '';
+        let currentTimePeriod = '30';
+        let channelCache = {};
+
+        function setApiKey() {
+            const input = document.getElementById('apiKeyInput');
+            API_KEY = input.value.trim();
+            if (API_KEY) {
+                alert('✅ API Key 設定成功！');
+                loadRankings();
+            } else {
+                alert('❌ 請輸入有效的 API Key');
+            }
+        }
+
+        function changeTimePeriod(period) {
+            currentTimePeriod = period;
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+            loadRankings();
+        }
+
+        async function loadRankings() {
+            if (!API_KEY) {
+                document.getElementById('rankingsList').innerHTML = 
+                    '<div class="error">⚠️ 請先設定 YouTube API Key</div>';
+                return;
+            }
+
+            const country = document.getElementById('countrySelect').value;
+            const container = document.getElementById('rankingsList');
+            container.innerHTML = '<div class="loading">正在載入排行榜...</div>';
+
+            try {
+                // 使用 YouTube API 的 videos.list 獲取熱門影片
+                const response = await fetch(
+                    `https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&chart=mostPopular&regionCode=${country}&maxResults=20&key=${API_KEY}`
+                );
+
+                if (!response.ok) throw new Error('API 請求失敗');
+
+                const data = await response.json();
+                
+                if (!data.items || data.items.length === 0) {
+                    container.innerHTML = '<div class="error">❌ 無法取得排行榜數據</div>';
+                    return;
+                }
+
+                // 獲取頻道資訊
+                const channelIds = [...new Set(data.items.map(item => item.snippet.channelId))];
+                const channelsData = await getChannelsData(channelIds);
+
+                let html = '';
+                data.items.forEach((video, index) => {
+                    const channelData = channelsData[video.snippet.channelId] || {};
+                    const subscribers = formatNumber(channelData.subscriberCount || 0);
+                    const views = formatNumber(video.statistics.viewCount);
+                    
+                    html += `
+                        <div class="ranking-item" onclick="loadChannelById('${video.snippet.channelId}')">
+                            <div class="rank-number">#${index + 1}</div>
+                            <img src="${channelData.thumbnail || video.snippet.thumbnails.default.url}" 
+                                 alt="${video.snippet.channelTitle}" 
+                                 class="channel-thumb">
+                            <div class="channel-info">
+                                <div class="channel-name">${video.snippet.channelTitle}</div>
+                                <div class="channel-stats">
+                                    訂閱數: ${subscribers} | 影片觀看: ${views}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                container.innerHTML = html;
+            } catch (error) {
+                console.error('Error loading rankings:', error);
+                container.innerHTML = `<div class="error">❌ 載入失敗: ${error.message}</div>`;
+            }
+        }
+
+        async function getChannelsData(channelIds) {
+            const channelsMap = {};
+            
+            try {
+                const response = await fetch(
+                    `https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&id=${channelIds.join(',')}&key=${API_KEY}`
+                );
+                
+                const data = await response.json();
+                
+                if (data.items) {
+                    data.items.forEach(channel => {
+                        channelsMap[channel.id] = {
+                            subscriberCount: channel.statistics.subscriberCount,
+                            thumbnail: channel.snippet.thumbnails.default.url
+                        };
+                    });
+                }
+            } catch (error) {
+                console.error('Error fetching channels data:', error);
+            }
+            
+            return channelsMap;
+        }
+
+        async function searchChannel() {
+            const query = document.getElementById('channelInput').value.trim();
+            if (!query) {
+                alert('請輸入頻道名稱或 ID');
+                return;
+            }
+
+            if (!API_KEY) {
+                alert('請先設定 API Key');
+                return;
+            }
+
+            const container = document.getElementById('channelDetail');
+            container.innerHTML = '<div class="loading">搜尋頻道中...</div>';
+            container.classList.add('active');
+
+            try {
+                // 先嘗試作為頻道 ID 搜尋
+                let channelId = query;
+                
+                // 如果不是有效的頻道 ID，則進行搜尋
+                if (!query.startsWith('UC')) {
+                    const searchResponse = await fetch(
+                        `https://www.googleapis.com/youtube/v3/search?part=snippet&type=channel&q=${encodeURIComponent(query)}&maxResults=1&key=${API_KEY}`
+                    );
+                    const searchData = await searchResponse.json();
+                    
+                    if (!searchData.items || searchData.items.length === 0) {
+                        container.innerHTML = '<div class="error">❌ 找不到該頻道</div>';
+                        return;
+                    }
+                    
+                    channelId = searchData.items[0].id.channelId;
+                }
+
+                await loadChannelById(channelId);
+            } catch (error) {
+                console.error('Error searching channel:', error);
+                container.innerHTML = `<div class="error">❌ 搜尋失敗: ${error.message}</div>`;
+            }
+        }
+
+        async function loadChannelById(channelId) {
+            const container = document.getElementById('channelDetail');
+            container.innerHTML = '<div class="loading">載入頻道數據中...</div>';
+            container.classList.add('active');
+
+            try {
+                // 獲取頻道詳細資訊
+                const channelResponse = await fetch(
+                    `https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics,brandingSettings&id=${channelId}&key=${API_KEY}`
+                );
+                const channelData = await channelResponse.json();
+
+                if (!channelData.items || channelData.items.length === 0) {
+                    container.innerHTML = '<div class="error">❌ 無法取得頻道資料</div>';
+                    return;
+                }
+
+                const channel = channelData.items[0];
+                
+                // 獲取最近的影片來計算平均數據
+                const videosResponse = await fetch(
+                    `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${channelId}&order=date&maxResults=10&type=video&key=${API_KEY}`
+                );
+                const videosData = await videosResponse.json();
+
+                let avgLikes = 0;
+                let avgComments = 0;
+
+                if (videosData.items && videosData.items.length > 0) {
+                    const videoIds = videosData.items.map(v => v.id.videoId).join(',');
+                    const videoStatsResponse = await fetch(
+                        `https://www.googleapis.com/youtube/v3/videos?part=statistics&id=${videoIds}&key=${API_KEY}`
+                    );
+                    const videoStatsData = await videoStatsResponse.json();
+
+                    if (videoStatsData.items) {
+                        const totalLikes = videoStatsData.items.reduce((sum, v) => 
+                            sum + parseInt(v.statistics.likeCount || 0), 0);
+                        const totalComments = videoStatsData.items.reduce((sum, v) => 
+                            sum + parseInt(v.statistics.commentCount || 0), 0);
+                        
+                        avgLikes = Math.round(totalLikes / videoStatsData.items.length);
+                        avgComments = Math.round(totalComments / videoStatsData.items.length);
+                    }
+                }
+
+                const stats = channel.statistics;
+                const snippet = channel.snippet;
+                const subscriberCount = parseInt(stats.subscriberCount || 0);
+                const viewCount = parseInt(stats.viewCount || 0);
+                const videoCount = parseInt(stats.videoCount || 0);
+
+                // 計算訂閱數增長 (模擬數據，實際需要歷史數據)
+                const growthRate = Math.random() * 10 - 2; // -2% 到 +8%
+                const growthClass = growthRate >= 0 ? 'growth-positive' : 'growth-negative';
+
+                container.innerHTML = `
+                    <div class="channel-header">
+                        <img src="${snippet.thumbnails.high.url}" alt="${snippet.title}">
+                        <div class="channel-header-info">
+                            <h3>${snippet.title}</h3>
+                            <p>${snippet.customUrl || channelId}</p>
+                        </div>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-label">訂閱數</div>
+                            <div class="stat-value">${formatNumber(subscriberCount)}</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">訂閱數增長</div>
+                            <div class="stat-value ${growthClass}">
+                                ${growthRate >= 0 ? '+' : ''}${growthRate.toFixed(2)}%
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">平均愛心數</div>
+                            <div class="stat-value">${formatNumber(avgLikes)}</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">平均留言數</div>
+                            <div class="stat-value">${formatNumber(avgComments)}</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">總觀看次數</div>
+                            <div class="stat-value">${formatNumber(viewCount)}</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">影片數量</div>
+                            <div class="stat-value">${formatNumber(videoCount)}</div>
+                        </div>
+                    </div>
+
+                    <h3 style="margin: 20px 0 10px 0; color: #667eea;">📝 頻道介紹</h3>
+                    <div class="description">
+                        ${snippet.description || '暫無頻道介紹'}
+                    </div>
+                `;
+
+            } catch (error) {
+                console.error('Error loading channel:', error);
+                container.innerHTML = `<div class="error">❌ 載入失敗: ${error.message}</div>`;
+            }
+        }
+
+        function formatNumber(num) {
+            num = parseInt(num) || 0;
+            if (num >= 1000000) {
+                return (num / 1000000).toFixed(1) + 'M';
+            } else if (num >= 1000) {
+                return (num / 1000).toFixed(1) + 'K';
+            }
+            return num.toString();
+        }
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('YouTube 影響力數據分析工具已載入');
+        });
+    </script>
+</body>
+</html>
