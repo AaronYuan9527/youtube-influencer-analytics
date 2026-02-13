@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VGV YouTube 影響力分析工具</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{
+      font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Microsoft JhengHei',sans-serif;
+      background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+      min-height:100vh;padding:20px;
+    }
+    .container{max-width:1400px;margin:0 auto}
+    .header{
+      background:#fff;padding:30px;border-radius:16px;
+      box-shadow:0 10px 30px rgba(0,0,0,.2);margin-bottom:20px;text-align:center
+    }
+    .header h1{color:#667eea;font-size:2.2em;margin-bottom:8px}
+    .header p{color:#666;font-size:1.05em}
+    .panel{
+      background:#fff;padding:20px;border-radius:16px;
+      box-shadow:0 6px 22px rgba(0,0,0,.12);margin-bottom:20px;
+    }
+    .api-box{
+      background:#f8f9ff;border:2px solid #e0e7ff;border-radius:12px;
+      padding:16px;margin-bottom:20px;
+    }
+    .api-box input{
+      width:calc(100% - 120px);padding:12px;border:2px solid #ddd;
+      border-radius:8px;font-size:15px;margin-right:10px;
+    }
+    .api-box button{
+      padding:12px 24px;background:#667eea;color:#fff;border:0;
+      border-radius:8px;font-weight:700;cursor:pointer;transition:.2s;
+    }
+    .api-box button:hover{background:#5568d3}
+    .note{
+      background:#fef3c7;border-left:4px solid #f59e0b;
+      padding:12px;border-radius:8px;margin-top:10px;font-size:.95em;color:#92400e;
+    }
+    .controls{
+      display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+      gap:12px;margin-bottom:16px;
+    }
+    label{display:block;color:#374151;font-weight:600;margin-bottom:6px;font-size:.9em}
+    select,input{
+      width:100%;padding:10px;border:2px solid #e5e7eb;
+      border-radius:8px;font-size:14px;background:#fff;
+    }
+    .btn-group{display:flex;gap:10px;margin-top:16px;}
+    button{
+      padding:12px 20px;border:0;border-radius:8px;font-weight:700;
+      cursor:pointer;transition:.2s;font-size:15px;
+    }
+    .btn-primary{background:#667eea;color:#fff}
+    .btn-primary:hover{background:#5568d3}
+    .btn-secondary{background:#6b7280;color:#fff}
+    .btn-secondary:hover{background:#4b5563}
+    .status{
+      margin:16px 0;padding:12px;border-radius:8px;font-weight:600;
+    }
+    .status.loading{background:#dbeafe;color:#1e40af}
+    .status.success{background:#d1fae5;color:#065f46}
+    .status.error{background:#fee2e2;color:#991b1b}
+    table{width:100%;border-collapse:collapse;margin-top:16px}
+    thead th{
+      background:#f9fafb;text-align:left;padding:12px;
+      border-bottom:2px solid #e5e7eb;font-size:.9em;color:#374151;
+      position:sticky;top:0;cursor:pointer;user-select:none;
+    }
+    thead th:hover{background:#f3f4f6}
+    tbody td{
+      padding:12px;border-bottom:1px solid #f3f4f6;
+      font-size:.95em;vertical-align:middle;
+    }
+    tbody tr:hover{background:#f9fafb}
+    .channel-cell{display:flex;align-items:center;gap:12px}
+    .channel-thumb{width:48px;height:48px;border-radius:50%;object-fit:cover}
+    .channel-name{font-weight:600;color:#111827}
+    .channel-id{font-size:.85em;color:#6b7280;margin-top:2px}
+    .number{font-weight:700;color:#667eea}
+    .tier{
+      display:inline-block;padding:4px 12px;border-radius:999px;
+      font-weight:800;font-size:.85em;
+    }
+    .tier-A{background:#d1fae5;color:#065f46}
+    .tier-B{background:#dbeafe;color:#1e40af}
+    .tier-C{background:#fef3c7;color:#92400e}
+    .tier-D{background:#fee2e2;color:#991b1b}
+    .link{color:#667eea;text-decoration:none;font-weight:600}
+    .link:hover{text-decoration:underline}
+    @media(max-width:768px){
+      .controls{grid-template-columns:1fr}
+      .api-box input{width:100%;margin-bottom:10px}
+      .api-box button{width:100%}
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>📊 VGV YouTube 影響力分析工具</h1>
+    <p>VGV 圈粉行銷科技 - 專業 KOL 數據分析</p>
+  </div>
+
+  <div class="panel">
+    <h3 style="color:#374151;margin-bottom:12px">🔑 YouTube API 設定</h3>
+    <div class="api-box">
+      <input type="password" id="apiKey" placeholder="請輸入您的 YouTube Data API v3 金鑰" />
+      <button onclick="saveApiKey()">儲存</button>
+      <div class="note">
+        ℹ️ 取得 API Key：前往 <a href="https://console.cloud.google.com/" target="_blank">Google Cloud Console</a> 
+        → 啟用 YouTube Data API v3 → 建立憑證（API 金鑰）
+        <br><small style="margin-top:6px;display:block">※ API Key 只存在您的瀏覽器，不會上傳到任何伺服器</small>
+      </div>
+    </div>
+
+    <h3 style="color:#374151;margin:20px 0 12px">🎯 搜尋條件</h3>
+    <div class="controls">
+      <div>
+        <label>地區</label>
+        <select id="region">
+          <option value="TW">台灣 🇹🇼</option>
+          <option value="HK">香港 🇭🇰</option>
+          <option value="SG">新加坡 🇸🇬</option>
+          <option value="JP">日本 🇯🇵</option>
+          <option value="KR">韓國 🇰🇷</option>
+          <option value="US">美國 🇺🇸</option>
+        </select>
+      </div>
+      <div>
+        <label>語言</label>
+        <select id="lang">
+          <option value="zh-Hant">繁體中文</option>
+          <option value="zh-Hans">簡體中文</option>
+          <option value="en">英文</option>
+          <option value="ja">日文</option>
+          <option value="ko">韓文</option>
+        </select>
+      </div>
+      <div>
+        <label>品類關鍵字</label>
+        <input id="category" placeholder="例如：科技、美食、旅遊" value="科技" />
+      </div>
+      <div>
+        <label>結果數量</label>
+        <select id="maxResults">
+          <option value="20">20</option>
+          <option value="50" selected>50</option>
+          <option value="100">100</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="btn-group">
+      <button class="btn-primary" onclick="searchChannels()">🔍 開始分析</button>
+      <button class="btn-secondary" onclick="exportCSV()">📥 匯出 CSV</button>
+      <button class="btn-secondary" onclick="clearResults()">🗑️ 清除結果</button>
+    </div>
+
+    <div id="status"></div>
+
+    <div style="overflow-x:auto">
+      <table id="resultsTable" style="display:none">
+        <thead>
+          <tr>
+            <th onclick="sortTable('rank')">#</th>
+            <th onclick="sortTable('title')">頻道</th>
+            <th onclick="sortTable('tier')">評級</th>
+            <th onclick="sortTable('subscriberCount')">訂閱數</th>
+            <th onclick="sortTable('viewCount')">總觀看</th>
+            <th onclick="sortTable('videoCount')">影片數</th>
+            <th onclick="sortTable('avgViews')">平均觀看</th>
+            <th onclick="sortTable('score')">綜合分數</th>
+          </tr>
+        </thead>
+        <tbody id="resultsBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+const API_KEY_STORAGE = 'vgv_youtube_api_key';
+let currentResults = [];
+let sortColumn = 'score';
+let sortAsc = false;
+
+// 載入已儲存的 API Key
+window.onload = function() {
+  const saved = localStorage.getItem(API_KEY_STORAGE);
+  if(saved) document.getElementById('apiKey').value = saved;
+};
+
+function saveApiKey() {
+  const key = document.getElementById('apiKey').value.trim();
+  if(!key) {
+    showStatus('請輸入 API Key', 'error');
+    return;
+  }
+  localStorage.setItem(API_KEY_STORAGE, key);
+  showStatus('✅ API Key 已儲存', 'success');
+}
+
+function showStatus(msg, type = 'loading') {
+  const div = document.getElementById('status');
+  div.className = 'status ' + type;
+  div.textContent = msg;
+  div.style.display = 'block';
+}
+
+async function searchChannels() {
+  const apiKey = localStorage.getItem(API_KEY_STORAGE);
+  if(!apiKey) {
+    showStatus('❌ 請先設定 API Key', 'error');
+    return;
+  }
+
+  const region = document.getElementById('region').value;
+  const lang = document.getElementById('lang').value;
+  const category = document.getElementById('category').value.trim();
+  const maxResults = document.getElementById('maxResults').value;
+
+  showStatus('🔍 正在搜尋頻道...', 'loading');
+  currentResults = [];
+
+  try {
+    // 1. 搜尋頻道
+    const searchUrl = `https://www.googleapis.com/youtube/v3/search?` +
+      `part=snippet&type=channel&regionCode=${region}&relevanceLanguage=${lang}` +
+      `&q=${encodeURIComponent(category)}&maxResults=${maxResults}&key=${apiKey}`;
+    
+    const searchRes = await fetch(searchUrl);
+    if(!searchRes.ok) throw new Error('搜尋失敗：' + searchRes.status);
+    const searchData = await searchRes.json();
+
+    if(!searchData.items || searchData.items.length === 0) {
+      showStatus('❌ 找不到符合條件的頻道', 'error');
+      return;
+    }
+
+    const channelIds = searchData.items.map(item => item.snippet.channelId).join(',');
+
+    // 2. 取得頻道詳細資訊
+    const channelsUrl = `https://www.googleapis.com/youtube/v3/channels?` +
+      `part=snippet,statistics&id=${channelIds}&key=${apiKey}`;
+    
+    const channelsRes = await fetch(channelsUrl);
+    if(!channelsRes.ok) throw new Error('取得頻道資料失敗');
+    const channelsData = await channelsRes.json();
+
+    // 3. 處理結果
+    currentResults = channelsData.items.map((ch, idx) => {
+      const stats = ch.statistics;
+      const snippet = ch.snippet;
+      
+      const subscriberCount = parseInt(stats.subscriberCount || 0);
+      const viewCount = parseInt(stats.viewCount || 0);
+      const videoCount = parseInt(stats.videoCount || 1);
+      const avgViews = Math.round(viewCount / videoCount);
+      
+      // 簡單評分（可自訂）
+      let score = 0;
+      score += Math.min(subscriberCount / 10000, 50); // 訂閱數（最高50分）
+      score += Math.min(avgViews / 1000, 30); // 平均觀看（最高30分）
+      score += Math.min(videoCount / 10, 20); // 影片數（最高20分）
+      score = Math.round(score);
+
+      let tier = 'D';
+      if(score >= 80) tier = 'A';
+      else if(score >= 65) tier = 'B';
+      else if(score >= 50) tier = 'C';
+
+      return {
+        rank: idx + 1,
+        channelId: ch.id,
+        title: snippet.title,
+        customUrl: snippet.customUrl || '',
+        thumbnail: snippet.thumbnails.default.url,
+        subscriberCount,
+        viewCount,
+        videoCount,
+        avgViews,
+        score,
+        tier
+      };
+    });
+
+    sortColumn = 'score';
+    sortAsc = false;
+    renderTable();
+    showStatus(`✅ 找到 ${currentResults.length} 個頻道`, 'success');
+
+  } catch(error) {
+    console.error(error);
+    showStatus('❌ 錯誤：' + error.message, 'error');
+  }
+}
+
+function renderTable() {
+  const tbody = document.getElementById('resultsBody');
+  const table = document.getElementById('resultsTable');
+  
+  if(currentResults.length === 0) {
+    table.style.display = 'none';
+    return;
+  }
+
+  // 排序
+  const sorted = [...currentResults].sort((a, b) => {
+    let av = a[sortColumn];
+    let bv = b[sortColumn];
+    
+    if(sortColumn === 'title' || sortColumn === 'tier') {
+      return sortAsc ? 
+        String(av).localeCompare(String(bv)) : 
+        String(bv).localeCompare(String(av));
+    }
+    
+    return sortAsc ? av - bv : bv - av;
+  });
+
+  tbody.innerHTML = sorted.map(ch => `
+    <tr>
+      <td class="number">${ch.rank}</td>
+      <td>
+        <div class="channel-cell">
+          <img src="${ch.thumbnail}" class="channel-thumb" alt="">
+          <div>
+            <a href="https://www.youtube.com/channel/${ch.channelId}" 
+               target="_blank" class="channel-name link">${escapeHtml(ch.title)}</a>
+            <div class="channel-id">${escapeHtml(ch.customUrl || ch.channelId)}</div>
+          </div>
+        </div>
+      </td>
+      <td><span class="tier tier-${ch.tier}">${ch.tier}</span></td>
+      <td class="number">${formatNumber(ch.subscriberCount)}</td>
+      <td class="number">${formatNumber(ch.viewCount)}</td>
+      <td class="number">${formatNumber(ch.videoCount)}</td>
+      <td class="number">${formatNumber(ch.avgViews)}</td>
+      <td class="number">${ch.score}</td>
+    </tr>
+  `).join('');
+
+  table.style.display = 'table';
+}
+
+function sortTable(column) {
+  if(sortColumn === column) {
+    sortAsc = !sortAsc;
+  } else {
+    sortColumn = column;
+    sortAsc = false;
+  }
+  renderTable();
+}
+
+function formatNumber(num) {
+  if(num >= 1000000) return (num/1000000).toFixed(1) + 'M';
+  if(num >= 1000) return (num/1000).toFixed(1) + 'K';
+  return num.toString();
+}
+
+function escapeHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function exportCSV() {
+  if(currentResults.length === 0) {
+    showStatus('❌ 沒有資料可匯出', 'error');
+    return;
+  }
+
+  const headers = ['排名','評級','頻道名稱','頻道ID','訂閱數','總觀看','影片數','平均觀看','綜合分數'];
+  const rows = currentResults.map(ch => [
+    ch.rank,
+    ch.tier,
+    `"${ch.title.replace(/"/g,'""')}"`,
+    ch.channelId,
+    ch.subscriberCount,
+    ch.viewCount,
+    ch.videoCount,
+    ch.avgViews,
+    ch.score
+  ]);
+
+  const csv = [headers, ...rows].map(row => row.join(',')).join('\n');
+  const blob = new Blob(['\ufeff' + csv], {type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `VGV_YouTube分析_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+  
+  showStatus('✅ CSV 已匯出', 'success');
+}
+
+function clearResults() {
+  currentResults = [];
+  document.getElementById('resultsTable').style.display = 'none';
+  document.getElementById('status').style.display = 'none';
+}
+</script>
+</body>
+</html>
