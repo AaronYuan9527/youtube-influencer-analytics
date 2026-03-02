@@ -248,6 +248,17 @@
         </select>
       </div>
       <div class="ctrl">
+        <label>最低訂閱數門檻（過濾微型頻道）</label>
+        <select id="minSubs">
+          <option value="0">不限制</option>
+          <option value="1000" selected>1,000+（建議）</option>
+          <option value="5000">5,000+</option>
+          <option value="10000">1 萬+</option>
+          <option value="50000">5 萬+</option>
+          <option value="100000">10 萬+</option>
+        </select>
+      </div>
+      <div class="ctrl">
         <label>近期影片取樣（用於 ER 計算）</label>
         <select id="recentCount">
           <option value="5">最近 5 支</option>
@@ -258,8 +269,9 @@
       <div class="ctrl">
         <label>ER 計算方式說明</label>
         <div style="padding:10px 0;font-size:.82em;color:var(--muted);line-height:1.7">
-          ER = (觀看 + 留言×<span id="cmtWeight">5</span> + 按讚×<span id="likeWeight">2</span>) / 訂閱數<br>
-          <span style="color:var(--accent)">有留言才能衝高排名 ✓</span>
+          ER = (觀看 + 留言×5 + 按讚×2) / 訂閱數<br>
+          × <span style="color:var(--accent2)">訂閱規模修正係數</span><br>
+          <span style="color:var(--accent);font-size:.9em">小頻道 ER 自動降權，避免微型頻道暴衝 ✓</span>
         </div>
       </div>
       <div class="ctrl">
@@ -448,10 +460,34 @@ async function fetchVideoStats(videoIds, apiKey){
 }
 
 // ═══════════════════════════════════════════════════
-//  ER CALCULATION
+//  ER CALCULATION  (with subscriber scale correction)
 // ═══════════════════════════════════════════════════
+//
+//  Problem: tiny channels (e.g. 1.3K subs) get inflated ER
+//  because raw ER = interactions / subs gives a huge number
+//  when subs is small.
+//
+//  Solution: apply a subscriber scale correction factor.
+//  We use log10-based normalization so that:
+//    - 1K subs   → factor ≈ 0.25  (heavy penalty)
+//    - 10K subs  → factor ≈ 0.50
+//    - 100K subs → factor ≈ 0.75
+//    - 1M  subs  → factor ≈ 1.00  (no penalty)
+//
+//  This means a 1K channel needs 4× the raw ER of a 1M channel
+//  to achieve the same corrected ER — fair for KOL evaluation.
+//
+function subsScaleFactor(subs){
+  if(subs <= 0) return 0;
+  // log10(1M) = 6 → factor = 1.0
+  // log10(1K) = 3 → factor = 0.5
+  // clamp between 0.1 and 1.0
+  const factor = Math.log10(Math.max(subs, 100)) / 6;
+  return Math.min(Math.max(factor, 0.1), 1.0);
+}
+
 function calcER(videos, subscriberCount){
-  if(!videos.length || subscriberCount===0) return { er:0, avgViews:0, avgLikes:0, avgComments:0 };
+  if(!videos.length || subscriberCount===0) return { er:0, rawEr:0, avgViews:0, avgLikes:0, avgComments:0, scaleFactor:0 };
   let tv=0, tl=0, tc=0;
   for(const v of videos){
     tv += parseInt(v.statistics?.viewCount||0);
@@ -459,28 +495,40 @@ function calcER(videos, subscriberCount){
     tc += parseInt(v.statistics?.commentCount||0);
   }
   const n = videos.length;
-  const avgViews   = Math.round(tv/n);
-  const avgLikes   = Math.round(tl/n);
-  const avgComments= Math.round(tc/n);
-  // Weighted ER: views×1 + likes×2 + comments×5
+  const avgViews    = Math.round(tv/n);
+  const avgLikes    = Math.round(tl/n);
+  const avgComments = Math.round(tc/n);
+
+  // Raw weighted ER (views×1 + likes×2 + comments×5) / subs
   const weightedSum = (avgViews*W_VIEW + avgLikes*W_LIKE + avgComments*W_COMMENT);
-  const er = (weightedSum/subscriberCount)*100;
-  return { er, avgViews, avgLikes, avgComments };
+  const rawEr = (weightedSum / subscriberCount) * 100;
+
+  // Apply subscriber scale correction
+  const scaleFactor = subsScaleFactor(subscriberCount);
+  const er = rawEr * scaleFactor;
+
+  return { er, rawEr, avgViews, avgLikes, avgComments, scaleFactor };
 }
 
 // ═══════════════════════════════════════════════════
 //  SCORING & TIER
 // ═══════════════════════════════════════════════════
 function computeScore(subs, er, days){
-  let s = Math.min(subs/10000, 25); // max 25
-  s += Math.min(er*8, 55);          // ER: max 55 (主要指標)
-  s += days<=90?20:days<=180?12:days<=365?5:0; // recency: max 20
-  return Math.round(s);
+  // Subscriber tier score: log-scaled, max 35pts
+  // 1K→3, 10K→12, 100K→23, 1M→35
+  const subScore = Math.min(Math.log10(Math.max(subs,100)) / 6 * 35, 35);
+  // Corrected ER score: max 45pts (already scale-corrected so fair)
+  const erScore  = Math.min(er * 5, 45);
+  // Recency: max 20pts
+  const recency  = days<=90?20:days<=180?12:days<=365?5:0;
+  return Math.round(subScore + erScore + recency);
 }
-function getTier(score, er){
-  if(score>=65 && er>=5) return 'S';
-  if(score>=50) return 'A';
-  if(score>=35) return 'B';
+
+function getTier(score, subs, er){
+  // Require minimum subscriber base for S/A tier
+  if(score>=65 && er>=3  && subs>=10000) return 'S';
+  if(score>=50 && subs>=5000)  return 'A';
+  if(score>=35 && subs>=1000)  return 'B';
   if(score>=20) return 'C';
   return 'D';
 }
@@ -589,7 +637,7 @@ async function searchChannels(){
       let erData, daysSince=9999, lastDate=null;
 
       if(item.fromCache){
-        erData = { er: item.cached.er, avgViews: item.cached.avgViews, avgLikes: item.cached.avgLikes, avgComments: item.cached.avgComments };
+        erData = { er: item.cached.er, rawEr: item.cached.rawEr||0, scaleFactor: item.cached.scaleFactor||0, avgViews: item.cached.avgViews, avgLikes: item.cached.avgLikes, avgComments: item.cached.avgComments };
         daysSince = item.cached.daysSince;
         lastDate = item.cached.lastDate ? new Date(item.cached.lastDate) : null;
       } else {
@@ -605,7 +653,7 @@ async function searchChannels(){
         // Cache this channel's data
         newCache[ch.id] = {
           ts: Date.now(),
-          data: { er: erData.er, avgViews: erData.avgViews, avgLikes: erData.avgLikes, avgComments: erData.avgComments, daysSince, lastDate: lastDate?.toISOString() }
+          data: { er: erData.er, rawEr: erData.rawEr, scaleFactor: erData.scaleFactor, avgViews: erData.avgViews, avgLikes: erData.avgLikes, avgComments: erData.avgComments, daysSince, lastDate: lastDate?.toISOString() }
         };
       }
 
@@ -619,13 +667,15 @@ async function searchChannels(){
         totalViews,
         videoCount,
         er: erData.er,
+        rawEr: erData.rawEr||0,
+        scaleFactor: erData.scaleFactor||0,
         avgViews: erData.avgViews,
         avgLikes: erData.avgLikes,
         avgComments: erData.avgComments,
         daysSince,
         lastDate,
         score,
-        tier: getTier(score, erData.er),
+        tier: getTier(score, subs, erData.er),
         fromCache: item.fromCache
       });
     }
@@ -646,13 +696,19 @@ async function searchChannels(){
 // ═══════════════════════════════════════════════════
 function renderResults(){
   const filterDays = parseInt(document.getElementById('activeFilter').value)||0;
+  const minSubs    = parseInt(document.getElementById('minSubs').value)||0;
   let results = [...allResults];
-  let filtered = 0;
+  let filteredInactive = 0, filteredSmall = 0;
 
   if(filterDays > 0){
     const before = results.length;
     results = results.filter(r=>r.daysSince<=filterDays);
-    filtered = before - results.length;
+    filteredInactive = before - results.length;
+  }
+  if(minSubs > 0){
+    const before = results.length;
+    results = results.filter(r=>r.subscriberCount>=minSubs);
+    filteredSmall = before - results.length;
   }
 
   const cachedCount = results.filter(r=>r.fromCache).length;
@@ -661,10 +717,10 @@ function renderResults(){
 
   document.getElementById('summaryBar').innerHTML = `
     <div class="stat-card"><div class="slabel">有效頻道</div><div class="sval">${results.length}</div></div>
-    <div class="stat-card swarn"><div class="slabel">已篩除（停更）</div><div class="sval">${filtered}</div></div>
+    <div class="stat-card swarn"><div class="slabel">篩除（停更）</div><div class="sval">${filteredInactive}</div></div>
+    <div class="stat-card swarn"><div class="slabel">篩除（訂閱數不足）</div><div class="sval">${filteredSmall}</div></div>
     <div class="stat-card"><div class="slabel">平均互動率 ER</div><div class="sval">${avgER.toFixed(2)}%</div></div>
     <div class="stat-card"><div class="slabel">最高 ER</div><div class="sval">${topER.toFixed(2)}%</div></div>
-    <div class="stat-card"><div class="slabel">從快取讀取</div><div class="sval">${cachedCount}</div></div>
     <div class="stat-card"><div class="slabel">今日 API 用量</div><div class="sval">${getUnits()}</div></div>
   `;
 
@@ -712,6 +768,9 @@ function renderResults(){
             <div class="er-track"><div class="er-fill" style="width:${erPct.toFixed(1)}%;background:${erColor}"></div></div>
             <span class="er-val" style="color:${erColor}">${ch.er.toFixed(2)}%</span>
           </div>
+          <div class="er-breakdown">
+            原始:${ch.rawEr?ch.rawEr.toFixed(1):'?'}% × 規模${ch.scaleFactor?(ch.scaleFactor*100).toFixed(0):'?'}%
+          </div>
           <div class="er-breakdown">V:${fmt(ch.avgViews)} L:${fmt(ch.avgLikes)} C:${fmt(ch.avgComments)}</div>
         </div>
       </td>
@@ -724,8 +783,7 @@ function renderResults(){
 
   document.getElementById('resultsPanel').style.display='block';
   showStatus(
-    `✅ 顯示 ${results.length} 個頻道（依 ER 排序），篩除 ${filtered} 個停更 · `+
-    `本次 API: ${getUnits()} units`,
+    `✅ 顯示 ${results.length} 個頻道（依 ER×規模修正排序），篩除 ${filteredInactive} 個停更、${filteredSmall} 個訂閱不足 · API: ${getUnits()} units`,
     'success'
   );
 }
