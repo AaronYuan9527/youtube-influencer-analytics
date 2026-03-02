@@ -3,122 +3,269 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>VGV YouTube 影響力分析工具</title>
+  <title>VGV YouTube 影響力分析工具 v2</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
   <style>
+    :root{
+      --bg:#0d0f14;
+      --surface:#161921;
+      --surface2:#1e2230;
+      --border:#2a2f3e;
+      --accent:#00e5a0;
+      --accent2:#7c6af7;
+      --accent3:#f7a56a;
+      --text:#e8eaf0;
+      --muted:#6b7280;
+      --danger:#f87171;
+      --warn:#fbbf24;
+    }
     *{margin:0;padding:0;box-sizing:border-box}
     body{
-      font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Microsoft JhengHei',sans-serif;
-      background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
-      min-height:100vh;padding:20px;
+      font-family:'Noto Sans TC',sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      min-height:100vh;
     }
-    .container{max-width:1400px;margin:0 auto}
+    /* Dot grid bg */
+    body::before{
+      content:'';position:fixed;inset:0;z-index:0;
+      background-image:radial-gradient(circle,#2a2f3e 1px,transparent 1px);
+      background-size:28px 28px;opacity:.45;pointer-events:none;
+    }
+    .container{max-width:1320px;margin:0 auto;padding:28px 20px;position:relative;z-index:1}
+
+    /* Header */
     .header{
-      background:#fff;padding:30px;border-radius:16px;
-      box-shadow:0 10px 30px rgba(0,0,0,.2);margin-bottom:20px;text-align:center
+      display:flex;align-items:center;justify-content:space-between;
+      background:var(--surface);border:1px solid var(--border);
+      border-radius:16px;padding:24px 32px;margin-bottom:20px;
+      position:relative;overflow:hidden;
     }
-    .header h1{color:#667eea;font-size:2.2em;margin-bottom:8px}
-    .header p{color:#666;font-size:1.05em}
+    .header::before{
+      content:'';position:absolute;top:-60px;right:-60px;
+      width:220px;height:220px;border-radius:50%;
+      background:radial-gradient(circle,rgba(0,229,160,.15),transparent 70%);
+      pointer-events:none;
+    }
+    .header-left h1{
+      font-family:'Space Mono',monospace;font-size:1.6em;font-weight:700;
+      color:var(--accent);letter-spacing:-.5px;
+    }
+    .header-left p{color:var(--muted);font-size:.9em;margin-top:4px}
+    .header-badge{
+      background:linear-gradient(135deg,var(--accent2),var(--accent));
+      color:#fff;font-weight:700;font-size:.8em;
+      padding:6px 16px;border-radius:999px;font-family:'Space Mono',monospace;
+      white-space:nowrap;
+    }
+
+    /* Panels */
     .panel{
-      background:#fff;padding:20px;border-radius:16px;
-      box-shadow:0 6px 22px rgba(0,0,0,.12);margin-bottom:20px;
+      background:var(--surface);border:1px solid var(--border);
+      border-radius:16px;padding:24px;margin-bottom:20px;
     }
-    .api-box{
-      background:#f8f9ff;border:2px solid #e0e7ff;border-radius:12px;
-      padding:16px;margin-bottom:20px;
+    .panel-title{
+      font-family:'Space Mono',monospace;font-size:.85em;
+      color:var(--accent);text-transform:uppercase;letter-spacing:2px;
+      margin-bottom:16px;display:flex;align-items:center;gap:8px;
     }
-    .api-box input{
-      width:calc(100% - 120px);padding:12px;border:2px solid #ddd;
-      border-radius:8px;font-size:15px;margin-right:10px;
+    .panel-title::before{content:'';display:block;width:3px;height:16px;background:var(--accent);border-radius:2px}
+
+    /* API box */
+    .api-row{display:flex;gap:10px;align-items:stretch}
+    .api-row input{
+      flex:1;padding:12px 16px;
+      background:var(--surface2);border:1px solid var(--border);
+      color:var(--text);border-radius:10px;font-size:14px;
+      font-family:'Space Mono',monospace;transition:.2s;
     }
-    .api-box button{
-      padding:12px 24px;background:#667eea;color:#fff;border:0;
-      border-radius:8px;font-weight:700;cursor:pointer;transition:.2s;
-    }
-    .api-box button:hover{background:#5568d3}
+    .api-row input:focus{outline:0;border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,229,160,.12)}
     .note{
-      background:#fef3c7;border-left:4px solid #f59e0b;
-      padding:12px;border-radius:8px;margin-top:10px;font-size:.95em;color:#92400e;
+      background:rgba(251,191,36,.07);border-left:3px solid var(--warn);
+      padding:10px 14px;border-radius:8px;margin-top:10px;
+      font-size:.85em;color:#d97706;line-height:1.6;
     }
+    .note a{color:var(--accent);text-decoration:none}
+
+    /* Controls grid */
     .controls{
+      display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+      gap:14px;margin-bottom:18px;
+    }
+    .ctrl-group label{
+      display:block;font-size:.78em;color:var(--muted);
+      text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px;
+      font-weight:700;
+    }
+    .ctrl-group select,
+    .ctrl-group input[type=text]{
+      width:100%;padding:10px 12px;
+      background:var(--surface2);border:1px solid var(--border);
+      color:var(--text);border-radius:10px;font-size:.95em;transition:.2s;
+      font-family:inherit;
+    }
+    .ctrl-group select:focus,
+    .ctrl-group input:focus{outline:0;border-color:var(--accent)}
+
+    /* Filter section */
+    .filter-row{
       display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+      gap:14px;padding:16px;background:var(--surface2);
+      border-radius:12px;border:1px solid var(--border);margin-bottom:18px;
+    }
+    .filter-chip{
+      display:flex;align-items:center;gap:10px;cursor:pointer;
+      padding:4px 0;
+    }
+    .filter-chip input[type=checkbox]{
+      width:18px;height:18px;accent-color:var(--accent);cursor:pointer;
+    }
+    .filter-chip span{font-size:.9em;color:var(--text)}
+    .filter-chip small{color:var(--muted);font-size:.78em}
+
+    /* Buttons */
+    .btn-group{display:flex;gap:10px;flex-wrap:wrap}
+    .btn{
+      padding:11px 22px;border:0;border-radius:10px;font-weight:700;
+      cursor:pointer;transition:all .2s;font-size:.9em;
+      font-family:inherit;display:flex;align-items:center;gap:6px;
+    }
+    .btn-primary{background:var(--accent);color:#0d0f14}
+    .btn-primary:hover{background:#00c98e;transform:translateY(-1px)}
+    .btn-primary:active{transform:none}
+    .btn-ghost{background:var(--surface2);color:var(--text);border:1px solid var(--border)}
+    .btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
+    .btn-danger{background:rgba(248,113,113,.12);color:var(--danger);border:1px solid rgba(248,113,113,.25)}
+    .btn-danger:hover{background:rgba(248,113,113,.2)}
+
+    /* Status */
+    .status{
+      margin:14px 0;padding:12px 16px;border-radius:10px;
+      font-size:.9em;font-weight:600;display:flex;align-items:center;gap:8px;
+    }
+    .status.loading{background:rgba(124,106,247,.12);color:#a89af5;border:1px solid rgba(124,106,247,.25)}
+    .status.success{background:rgba(0,229,160,.08);color:var(--accent);border:1px solid rgba(0,229,160,.2)}
+    .status.error{background:rgba(248,113,113,.08);color:var(--danger);border:1px solid rgba(248,113,113,.2)}
+
+    /* Summary bar */
+    .summary-bar{
+      display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
       gap:12px;margin-bottom:16px;
     }
-    label{display:block;color:#374151;font-weight:600;margin-bottom:6px;font-size:.9em}
-    select,input{
-      width:100%;padding:10px;border:2px solid #e5e7eb;
-      border-radius:8px;font-size:14px;background:#fff;
+    .stat-card{
+      background:var(--surface2);border:1px solid var(--border);
+      border-radius:12px;padding:14px 16px;
     }
-    .btn-group{display:flex;gap:10px;margin-top:16px;}
-    button{
-      padding:12px 20px;border:0;border-radius:8px;font-weight:700;
-      cursor:pointer;transition:.2s;font-size:15px;
-    }
-    .btn-primary{background:#667eea;color:#fff}
-    .btn-primary:hover{background:#5568d3}
-    .btn-secondary{background:#6b7280;color:#fff}
-    .btn-secondary:hover{background:#4b5563}
-    .status{
-      margin:16px 0;padding:12px;border-radius:8px;font-weight:600;
-    }
-    .status.loading{background:#dbeafe;color:#1e40af}
-    .status.success{background:#d1fae5;color:#065f46}
-    .status.error{background:#fee2e2;color:#991b1b}
-    table{width:100%;border-collapse:collapse;margin-top:16px}
+    .stat-card .label{font-size:.75em;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+    .stat-card .value{font-family:'Space Mono',monospace;font-size:1.5em;font-weight:700;color:var(--accent)}
+    .stat-card.warn .value{color:var(--warn)}
+    .stat-card.danger .value{color:var(--danger)}
+
+    /* Table */
+    .table-wrap{overflow-x:auto;border-radius:12px;border:1px solid var(--border)}
+    table{width:100%;border-collapse:collapse}
     thead th{
-      background:#f9fafb;text-align:left;padding:12px;
-      border-bottom:2px solid #e5e7eb;font-size:.9em;color:#374151;
-      position:sticky;top:0;cursor:pointer;user-select:none;
+      background:var(--surface2);padding:12px 14px;
+      text-align:left;font-size:.78em;
+      color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;
+      font-weight:700;cursor:pointer;user-select:none;white-space:nowrap;
+      border-bottom:1px solid var(--border);transition:.15s;
     }
-    thead th:hover{background:#f3f4f6}
+    thead th:hover{color:var(--accent)}
+    thead th.sorted{color:var(--accent)}
+    thead th .sort-icon{margin-left:4px;opacity:.6}
     tbody td{
-      padding:12px;border-bottom:1px solid #f3f4f6;
-      font-size:.95em;vertical-align:middle;
+      padding:12px 14px;border-bottom:1px solid rgba(42,47,62,.6);
+      font-size:.9em;vertical-align:middle;
     }
-    tbody tr:hover{background:#f9fafb}
-    .channel-cell{display:flex;align-items:center;gap:12px}
-    .channel-thumb{width:48px;height:48px;border-radius:50%;object-fit:cover}
-    .channel-name{font-weight:600;color:#111827}
-    .channel-id{font-size:.85em;color:#6b7280;margin-top:2px}
-    .number{font-weight:700;color:#667eea}
+    tbody tr:last-child td{border-bottom:0}
+    tbody tr:hover td{background:rgba(255,255,255,.025)}
+    .inactive-row td{opacity:.45}
+    .inactive-row:hover td{opacity:.7}
+
+    /* Channel cell */
+    .ch-cell{display:flex;align-items:center;gap:12px}
+    .ch-thumb{width:42px;height:42px;border-radius:50%;object-fit:cover;border:2px solid var(--border)}
+    .ch-name{font-weight:700;color:var(--text);font-size:.95em}
+    .ch-name a{color:inherit;text-decoration:none}
+    .ch-name a:hover{color:var(--accent)}
+    .ch-id{font-size:.78em;color:var(--muted);margin-top:2px;font-family:'Space Mono',monospace}
+    .last-updated{font-size:.75em;margin-top:3px}
+    .last-updated.fresh{color:var(--accent)}
+    .last-updated.stale{color:var(--warn)}
+    .last-updated.dead{color:var(--danger)}
+
+    /* Tier badge */
     .tier{
-      display:inline-block;padding:4px 12px;border-radius:999px;
-      font-weight:800;font-size:.85em;
+      display:inline-flex;align-items:center;justify-content:center;
+      width:32px;height:32px;border-radius:8px;font-weight:900;
+      font-family:'Space Mono',monospace;font-size:.9em;
     }
-    .tier-A{background:#d1fae5;color:#065f46}
-    .tier-B{background:#dbeafe;color:#1e40af}
-    .tier-C{background:#fef3c7;color:#92400e}
-    .tier-D{background:#fee2e2;color:#991b1b}
-    .link{color:#667eea;text-decoration:none;font-weight:600}
-    .link:hover{text-decoration:underline}
-    @media(max-width:768px){
-      .controls{grid-template-columns:1fr}
-      .api-box input{width:100%;margin-bottom:10px}
-      .api-box button{width:100%}
+    .tier-S{background:rgba(0,229,160,.15);color:var(--accent);border:1px solid rgba(0,229,160,.3)}
+    .tier-A{background:rgba(124,106,247,.15);color:#a89af5;border:1px solid rgba(124,106,247,.3)}
+    .tier-B{background:rgba(247,165,106,.12);color:var(--accent3);border:1px solid rgba(247,165,106,.25)}
+    .tier-C{background:rgba(251,191,36,.1);color:var(--warn);border:1px solid rgba(251,191,36,.2)}
+    .tier-D{background:rgba(248,113,113,.1);color:var(--danger);border:1px solid rgba(248,113,113,.2)}
+
+    /* ER bar */
+    .er-bar{display:flex;align-items:center;gap:8px}
+    .er-bar-track{flex:1;height:6px;background:var(--surface2);border-radius:3px;min-width:60px}
+    .er-bar-fill{height:100%;border-radius:3px;transition:width .4s}
+    .er-val{font-family:'Space Mono',monospace;font-size:.85em;font-weight:700;white-space:nowrap}
+
+    .mono{font-family:'Space Mono',monospace;font-weight:700;color:var(--text)}
+    .muted{color:var(--muted)}
+
+    /* Inactive badge */
+    .inactive-badge{
+      display:inline-block;padding:2px 8px;background:rgba(248,113,113,.12);
+      color:var(--danger);border-radius:4px;font-size:.72em;font-weight:700;
+      border:1px solid rgba(248,113,113,.2);margin-left:6px;vertical-align:middle;
+    }
+
+    /* Spinner */
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .spinner{
+      display:inline-block;width:14px;height:14px;border:2px solid currentColor;
+      border-right-color:transparent;border-radius:50%;animation:spin .6s linear infinite;
+    }
+
+    @media(max-width:640px){
+      .header{flex-direction:column;gap:12px;text-align:center}
+      .btn-group{flex-direction:column}
     }
   </style>
 </head>
 <body>
 <div class="container">
+
+  <!-- Header -->
   <div class="header">
-    <h1>📊 VGV YouTube 影響力分析工具</h1>
-    <p>VGV 圈粉行銷科技 - 專業 KOL 數據分析</p>
+    <div class="header-left">
+      <h1>VGV YouTube KOL Analyzer</h1>
+      <p>VGV 圈粉行銷科技 · 專業影響力行銷數據分析</p>
+    </div>
+    <div class="header-badge">v2.0 · ER FILTER</div>
   </div>
 
+  <!-- API 設定 -->
   <div class="panel">
-    <h3 style="color:#374151;margin-bottom:12px">🔑 YouTube API 設定</h3>
-    <div class="api-box">
-      <input type="password" id="apiKey" placeholder="請輸入您的 YouTube Data API v3 金鑰" />
-      <button onclick="saveApiKey()">儲存</button>
-      <div class="note">
-        ℹ️ 取得 API Key：前往 <a href="https://console.cloud.google.com/" target="_blank">Google Cloud Console</a> 
-        → 啟用 YouTube Data API v3 → 建立憑證（API 金鑰）
-        <br><small style="margin-top:6px;display:block">※ API Key 只存在您的瀏覽器，不會上傳到任何伺服器</small>
-      </div>
+    <div class="panel-title">API 金鑰設定</div>
+    <div class="api-row">
+      <input type="password" id="apiKey" placeholder="YouTube Data API v3 金鑰" />
+      <button class="btn btn-primary" onclick="saveApiKey()">儲存</button>
     </div>
+    <div class="note">
+      取得 API Key：<a href="https://console.cloud.google.com/" target="_blank">Google Cloud Console</a> → 啟用 YouTube Data API v3 → 建立憑證<br>
+      <small>※ API Key 只存在您的瀏覽器，不會上傳到任何伺服器</small>
+    </div>
+  </div>
 
-    <h3 style="color:#374151;margin:20px 0 12px">🎯 搜尋條件</h3>
+  <!-- 搜尋條件 -->
+  <div class="panel">
+    <div class="panel-title">搜尋條件</div>
     <div class="controls">
-      <div>
+      <div class="ctrl-group">
         <label>地區</label>
         <select id="region">
           <option value="TW">台灣 🇹🇼</option>
@@ -129,7 +276,7 @@
           <option value="US">美國 🇺🇸</option>
         </select>
       </div>
-      <div>
+      <div class="ctrl-group">
         <label>語言</label>
         <select id="lang">
           <option value="zh-Hant">繁體中文</option>
@@ -139,12 +286,12 @@
           <option value="ko">韓文</option>
         </select>
       </div>
-      <div>
+      <div class="ctrl-group">
         <label>品類關鍵字</label>
-        <input id="category" placeholder="例如：科技、美食、旅遊" value="科技" />
+        <input type="text" id="category" placeholder="科技、美食、旅遊…" value="科技" />
       </div>
-      <div>
-        <label>結果數量</label>
+      <div class="ctrl-group">
+        <label>搜尋數量</label>
         <select id="maxResults">
           <option value="20">20</option>
           <option value="50" selected>50</option>
@@ -153,255 +300,386 @@
       </div>
     </div>
 
-    <div class="btn-group">
-      <button class="btn-primary" onclick="searchChannels()">🔍 開始分析</button>
-      <button class="btn-secondary" onclick="exportCSV()">📥 匯出 CSV</button>
-      <button class="btn-secondary" onclick="clearResults()">🗑️ 清除結果</button>
+    <!-- 活躍篩選 -->
+    <div class="panel-title" style="margin-top:4px">活躍度篩選條件</div>
+    <div class="filter-row">
+      <div class="ctrl-group">
+        <label>最後發片時間（篩選掉超過此期間未更新）</label>
+        <select id="activeFilter">
+          <option value="90">3 個月內有發片</option>
+          <option value="180" selected>6 個月內有發片</option>
+          <option value="365">1 年內有發片</option>
+          <option value="0">不篩選</option>
+        </select>
+      </div>
+      <div class="ctrl-group">
+        <label>近期影片取樣數（用於計算互動率）</label>
+        <select id="recentCount">
+          <option value="5">最近 5 支</option>
+          <option value="10" selected>最近 10 支</option>
+          <option value="20">最近 20 支</option>
+        </select>
+      </div>
+      <div class="ctrl-group">
+        <label>僅顯示年內有發片頻道</label>
+        <div style="padding-top:8px">
+          <label class="filter-chip">
+            <input type="checkbox" id="hideInactive" checked />
+            <span>隱藏長期停更頻道<br><small>（依上方篩選天數自動過濾）</small></span>
+          </label>
+        </div>
+      </div>
     </div>
 
-    <div id="status"></div>
+    <div class="btn-group">
+      <button class="btn btn-primary" onclick="searchChannels()"><span id="searchSpinner" style="display:none" class="spinner"></span>🔍 開始分析</button>
+      <button class="btn btn-ghost" onclick="exportCSV()">📥 匯出 CSV</button>
+      <button class="btn btn-danger" onclick="clearResults()">🗑️ 清除</button>
+    </div>
 
-    <div style="overflow-x:auto">
-      <table id="resultsTable" style="display:none">
-        <thead>
-          <tr>
-            <th onclick="sortTable('rank')">#</th>
-            <th onclick="sortTable('title')">頻道</th>
-            <th onclick="sortTable('tier')">評級</th>
-            <th onclick="sortTable('subscriberCount')">訂閱數</th>
-            <th onclick="sortTable('viewCount')">總觀看</th>
-            <th onclick="sortTable('videoCount')">影片數</th>
-            <th onclick="sortTable('avgViews')">平均觀看</th>
-            <th onclick="sortTable('score')">綜合分數</th>
-          </tr>
-        </thead>
-        <tbody id="resultsBody"></tbody>
-      </table>
+    <div id="status" style="display:none"></div>
+  </div>
+
+  <!-- 結果 -->
+  <div id="resultsPanel" style="display:none">
+    <div class="panel">
+      <div class="panel-title">分析結果</div>
+      <div class="summary-bar" id="summaryBar"></div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th onclick="sortTable('rank')" id="th-rank"># <span class="sort-icon"></span></th>
+              <th onclick="sortTable('title')" id="th-title">頻道 <span class="sort-icon"></span></th>
+              <th onclick="sortTable('tier')" id="th-tier">評級 <span class="sort-icon"></span></th>
+              <th onclick="sortTable('subscriberCount')" id="th-subscriberCount">訂閱數 <span class="sort-icon"></span></th>
+              <th onclick="sortTable('engagementRate')" id="th-engagementRate" class="sorted">近期互動率↓ <span class="sort-icon">▼</span></th>
+              <th onclick="sortTable('avgRecentViews')" id="th-avgRecentViews">近期平均觀看 <span class="sort-icon"></span></th>
+              <th onclick="sortTable('daysSinceUpdate')" id="th-daysSinceUpdate">最後更新 <span class="sort-icon"></span></th>
+              <th onclick="sortTable('videoCount')" id="th-videoCount">總影片 <span class="sort-icon"></span></th>
+            </tr>
+          </thead>
+          <tbody id="resultsBody"></tbody>
+        </table>
+      </div>
     </div>
   </div>
+
 </div>
 
 <script>
 const API_KEY_STORAGE = 'vgv_youtube_api_key';
-let currentResults = [];
-let sortColumn = 'score';
+let allResults = [];  // all fetched (including inactive)
+let sortColumn = 'engagementRate';
 let sortAsc = false;
 
-// 載入已儲存的 API Key
-window.onload = function() {
+window.onload = () => {
   const saved = localStorage.getItem(API_KEY_STORAGE);
   if(saved) document.getElementById('apiKey').value = saved;
 };
 
-function saveApiKey() {
-  const key = document.getElementById('apiKey').value.trim();
-  if(!key) {
-    showStatus('請輸入 API Key', 'error');
-    return;
-  }
-  localStorage.setItem(API_KEY_STORAGE, key);
-  showStatus('✅ API Key 已儲存', 'success');
+function saveApiKey(){
+  const k = document.getElementById('apiKey').value.trim();
+  if(!k){ showStatus('請輸入 API Key','error'); return; }
+  localStorage.setItem(API_KEY_STORAGE,k);
+  showStatus('✅ API Key 已儲存','success');
 }
 
-function showStatus(msg, type = 'loading') {
+function showStatus(msg, type='loading'){
   const div = document.getElementById('status');
-  div.className = 'status ' + type;
-  div.textContent = msg;
-  div.style.display = 'block';
+  div.className = 'status '+type;
+  div.style.display = 'flex';
+  div.innerHTML = (type==='loading' ? '<span class="spinner"></span>' : '') + msg;
 }
 
-async function searchChannels() {
+function hideStatus(){ document.getElementById('status').style.display='none'; }
+
+function setSearching(on){
+  document.getElementById('searchSpinner').style.display = on ? 'inline-block' : 'none';
+}
+
+// ─── Main search ────────────────────────────────────────────────────────────
+async function searchChannels(){
   const apiKey = localStorage.getItem(API_KEY_STORAGE);
-  if(!apiKey) {
-    showStatus('❌ 請先設定 API Key', 'error');
-    return;
-  }
+  if(!apiKey){ showStatus('❌ 請先設定 API Key','error'); return; }
 
   const region = document.getElementById('region').value;
   const lang = document.getElementById('lang').value;
   const category = document.getElementById('category').value.trim();
   const maxResults = document.getElementById('maxResults').value;
+  const recentCount = parseInt(document.getElementById('recentCount').value);
 
-  showStatus('🔍 正在搜尋頻道...', 'loading');
-  currentResults = [];
+  setSearching(true);
+  showStatus('🔍 正在搜尋頻道...','loading');
+  allResults = [];
 
   try {
-    // 1. 搜尋頻道
+    // Step 1: Search channels
     const searchUrl = `https://www.googleapis.com/youtube/v3/search?` +
       `part=snippet&type=channel&regionCode=${region}&relevanceLanguage=${lang}` +
       `&q=${encodeURIComponent(category)}&maxResults=${maxResults}&key=${apiKey}`;
-    
     const searchRes = await fetch(searchUrl);
-    if(!searchRes.ok) throw new Error('搜尋失敗：' + searchRes.status);
+    if(!searchRes.ok){ const e=await searchRes.json(); throw new Error(e.error?.message||searchRes.status); }
     const searchData = await searchRes.json();
+    if(!searchData.items?.length){ showStatus('❌ 找不到頻道','error'); setSearching(false); return; }
 
-    if(!searchData.items || searchData.items.length === 0) {
-      showStatus('❌ 找不到符合條件的頻道', 'error');
-      return;
+    showStatus(`✅ 找到 ${searchData.items.length} 個頻道，正在取得詳細資料...`,'loading');
+
+    // Step 2: Channel statistics
+    const channelIds = searchData.items.map(i=>i.snippet.channelId).join(',');
+    const chUrl = `https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics,contentDetails&id=${channelIds}&key=${apiKey}`;
+    const chRes = await fetch(chUrl);
+    if(!chRes.ok) throw new Error('取得頻道資料失敗');
+    const chData = await chRes.json();
+
+    showStatus(`📊 正在抓取各頻道近期影片互動率（共 ${chData.items.length} 個）...`,'loading');
+
+    // Step 3: For each channel, get recent videos
+    const enriched = [];
+    for(const ch of chData.items){
+      try{
+        const info = await getChannelActivity(ch, apiKey, recentCount);
+        enriched.push(info);
+      } catch(e){
+        // fallback without recent video data
+        enriched.push(buildFallback(ch));
+      }
     }
 
-    const channelIds = searchData.items.map(item => item.snippet.channelId).join(',');
+    allResults = enriched;
+    renderResults();
+    setSearching(false);
 
-    // 2. 取得頻道詳細資訊
-    const channelsUrl = `https://www.googleapis.com/youtube/v3/channels?` +
-      `part=snippet,statistics&id=${channelIds}&key=${apiKey}`;
-    
-    const channelsRes = await fetch(channelsUrl);
-    if(!channelsRes.ok) throw new Error('取得頻道資料失敗');
-    const channelsData = await channelsRes.json();
-
-    // 3. 處理結果
-    currentResults = channelsData.items.map((ch, idx) => {
-      const stats = ch.statistics;
-      const snippet = ch.snippet;
-      
-      const subscriberCount = parseInt(stats.subscriberCount || 0);
-      const viewCount = parseInt(stats.viewCount || 0);
-      const videoCount = parseInt(stats.videoCount || 1);
-      const avgViews = Math.round(viewCount / videoCount);
-      
-      // 簡單評分（可自訂）
-      let score = 0;
-      score += Math.min(subscriberCount / 10000, 50); // 訂閱數（最高50分）
-      score += Math.min(avgViews / 1000, 30); // 平均觀看（最高30分）
-      score += Math.min(videoCount / 10, 20); // 影片數（最高20分）
-      score = Math.round(score);
-
-      let tier = 'D';
-      if(score >= 80) tier = 'A';
-      else if(score >= 65) tier = 'B';
-      else if(score >= 50) tier = 'C';
-
-      return {
-        rank: idx + 1,
-        channelId: ch.id,
-        title: snippet.title,
-        customUrl: snippet.customUrl || '',
-        thumbnail: snippet.thumbnails.default.url,
-        subscriberCount,
-        viewCount,
-        videoCount,
-        avgViews,
-        score,
-        tier
-      };
-    });
-
-    sortColumn = 'score';
-    sortAsc = false;
-    renderTable();
-    showStatus(`✅ 找到 ${currentResults.length} 個頻道`, 'success');
-
-  } catch(error) {
-    console.error(error);
-    showStatus('❌ 錯誤：' + error.message, 'error');
+  } catch(err){
+    console.error(err);
+    showStatus('❌ 錯誤：'+err.message,'error');
+    setSearching(false);
   }
 }
 
-function renderTable() {
-  const tbody = document.getElementById('resultsBody');
-  const table = document.getElementById('resultsTable');
-  
-  if(currentResults.length === 0) {
-    table.style.display = 'none';
-    return;
+async function getChannelActivity(ch, apiKey, recentCount){
+  const stats = ch.statistics;
+  const snippet = ch.snippet;
+  const subscriberCount = parseInt(stats.subscriberCount||0);
+  const viewCount = parseInt(stats.viewCount||0);
+  const videoCount = parseInt(stats.videoCount||1);
+
+  // Get recent videos via search on this channel
+  const vUrl = `https://www.googleapis.com/youtube/v3/search?` +
+    `part=snippet&channelId=${ch.id}&order=date&maxResults=${recentCount}&type=video&key=${apiKey}`;
+  const vRes = await fetch(vUrl);
+  const vData = await vRes.json();
+
+  let daysSinceUpdate = 9999;
+  let avgRecentViews = 0;
+  let engagementRate = 0;
+  let lastVideoDate = null;
+
+  if(vData.items?.length){
+    const videoIds = vData.items.map(v=>v.id.videoId).filter(Boolean).join(',');
+    lastVideoDate = new Date(vData.items[0].snippet.publishedAt);
+    daysSinceUpdate = Math.round((Date.now()-lastVideoDate)/(1000*86400));
+
+    if(videoIds){
+      // Get video stats
+      const vsUrl = `https://www.googleapis.com/youtube/v3/videos?part=statistics&id=${videoIds}&key=${apiKey}`;
+      const vsRes = await fetch(vsUrl);
+      const vsData = await vsRes.json();
+      if(vsData.items?.length){
+        const totalViews = vsData.items.reduce((s,v)=>s+parseInt(v.statistics.viewCount||0),0);
+        avgRecentViews = Math.round(totalViews/vsData.items.length);
+        // ER = avg recent views / subscribers * 100
+        engagementRate = subscriberCount>0 ? (avgRecentViews/subscriberCount)*100 : 0;
+      }
+    }
   }
 
-  // 排序
-  const sorted = [...currentResults].sort((a, b) => {
-    let av = a[sortColumn];
-    let bv = b[sortColumn];
-    
-    if(sortColumn === 'title' || sortColumn === 'tier') {
-      return sortAsc ? 
-        String(av).localeCompare(String(bv)) : 
-        String(bv).localeCompare(String(av));
-    }
-    
+  const score = computeScore(subscriberCount, engagementRate, daysSinceUpdate);
+
+  return {
+    channelId:ch.id,
+    title:snippet.title,
+    customUrl:snippet.customUrl||'',
+    thumbnail:snippet.thumbnails?.default?.url||'',
+    subscriberCount,
+    viewCount,
+    videoCount,
+    avgRecentViews,
+    engagementRate,
+    daysSinceUpdate,
+    lastVideoDate,
+    score,
+    tier:getTier(score,engagementRate)
+  };
+}
+
+function buildFallback(ch){
+  const stats = ch.statistics;
+  const snippet = ch.snippet;
+  const subscriberCount = parseInt(stats.subscriberCount||0);
+  const viewCount = parseInt(stats.viewCount||0);
+  const videoCount = parseInt(stats.videoCount||1);
+  return {
+    channelId:ch.id,
+    title:snippet.title,
+    customUrl:snippet.customUrl||'',
+    thumbnail:snippet.thumbnails?.default?.url||'',
+    subscriberCount,viewCount,videoCount,
+    avgRecentViews:0,engagementRate:0,daysSinceUpdate:9999,
+    lastVideoDate:null,score:0,tier:'D'
+  };
+}
+
+function computeScore(subs, er, days){
+  let score = 0;
+  // Subscriber weight (max 30)
+  score += Math.min(subs/10000, 30);
+  // Engagement rate weight (max 50) — this is the priority metric
+  score += Math.min(er*10, 50);
+  // Recency penalty: if updated within 90 days full points, decay after
+  const recencyScore = days <= 90 ? 20 : days <= 180 ? 12 : days <= 365 ? 5 : 0;
+  score += recencyScore;
+  return Math.round(score);
+}
+
+function getTier(score, er){
+  if(score >= 60 && er >= 5) return 'S';
+  if(score >= 45) return 'A';
+  if(score >= 30) return 'B';
+  if(score >= 15) return 'C';
+  return 'D';
+}
+
+// ─── Render ──────────────────────────────────────────────────────────────────
+function renderResults(){
+  const activeFilterDays = parseInt(document.getElementById('activeFilter').value);
+  const hideInactive = document.getElementById('hideInactive').checked;
+
+  let results = [...allResults];
+
+  // Filter inactive if requested
+  if(hideInactive && activeFilterDays > 0){
+    results = results.filter(r => r.daysSinceUpdate <= activeFilterDays);
+  }
+
+  const total = allResults.length;
+  const shown = results.length;
+  const filtered = total - shown;
+  const avgER = shown > 0 ? (results.reduce((s,r)=>s+r.engagementRate,0)/shown) : 0;
+  const topER = shown > 0 ? Math.max(...results.map(r=>r.engagementRate)) : 0;
+
+  // Summary
+  document.getElementById('summaryBar').innerHTML = `
+    <div class="stat-card">
+      <div class="label">符合條件頻道</div>
+      <div class="value">${shown}</div>
+    </div>
+    <div class="stat-card ${filtered>0?'warn':''}">
+      <div class="label">已篩除（停更）</div>
+      <div class="value ${filtered>0?'':'muted'}">${filtered}</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">平均近期互動率</div>
+      <div class="value">${avgER.toFixed(2)}%</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">最高互動率</div>
+      <div class="value">${topER.toFixed(2)}%</div>
+    </div>
+  `;
+
+  // Sort
+  const sorted = results.sort((a,b)=>{
+    let av = a[sortColumn], bv = b[sortColumn];
+    if(typeof av === 'string') return sortAsc ? av.localeCompare(bv) : bv.localeCompare(av);
     return sortAsc ? av - bv : bv - av;
   });
 
-  tbody.innerHTML = sorted.map(ch => `
-    <tr>
-      <td class="number">${ch.rank}</td>
+  // Rank after sort
+  sorted.forEach((r,i)=>r.rank = i+1);
+
+  const tbody = document.getElementById('resultsBody');
+  tbody.innerHTML = sorted.map(ch => {
+    const daysText = ch.daysSinceUpdate===9999 ? '未知' :
+      ch.daysSinceUpdate < 30 ? `${ch.daysSinceUpdate} 天前` :
+      ch.daysSinceUpdate < 365 ? `${Math.round(ch.daysSinceUpdate/30)} 個月前` :
+      `${(ch.daysSinceUpdate/365).toFixed(1)} 年前`;
+
+    const freshClass = ch.daysSinceUpdate<=90 ? 'fresh' : ch.daysSinceUpdate<=365 ? 'stale' : 'dead';
+    const erColor = ch.engagementRate>=10 ? '#00e5a0' : ch.engagementRate>=3 ? '#7c6af7' : ch.engagementRate>=1 ? '#f7a56a' : '#f87171';
+    const erPct = Math.min(ch.engagementRate, 30) / 30 * 100; // cap bar at 30%
+    const isInactive = ch.daysSinceUpdate > (parseInt(document.getElementById('activeFilter').value)||9999);
+
+    return `<tr class="${isInactive&&!document.getElementById('hideInactive').checked?'inactive-row':''}">
+      <td class="muted" style="font-family:'Space Mono',monospace">${ch.rank}</td>
       <td>
-        <div class="channel-cell">
-          <img src="${ch.thumbnail}" class="channel-thumb" alt="">
+        <div class="ch-cell">
+          <img src="${ch.thumbnail}" class="ch-thumb" alt="" onerror="this.style.background='#2a2f3e';this.src=''"  />
           <div>
-            <a href="https://www.youtube.com/channel/${ch.channelId}" 
-               target="_blank" class="channel-name link">${escapeHtml(ch.title)}</a>
-            <div class="channel-id">${escapeHtml(ch.customUrl || ch.channelId)}</div>
+            <div class="ch-name"><a href="https://www.youtube.com/channel/${ch.channelId}" target="_blank">${escHtml(ch.title)}</a>${isInactive?'<span class="inactive-badge">停更</span>':''}</div>
+            <div class="ch-id">${escHtml(ch.customUrl||ch.channelId)}</div>
+            <div class="last-updated ${freshClass}">⏱ ${daysText}更新</div>
           </div>
         </div>
       </td>
       <td><span class="tier tier-${ch.tier}">${ch.tier}</span></td>
-      <td class="number">${formatNumber(ch.subscriberCount)}</td>
-      <td class="number">${formatNumber(ch.viewCount)}</td>
-      <td class="number">${formatNumber(ch.videoCount)}</td>
-      <td class="number">${formatNumber(ch.avgViews)}</td>
-      <td class="number">${ch.score}</td>
-    </tr>
-  `).join('');
+      <td class="mono">${fmtNum(ch.subscriberCount)}</td>
+      <td>
+        <div class="er-bar">
+          <div class="er-bar-track"><div class="er-bar-fill" style="width:${erPct.toFixed(1)}%;background:${erColor}"></div></div>
+          <span class="er-val" style="color:${erColor}">${ch.engagementRate.toFixed(2)}%</span>
+        </div>
+      </td>
+      <td class="mono">${fmtNum(ch.avgRecentViews)}</td>
+      <td class="last-updated ${freshClass}" style="font-family:'Space Mono',monospace;font-size:.85em">${daysText}</td>
+      <td class="muted">${fmtNum(ch.videoCount)}</td>
+    </tr>`;
+  }).join('');
 
-  table.style.display = 'table';
+  document.getElementById('resultsPanel').style.display = 'block';
+  showStatus(`✅ 顯示 ${shown} 個有效頻道（依近期互動率排序），已篩除 ${filtered} 個停更頻道`,'success');
 }
 
-function sortTable(column) {
-  if(sortColumn === column) {
-    sortAsc = !sortAsc;
-  } else {
-    sortColumn = column;
-    sortAsc = false;
-  }
-  renderTable();
+function sortTable(col){
+  if(sortColumn===col){ sortAsc=!sortAsc; } else { sortColumn=col; sortAsc=false; }
+  // Update header styles
+  document.querySelectorAll('thead th').forEach(th=>{th.classList.remove('sorted');th.innerHTML=th.innerHTML.replace(/ [▲▼]/g,'')});
+  const th = document.getElementById('th-'+col);
+  if(th){th.classList.add('sorted');th.innerHTML+=sortAsc?' ▲':' ▼';}
+  renderResults();
 }
 
-function formatNumber(num) {
-  if(num >= 1000000) return (num/1000000).toFixed(1) + 'M';
-  if(num >= 1000) return (num/1000).toFixed(1) + 'K';
-  return num.toString();
+function fmtNum(n){
+  if(n>=1000000) return (n/1000000).toFixed(1)+'M';
+  if(n>=1000) return (n/1000).toFixed(1)+'K';
+  return n===0?'-':n.toString();
 }
 
-function escapeHtml(str) {
-  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+function escHtml(s){
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-function exportCSV() {
-  if(currentResults.length === 0) {
-    showStatus('❌ 沒有資料可匯出', 'error');
-    return;
-  }
-
-  const headers = ['排名','評級','頻道名稱','頻道ID','訂閱數','總觀看','影片數','平均觀看','綜合分數'];
-  const rows = currentResults.map(ch => [
-    ch.rank,
-    ch.tier,
-    `"${ch.title.replace(/"/g,'""')}"`,
-    ch.channelId,
-    ch.subscriberCount,
-    ch.viewCount,
-    ch.videoCount,
-    ch.avgViews,
-    ch.score
+function exportCSV(){
+  if(!allResults.length){ showStatus('❌ 沒有資料可匯出','error'); return; }
+  const h = ['排名','評級','頻道名稱','頻道ID','訂閱數','近期互動率%','近期平均觀看','最後更新（天前）','總影片數','綜合分數'];
+  const rows = allResults.map((ch,i)=>[
+    i+1,ch.tier,`"${ch.title.replace(/"/g,'""')}"`,ch.channelId,
+    ch.subscriberCount,ch.engagementRate.toFixed(3),ch.avgRecentViews,
+    ch.daysSinceUpdate===9999?'未知':ch.daysSinceUpdate,ch.videoCount,ch.score
   ]);
-
-  const csv = [headers, ...rows].map(row => row.join(',')).join('\n');
-  const blob = new Blob(['\ufeff' + csv], {type:'text/csv;charset=utf-8;'});
-  const url = URL.createObjectURL(blob);
+  const csv = [h,...rows].map(r=>r.join(',')).join('\n');
+  const blob = new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'});
   const a = document.createElement('a');
-  a.href = url;
-  a.download = `VGV_YouTube分析_${new Date().toISOString().slice(0,10)}.csv`;
+  a.href = URL.createObjectURL(blob);
+  a.download = `VGV_KOL分析_${new Date().toISOString().slice(0,10)}.csv`;
   a.click();
-  URL.revokeObjectURL(url);
-  
-  showStatus('✅ CSV 已匯出', 'success');
+  showStatus('✅ CSV 已匯出','success');
 }
 
-function clearResults() {
-  currentResults = [];
-  document.getElementById('resultsTable').style.display = 'none';
-  document.getElementById('status').style.display = 'none';
+function clearResults(){
+  allResults=[];
+  document.getElementById('resultsPanel').style.display='none';
+  hideStatus();
 }
 </script>
 </body>
