@@ -3,204 +3,131 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>VGV YouTube 影響力分析工具 v2</title>
+  <title>VGV YouTube 影響力分析工具 v3</title>
   <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
   <style>
     :root{
-      --bg:#0d0f14;
-      --surface:#161921;
-      --surface2:#1e2230;
-      --border:#2a2f3e;
-      --accent:#00e5a0;
-      --accent2:#7c6af7;
-      --accent3:#f7a56a;
-      --text:#e8eaf0;
-      --muted:#6b7280;
-      --danger:#f87171;
-      --warn:#fbbf24;
+      --bg:#0d0f14;--surface:#161921;--surface2:#1e2230;--border:#2a2f3e;
+      --accent:#00e5a0;--accent2:#7c6af7;--accent3:#f7a56a;
+      --text:#e8eaf0;--muted:#6b7280;--danger:#f87171;--warn:#fbbf24;
     }
     *{margin:0;padding:0;box-sizing:border-box}
-    body{
-      font-family:'Noto Sans TC',sans-serif;
-      background:var(--bg);
-      color:var(--text);
-      min-height:100vh;
-    }
-    /* Dot grid bg */
+    body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
     body::before{
       content:'';position:fixed;inset:0;z-index:0;
       background-image:radial-gradient(circle,#2a2f3e 1px,transparent 1px);
-      background-size:28px 28px;opacity:.45;pointer-events:none;
+      background-size:28px 28px;opacity:.4;pointer-events:none;
     }
-    .container{max-width:1320px;margin:0 auto;padding:28px 20px;position:relative;z-index:1}
+    .container{max-width:1380px;margin:0 auto;padding:24px 20px;position:relative;z-index:1}
 
     /* Header */
     .header{
-      display:flex;align-items:center;justify-content:space-between;
+      display:flex;align-items:center;justify-content:space-between;gap:16px;
       background:var(--surface);border:1px solid var(--border);
-      border-radius:16px;padding:24px 32px;margin-bottom:20px;
-      position:relative;overflow:hidden;
+      border-radius:16px;padding:22px 30px;margin-bottom:18px;overflow:hidden;position:relative;
     }
-    .header::before{
-      content:'';position:absolute;top:-60px;right:-60px;
-      width:220px;height:220px;border-radius:50%;
-      background:radial-gradient(circle,rgba(0,229,160,.15),transparent 70%);
-      pointer-events:none;
+    .header::after{
+      content:'';position:absolute;top:-80px;right:-80px;width:260px;height:260px;border-radius:50%;
+      background:radial-gradient(circle,rgba(0,229,160,.12),transparent 70%);pointer-events:none;
     }
-    .header-left h1{
-      font-family:'Space Mono',monospace;font-size:1.6em;font-weight:700;
-      color:var(--accent);letter-spacing:-.5px;
-    }
-    .header-left p{color:var(--muted);font-size:.9em;margin-top:4px}
-    .header-badge{
-      background:linear-gradient(135deg,var(--accent2),var(--accent));
-      color:#fff;font-weight:700;font-size:.8em;
-      padding:6px 16px;border-radius:999px;font-family:'Space Mono',monospace;
-      white-space:nowrap;
-    }
+    .header h1{font-family:'Space Mono',monospace;font-size:1.5em;color:var(--accent);letter-spacing:-.5px}
+    .header p{color:var(--muted);font-size:.85em;margin-top:4px}
+    .header-badges{display:flex;gap:8px;flex-shrink:0;flex-wrap:wrap}
+    .badge{padding:5px 14px;border-radius:999px;font-size:.75em;font-weight:700;font-family:'Space Mono',monospace;white-space:nowrap}
+    .badge-v{background:linear-gradient(135deg,var(--accent2),var(--accent));color:#fff}
+    .badge-units{background:var(--surface2);color:var(--accent);border:1px solid var(--border)}
 
-    /* Panels */
-    .panel{
-      background:var(--surface);border:1px solid var(--border);
-      border-radius:16px;padding:24px;margin-bottom:20px;
-    }
-    .panel-title{
-      font-family:'Space Mono',monospace;font-size:.85em;
-      color:var(--accent);text-transform:uppercase;letter-spacing:2px;
-      margin-bottom:16px;display:flex;align-items:center;gap:8px;
-    }
-    .panel-title::before{content:'';display:block;width:3px;height:16px;background:var(--accent);border-radius:2px}
+    /* Panel */
+    .panel{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:22px;margin-bottom:16px;}
+    .pt{font-family:'Space Mono',monospace;font-size:.78em;color:var(--accent);text-transform:uppercase;letter-spacing:2px;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+    .pt::before{content:'';display:block;width:3px;height:14px;background:var(--accent);border-radius:2px}
 
-    /* API box */
-    .api-row{display:flex;gap:10px;align-items:stretch}
-    .api-row input{
-      flex:1;padding:12px 16px;
-      background:var(--surface2);border:1px solid var(--border);
-      color:var(--text);border-radius:10px;font-size:14px;
-      font-family:'Space Mono',monospace;transition:.2s;
-    }
-    .api-row input:focus{outline:0;border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,229,160,.12)}
-    .note{
-      background:rgba(251,191,36,.07);border-left:3px solid var(--warn);
-      padding:10px 14px;border-radius:8px;margin-top:10px;
-      font-size:.85em;color:#d97706;line-height:1.6;
-    }
+    /* API row */
+    .api-row{display:flex;gap:10px}
+    .api-row input{flex:1;padding:11px 14px;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:10px;font-size:14px;font-family:'Space Mono',monospace;transition:.2s}
+    .api-row input:focus{outline:0;border-color:var(--accent)}
+    .note{background:rgba(251,191,36,.07);border-left:3px solid var(--warn);padding:10px 14px;border-radius:8px;margin-top:10px;font-size:.82em;color:#d97706;line-height:1.7}
     .note a{color:var(--accent);text-decoration:none}
+    .note code{background:rgba(0,229,160,.1);color:var(--accent);padding:1px 5px;border-radius:4px;font-family:'Space Mono',monospace}
 
-    /* Controls grid */
-    .controls{
-      display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
-      gap:14px;margin-bottom:18px;
+    /* Units tracker */
+    .units-bar{
+      display:flex;align-items:center;gap:12px;margin-top:14px;
+      padding:12px 16px;background:var(--surface2);border-radius:10px;border:1px solid var(--border);
     }
-    .ctrl-group label{
-      display:block;font-size:.78em;color:var(--muted);
-      text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px;
-      font-weight:700;
-    }
-    .ctrl-group select,
-    .ctrl-group input[type=text]{
-      width:100%;padding:10px 12px;
-      background:var(--surface2);border:1px solid var(--border);
-      color:var(--text);border-radius:10px;font-size:.95em;transition:.2s;
-      font-family:inherit;
-    }
-    .ctrl-group select:focus,
-    .ctrl-group input:focus{outline:0;border-color:var(--accent)}
+    .units-label{font-size:.8em;color:var(--muted);font-family:'Space Mono',monospace;flex-shrink:0}
+    .units-track{flex:1;height:8px;background:var(--border);border-radius:4px;overflow:hidden}
+    .units-fill{height:100%;background:var(--accent);border-radius:4px;transition:width .4s}
+    .units-fill.warn{background:var(--warn)}
+    .units-fill.danger{background:var(--danger)}
+    .units-num{font-family:'Space Mono',monospace;font-size:.85em;font-weight:700;color:var(--accent);white-space:nowrap}
+    .units-num.warn{color:var(--warn)}
+    .units-num.danger{color:var(--danger)}
+    .btn-reset-cache{padding:5px 12px;border-radius:7px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:.78em;cursor:pointer;transition:.2s}
+    .btn-reset-cache:hover{border-color:var(--danger);color:var(--danger)}
 
-    /* Filter section */
-    .filter-row{
-      display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-      gap:14px;padding:16px;background:var(--surface2);
-      border-radius:12px;border:1px solid var(--border);margin-bottom:18px;
-    }
-    .filter-chip{
-      display:flex;align-items:center;gap:10px;cursor:pointer;
-      padding:4px 0;
-    }
-    .filter-chip input[type=checkbox]{
-      width:18px;height:18px;accent-color:var(--accent);cursor:pointer;
-    }
-    .filter-chip span{font-size:.9em;color:var(--text)}
-    .filter-chip small{color:var(--muted);font-size:.78em}
+    /* Controls */
+    .controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:14px}
+    .ctrl label{display:block;font-size:.75em;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px;font-weight:700}
+    .ctrl select,.ctrl input[type=text]{width:100%;padding:10px 12px;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:10px;font-size:.9em;font-family:inherit;transition:.2s}
+    .ctrl select:focus,.ctrl input:focus{outline:0;border-color:var(--accent)}
+
+    /* Filter panel */
+    .filter-box{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;padding:16px;background:var(--surface2);border-radius:12px;border:1px solid var(--border);margin-bottom:16px}
 
     /* Buttons */
     .btn-group{display:flex;gap:10px;flex-wrap:wrap}
-    .btn{
-      padding:11px 22px;border:0;border-radius:10px;font-weight:700;
-      cursor:pointer;transition:all .2s;font-size:.9em;
-      font-family:inherit;display:flex;align-items:center;gap:6px;
-    }
+    .btn{padding:10px 20px;border:0;border-radius:10px;font-weight:700;cursor:pointer;transition:all .2s;font-size:.88em;font-family:inherit;display:inline-flex;align-items:center;gap:6px}
     .btn-primary{background:var(--accent);color:#0d0f14}
     .btn-primary:hover{background:#00c98e;transform:translateY(-1px)}
-    .btn-primary:active{transform:none}
     .btn-ghost{background:var(--surface2);color:var(--text);border:1px solid var(--border)}
     .btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
-    .btn-danger{background:rgba(248,113,113,.12);color:var(--danger);border:1px solid rgba(248,113,113,.25)}
+    .btn-danger{background:rgba(248,113,113,.1);color:var(--danger);border:1px solid rgba(248,113,113,.2)}
     .btn-danger:hover{background:rgba(248,113,113,.2)}
 
     /* Status */
-    .status{
-      margin:14px 0;padding:12px 16px;border-radius:10px;
-      font-size:.9em;font-weight:600;display:flex;align-items:center;gap:8px;
-    }
-    .status.loading{background:rgba(124,106,247,.12);color:#a89af5;border:1px solid rgba(124,106,247,.25)}
-    .status.success{background:rgba(0,229,160,.08);color:var(--accent);border:1px solid rgba(0,229,160,.2)}
-    .status.error{background:rgba(248,113,113,.08);color:var(--danger);border:1px solid rgba(248,113,113,.2)}
+    .status{margin:12px 0;padding:11px 16px;border-radius:10px;font-size:.88em;font-weight:600;display:none;align-items:center;gap:8px;line-height:1.5}
+    .status.loading{background:rgba(124,106,247,.12);color:#a89af5;border:1px solid rgba(124,106,247,.2);display:flex}
+    .status.success{background:rgba(0,229,160,.08);color:var(--accent);border:1px solid rgba(0,229,160,.15);display:flex}
+    .status.error{background:rgba(248,113,113,.08);color:var(--danger);border:1px solid rgba(248,113,113,.15);display:flex}
 
-    /* Summary bar */
-    .summary-bar{
-      display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
-      gap:12px;margin-bottom:16px;
-    }
-    .stat-card{
-      background:var(--surface2);border:1px solid var(--border);
-      border-radius:12px;padding:14px 16px;
-    }
-    .stat-card .label{font-size:.75em;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
-    .stat-card .value{font-family:'Space Mono',monospace;font-size:1.5em;font-weight:700;color:var(--accent)}
-    .stat-card.warn .value{color:var(--warn)}
-    .stat-card.danger .value{color:var(--danger)}
+    /* Summary */
+    .summary-bar{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:16px}
+    .stat-card{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px}
+    .stat-card .slabel{font-size:.72em;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+    .stat-card .sval{font-family:'Space Mono',monospace;font-size:1.4em;font-weight:700;color:var(--accent)}
+    .stat-card.swarn .sval{color:var(--warn)}
+
+    /* Cache info */
+    .cache-tag{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;background:rgba(0,229,160,.1);border:1px solid rgba(0,229,160,.2);border-radius:6px;font-size:.72em;color:var(--accent);font-family:'Space Mono',monospace;margin-left:8px;vertical-align:middle}
+    .cache-tag.stale{background:rgba(251,191,36,.1);border-color:rgba(251,191,36,.2);color:var(--warn)}
 
     /* Table */
     .table-wrap{overflow-x:auto;border-radius:12px;border:1px solid var(--border)}
     table{width:100%;border-collapse:collapse}
     thead th{
-      background:var(--surface2);padding:12px 14px;
-      text-align:left;font-size:.78em;
-      color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;
-      font-weight:700;cursor:pointer;user-select:none;white-space:nowrap;
-      border-bottom:1px solid var(--border);transition:.15s;
+      background:var(--surface2);padding:11px 12px;text-align:left;font-size:.75em;
+      color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;font-weight:700;
+      cursor:pointer;user-select:none;white-space:nowrap;border-bottom:1px solid var(--border);transition:.15s;
     }
-    thead th:hover{color:var(--accent)}
-    thead th.sorted{color:var(--accent)}
-    thead th .sort-icon{margin-left:4px;opacity:.6}
-    tbody td{
-      padding:12px 14px;border-bottom:1px solid rgba(42,47,62,.6);
-      font-size:.9em;vertical-align:middle;
-    }
+    thead th:hover,thead th.sorted{color:var(--accent)}
+    tbody td{padding:11px 12px;border-bottom:1px solid rgba(42,47,62,.5);font-size:.88em;vertical-align:middle}
     tbody tr:last-child td{border-bottom:0}
-    tbody tr:hover td{background:rgba(255,255,255,.025)}
-    .inactive-row td{opacity:.45}
-    .inactive-row:hover td{opacity:.7}
+    tbody tr:hover td{background:rgba(255,255,255,.02)}
+    .inactive-row td{opacity:.4}
 
     /* Channel cell */
-    .ch-cell{display:flex;align-items:center;gap:12px}
-    .ch-thumb{width:42px;height:42px;border-radius:50%;object-fit:cover;border:2px solid var(--border)}
-    .ch-name{font-weight:700;color:var(--text);font-size:.95em}
+    .ch-cell{display:flex;align-items:center;gap:11px}
+    .ch-thumb{width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid var(--border);background:var(--surface2)}
+    .ch-name{font-weight:700;color:var(--text);font-size:.93em}
     .ch-name a{color:inherit;text-decoration:none}
     .ch-name a:hover{color:var(--accent)}
-    .ch-id{font-size:.78em;color:var(--muted);margin-top:2px;font-family:'Space Mono',monospace}
-    .last-updated{font-size:.75em;margin-top:3px}
-    .last-updated.fresh{color:var(--accent)}
-    .last-updated.stale{color:var(--warn)}
-    .last-updated.dead{color:var(--danger)}
+    .ch-sub{font-size:.75em;color:var(--muted);margin-top:2px;font-family:'Space Mono',monospace}
+    .ch-date{font-size:.73em;margin-top:3px}
+    .fresh{color:var(--accent)}.stale{color:var(--warn)}.dead{color:var(--danger)}
 
-    /* Tier badge */
-    .tier{
-      display:inline-flex;align-items:center;justify-content:center;
-      width:32px;height:32px;border-radius:8px;font-weight:900;
-      font-family:'Space Mono',monospace;font-size:.9em;
-    }
+    /* Tier */
+    .tier{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:7px;font-weight:900;font-family:'Space Mono',monospace;font-size:.88em}
     .tier-S{background:rgba(0,229,160,.15);color:var(--accent);border:1px solid rgba(0,229,160,.3)}
     .tier-A{background:rgba(124,106,247,.15);color:#a89af5;border:1px solid rgba(124,106,247,.3)}
     .tier-B{background:rgba(247,165,106,.12);color:var(--accent3);border:1px solid rgba(247,165,106,.25)}
@@ -208,32 +135,24 @@
     .tier-D{background:rgba(248,113,113,.1);color:var(--danger);border:1px solid rgba(248,113,113,.2)}
 
     /* ER bar */
-    .er-bar{display:flex;align-items:center;gap:8px}
-    .er-bar-track{flex:1;height:6px;background:var(--surface2);border-radius:3px;min-width:60px}
-    .er-bar-fill{height:100%;border-radius:3px;transition:width .4s}
+    .er-wrap{display:flex;flex-direction:column;gap:4px;min-width:140px}
+    .er-main{display:flex;align-items:center;gap:8px}
+    .er-track{flex:1;height:5px;background:var(--surface2);border-radius:3px}
+    .er-fill{height:100%;border-radius:3px}
     .er-val{font-family:'Space Mono',monospace;font-size:.85em;font-weight:700;white-space:nowrap}
-
-    .mono{font-family:'Space Mono',monospace;font-weight:700;color:var(--text)}
-    .muted{color:var(--muted)}
+    .er-breakdown{font-size:.7em;color:var(--muted);font-family:'Space Mono',monospace}
 
     /* Inactive badge */
-    .inactive-badge{
-      display:inline-block;padding:2px 8px;background:rgba(248,113,113,.12);
-      color:var(--danger);border-radius:4px;font-size:.72em;font-weight:700;
-      border:1px solid rgba(248,113,113,.2);margin-left:6px;vertical-align:middle;
-    }
+    .ibadge{display:inline-block;padding:1px 7px;background:rgba(248,113,113,.1);color:var(--danger);border-radius:4px;font-size:.7em;font-weight:700;border:1px solid rgba(248,113,113,.18);margin-left:5px}
+    .cbadge{display:inline-block;padding:1px 7px;background:rgba(0,229,160,.1);color:var(--accent);border-radius:4px;font-size:.7em;font-weight:700;border:1px solid rgba(0,229,160,.18);margin-left:5px}
 
-    /* Spinner */
+    .mono{font-family:'Space Mono',monospace;font-weight:700}
+    .muted{color:var(--muted)}
+
     @keyframes spin{to{transform:rotate(360deg)}}
-    .spinner{
-      display:inline-block;width:14px;height:14px;border:2px solid currentColor;
-      border-right-color:transparent;border-radius:50%;animation:spin .6s linear infinite;
-    }
+    .spinner{display:inline-block;width:13px;height:13px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:spin .6s linear infinite}
 
-    @media(max-width:640px){
-      .header{flex-direction:column;gap:12px;text-align:center}
-      .btn-group{flex-direction:column}
-    }
+    @media(max-width:640px){.header{flex-direction:column;text-align:center}.btn-group{flex-direction:column}}
   </style>
 </head>
 <body>
@@ -241,31 +160,49 @@
 
   <!-- Header -->
   <div class="header">
-    <div class="header-left">
+    <div>
       <h1>VGV YouTube KOL Analyzer</h1>
-      <p>VGV 圈粉行銷科技 · 專業影響力行銷數據分析</p>
+      <p>VGV 圈粉行銷科技 · 影響力行銷數據分析平台</p>
     </div>
-    <div class="header-badge">v2.0 · ER FILTER</div>
+    <div class="header-badges">
+      <span class="badge badge-v">v3.0 · OPTIMIZED</span>
+      <span class="badge badge-units" id="headerUnits">API 0 / 10000 units</span>
+    </div>
   </div>
 
   <!-- API 設定 -->
   <div class="panel">
-    <div class="panel-title">API 金鑰設定</div>
+    <div class="pt">API 金鑰設定</div>
     <div class="api-row">
       <input type="password" id="apiKey" placeholder="YouTube Data API v3 金鑰" />
       <button class="btn btn-primary" onclick="saveApiKey()">儲存</button>
     </div>
     <div class="note">
       取得 API Key：<a href="https://console.cloud.google.com/" target="_blank">Google Cloud Console</a> → 啟用 YouTube Data API v3 → 建立憑證<br>
-      <small>※ API Key 只存在您的瀏覽器，不會上傳到任何伺服器</small>
+      <small>※ API Key 只存在您的瀏覽器，不會傳送到任何伺服器</small>
+    </div>
+    <!-- Units tracker -->
+    <div class="units-bar">
+      <span class="units-label">今日 API 用量</span>
+      <div class="units-track"><div class="units-fill" id="unitsFill" style="width:0%"></div></div>
+      <span class="units-num" id="unitsNum">0 / 10,000 units</span>
+      <button class="btn-reset-cache" onclick="resetUnits()">重置計數</button>
+      <button class="btn-reset-cache" onclick="clearCache()">清除快取</button>
+    </div>
+    <div class="note" style="margin-top:10px">
+      ⚡ <strong>API 省用量策略：</strong>
+      <code>channels.list</code> = 1 unit・
+      <code>videos.list(批次50)</code> = 1 unit・
+      <code>search.list</code> = 100 units（盡量避免）<br>
+      🗄️ 抓過的頻道會存入本地快取（localStorage），重複搜尋不重打 API
     </div>
   </div>
 
   <!-- 搜尋條件 -->
   <div class="panel">
-    <div class="panel-title">搜尋條件</div>
+    <div class="pt">搜尋條件</div>
     <div class="controls">
-      <div class="ctrl-group">
+      <div class="ctrl">
         <label>地區</label>
         <select id="region">
           <option value="TW">台灣 🇹🇼</option>
@@ -276,7 +213,7 @@
           <option value="US">美國 🇺🇸</option>
         </select>
       </div>
-      <div class="ctrl-group">
+      <div class="ctrl">
         <label>語言</label>
         <select id="lang">
           <option value="zh-Hant">繁體中文</option>
@@ -286,77 +223,85 @@
           <option value="ko">韓文</option>
         </select>
       </div>
-      <div class="ctrl-group">
+      <div class="ctrl">
         <label>品類關鍵字</label>
         <input type="text" id="category" placeholder="科技、美食、旅遊…" value="科技" />
       </div>
-      <div class="ctrl-group">
-        <label>搜尋數量</label>
+      <div class="ctrl">
+        <label>搜尋頻道數</label>
         <select id="maxResults">
-          <option value="20">20</option>
-          <option value="50" selected>50</option>
-          <option value="100">100</option>
+          <option value="20">20 個（省 API）</option>
+          <option value="50" selected>50 個（建議）</option>
         </select>
       </div>
     </div>
 
-    <!-- 活躍篩選 -->
-    <div class="panel-title" style="margin-top:4px">活躍度篩選條件</div>
-    <div class="filter-row">
-      <div class="ctrl-group">
-        <label>最後發片時間（篩選掉超過此期間未更新）</label>
+    <div class="pt" style="margin-top:4px">活躍度 & 互動率設定</div>
+    <div class="filter-box">
+      <div class="ctrl">
+        <label>最後發片篩選（超過此時間自動隱藏）</label>
         <select id="activeFilter">
-          <option value="90">3 個月內有發片</option>
-          <option value="180" selected>6 個月內有發片</option>
-          <option value="365">1 年內有發片</option>
+          <option value="90">3 個月內</option>
+          <option value="180" selected>6 個月內</option>
+          <option value="365">1 年內</option>
           <option value="0">不篩選</option>
         </select>
       </div>
-      <div class="ctrl-group">
-        <label>近期影片取樣數（用於計算互動率）</label>
+      <div class="ctrl">
+        <label>近期影片取樣（用於 ER 計算）</label>
         <select id="recentCount">
           <option value="5">最近 5 支</option>
           <option value="10" selected>最近 10 支</option>
           <option value="20">最近 20 支</option>
         </select>
       </div>
-      <div class="ctrl-group">
-        <label>僅顯示年內有發片頻道</label>
-        <div style="padding-top:8px">
-          <label class="filter-chip">
-            <input type="checkbox" id="hideInactive" checked />
-            <span>隱藏長期停更頻道<br><small>（依上方篩選天數自動過濾）</small></span>
-          </label>
+      <div class="ctrl">
+        <label>ER 計算方式說明</label>
+        <div style="padding:10px 0;font-size:.82em;color:var(--muted);line-height:1.7">
+          ER = (觀看 + 留言×<span id="cmtWeight">5</span> + 按讚×<span id="likeWeight">2</span>) / 訂閱數<br>
+          <span style="color:var(--accent)">有留言才能衝高排名 ✓</span>
         </div>
+      </div>
+      <div class="ctrl">
+        <label>快取時效</label>
+        <select id="cacheHours">
+          <option value="24" selected>24 小時（節省 API）</option>
+          <option value="6">6 小時（較新鮮）</option>
+          <option value="0">不使用快取</option>
+        </select>
       </div>
     </div>
 
     <div class="btn-group">
-      <button class="btn btn-primary" onclick="searchChannels()"><span id="searchSpinner" style="display:none" class="spinner"></span>🔍 開始分析</button>
+      <button class="btn btn-primary" onclick="searchChannels()">
+        <span id="searchSpinner" style="display:none" class="spinner"></span>
+        🔍 開始分析
+      </button>
       <button class="btn btn-ghost" onclick="exportCSV()">📥 匯出 CSV</button>
-      <button class="btn btn-danger" onclick="clearResults()">🗑️ 清除</button>
+      <button class="btn btn-danger" onclick="clearResults()">🗑️ 清除結果</button>
     </div>
 
-    <div id="status" style="display:none"></div>
+    <div class="status" id="status"></div>
   </div>
 
   <!-- 結果 -->
   <div id="resultsPanel" style="display:none">
     <div class="panel">
-      <div class="panel-title">分析結果</div>
+      <div class="pt">分析結果</div>
       <div class="summary-bar" id="summaryBar"></div>
       <div class="table-wrap">
         <table>
           <thead>
             <tr>
-              <th onclick="sortTable('rank')" id="th-rank"># <span class="sort-icon"></span></th>
-              <th onclick="sortTable('title')" id="th-title">頻道 <span class="sort-icon"></span></th>
-              <th onclick="sortTable('tier')" id="th-tier">評級 <span class="sort-icon"></span></th>
-              <th onclick="sortTable('subscriberCount')" id="th-subscriberCount">訂閱數 <span class="sort-icon"></span></th>
-              <th onclick="sortTable('engagementRate')" id="th-engagementRate" class="sorted">近期互動率↓ <span class="sort-icon">▼</span></th>
-              <th onclick="sortTable('avgRecentViews')" id="th-avgRecentViews">近期平均觀看 <span class="sort-icon"></span></th>
-              <th onclick="sortTable('daysSinceUpdate')" id="th-daysSinceUpdate">最後更新 <span class="sort-icon"></span></th>
-              <th onclick="sortTable('videoCount')" id="th-videoCount">總影片 <span class="sort-icon"></span></th>
+              <th onclick="st('rank')" id="th-rank">#</th>
+              <th onclick="st('title')" id="th-title">頻道</th>
+              <th onclick="st('tier')" id="th-tier">評級</th>
+              <th onclick="st('subscriberCount')" id="th-subscriberCount">訂閱數</th>
+              <th onclick="st('er')" id="th-er" class="sorted">近期 ER ↓</th>
+              <th onclick="st('avgViews')" id="th-avgViews">近期均觀看</th>
+              <th onclick="st('avgLikes')" id="th-avgLikes">近期均按讚</th>
+              <th onclick="st('avgComments')" id="th-avgComments">近期均留言</th>
+              <th onclick="st('daysSince')" id="th-daysSince">最後更新</th>
             </tr>
           </thead>
           <tbody id="resultsBody"></tbody>
@@ -366,87 +311,326 @@
   </div>
 
 </div>
-
 <script>
+// ═══════════════════════════════════════════════════
+//  CONSTANTS & STATE
+// ═══════════════════════════════════════════════════
+const CACHE_KEY = 'vgv_ch_cache_v3';
+const UNITS_KEY = 'vgv_units_today';
+const UNITS_DATE_KEY = 'vgv_units_date';
 const API_KEY_STORAGE = 'vgv_youtube_api_key';
-let allResults = [];  // all fetched (including inactive)
-let sortColumn = 'engagementRate';
+const DAILY_LIMIT = 10000;
+
+// ER weights
+const W_VIEW = 1;
+const W_LIKE = 2;
+const W_COMMENT = 5;
+
+let allResults = [];
+let sortColumn = 'er';
 let sortAsc = false;
 
-window.onload = () => {
-  const saved = localStorage.getItem(API_KEY_STORAGE);
-  if(saved) document.getElementById('apiKey').value = saved;
-};
+// ═══════════════════════════════════════════════════
+//  API UNIT TRACKER
+// ═══════════════════════════════════════════════════
+function todayStr(){ return new Date().toISOString().slice(0,10); }
 
-function saveApiKey(){
-  const k = document.getElementById('apiKey').value.trim();
-  if(!k){ showStatus('請輸入 API Key','error'); return; }
-  localStorage.setItem(API_KEY_STORAGE,k);
-  showStatus('✅ API Key 已儲存','success');
+function getUnits(){
+  if(localStorage.getItem(UNITS_DATE_KEY) !== todayStr()){
+    localStorage.setItem(UNITS_DATE_KEY, todayStr());
+    localStorage.setItem(UNITS_KEY, '0');
+  }
+  return parseInt(localStorage.getItem(UNITS_KEY)||'0');
 }
 
-function showStatus(msg, type='loading'){
-  const div = document.getElementById('status');
-  div.className = 'status '+type;
-  div.style.display = 'flex';
-  div.innerHTML = (type==='loading' ? '<span class="spinner"></span>' : '') + msg;
+function addUnits(n){
+  const u = getUnits() + n;
+  localStorage.setItem(UNITS_KEY, String(u));
+  updateUnitsUI(u);
+  return u;
 }
 
-function hideStatus(){ document.getElementById('status').style.display='none'; }
-
-function setSearching(on){
-  document.getElementById('searchSpinner').style.display = on ? 'inline-block' : 'none';
+function updateUnitsUI(u){
+  u = u ?? getUnits();
+  const pct = Math.min(u/DAILY_LIMIT*100,100);
+  const fill = document.getElementById('unitsFill');
+  const num = document.getElementById('unitsNum');
+  const header = document.getElementById('headerUnits');
+  if(!fill) return;
+  fill.style.width = pct+'%';
+  fill.className = 'units-fill'+(pct>=90?' danger':pct>=60?' warn':'');
+  const cls = pct>=90?' danger':pct>=60?' warn':'';
+  num.className = 'units-num'+cls;
+  num.textContent = u.toLocaleString()+' / 10,000 units';
+  header.textContent = `API ${u.toLocaleString()} / 10,000 units`;
 }
 
-// ─── Main search ────────────────────────────────────────────────────────────
+function resetUnits(){
+  localStorage.setItem(UNITS_KEY,'0');
+  localStorage.setItem(UNITS_DATE_KEY, todayStr());
+  updateUnitsUI(0);
+}
+
+// ═══════════════════════════════════════════════════
+//  LOCAL CACHE
+// ═══════════════════════════════════════════════════
+function getCache(){
+  try{ return JSON.parse(localStorage.getItem(CACHE_KEY)||'{}'); } catch{ return {}; }
+}
+function saveCache(obj){ localStorage.setItem(CACHE_KEY, JSON.stringify(obj)); }
+function clearCache(){
+  localStorage.removeItem(CACHE_KEY);
+  showStatus('✅ 快取已清除','success');
+}
+function isCacheValid(entry, hours){
+  if(!entry || hours===0) return false;
+  return (Date.now() - entry.ts) < hours*3600*1000;
+}
+
+// ═══════════════════════════════════════════════════
+//  API HELPERS  (all track units)
+// ═══════════════════════════════════════════════════
+async function apiGet(url, units=1, label=''){
+  const res = await fetch(url);
+  if(!res.ok){
+    const e = await res.json().catch(()=>({error:{message:res.status}}));
+    throw new Error((e.error?.message)||res.status);
+  }
+  addUnits(units);
+  return res.json();
+}
+
+// channels.list — 1 unit per call (up to 50 ids)
+async function fetchChannelStats(channelIds, apiKey){
+  const url = `https://www.googleapis.com/youtube/v3/channels?`+
+    `part=snippet,statistics&id=${channelIds.join(',')}&key=${apiKey}`;
+  return apiGet(url, 1, 'channels.list');
+}
+
+// search.list (channel search) — 100 units per call
+async function searchChannelIds(q, region, lang, maxResults, apiKey){
+  const url = `https://www.googleapis.com/youtube/v3/search?`+
+    `part=snippet&type=channel&regionCode=${region}&relevanceLanguage=${lang}`+
+    `&q=${encodeURIComponent(q)}&maxResults=${maxResults}&key=${apiKey}`;
+  return apiGet(url, 100, 'search.list');
+}
+
+// search.list (channel videos) — 100 units  ← we now avoid this!
+// Instead we use: channels.list contentDetails to get playlist, then playlistItems.list
+// playlistItems.list — 1 unit per call (up to 50 videos)
+async function fetchRecentVideoIds(uploadsPlaylistId, maxResults, apiKey){
+  const url = `https://www.googleapis.com/youtube/v3/playlistItems?`+
+    `part=snippet&playlistId=${uploadsPlaylistId}&maxResults=${maxResults}&key=${apiKey}`;
+  const data = await apiGet(url, 1, 'playlistItems.list');
+  return data.items?.map(i=>i.snippet?.resourceId?.videoId).filter(Boolean)||[];
+}
+
+// channels.list with contentDetails — 1 unit
+async function fetchUploadsPlaylist(channelIds, apiKey){
+  const url = `https://www.googleapis.com/youtube/v3/channels?`+
+    `part=contentDetails&id=${channelIds.join(',')}&key=${apiKey}`;
+  return apiGet(url, 1, 'channels.list(contentDetails)');
+}
+
+// videos.list — 1 unit per batch of up to 50
+async function fetchVideoStats(videoIds, apiKey){
+  // batch into chunks of 50
+  const chunks = [];
+  for(let i=0;i<videoIds.length;i+=50) chunks.push(videoIds.slice(i,i+50));
+  const results = [];
+  for(const chunk of chunks){
+    const url = `https://www.googleapis.com/youtube/v3/videos?`+
+      `part=statistics,snippet&id=${chunk.join(',')}&key=${apiKey}`;
+    const data = await apiGet(url, 1, 'videos.list');
+    if(data.items) results.push(...data.items);
+  }
+  return results;
+}
+
+// ═══════════════════════════════════════════════════
+//  ER CALCULATION
+// ═══════════════════════════════════════════════════
+function calcER(videos, subscriberCount){
+  if(!videos.length || subscriberCount===0) return { er:0, avgViews:0, avgLikes:0, avgComments:0 };
+  let tv=0, tl=0, tc=0;
+  for(const v of videos){
+    tv += parseInt(v.statistics?.viewCount||0);
+    tl += parseInt(v.statistics?.likeCount||0);
+    tc += parseInt(v.statistics?.commentCount||0);
+  }
+  const n = videos.length;
+  const avgViews   = Math.round(tv/n);
+  const avgLikes   = Math.round(tl/n);
+  const avgComments= Math.round(tc/n);
+  // Weighted ER: views×1 + likes×2 + comments×5
+  const weightedSum = (avgViews*W_VIEW + avgLikes*W_LIKE + avgComments*W_COMMENT);
+  const er = (weightedSum/subscriberCount)*100;
+  return { er, avgViews, avgLikes, avgComments };
+}
+
+// ═══════════════════════════════════════════════════
+//  SCORING & TIER
+// ═══════════════════════════════════════════════════
+function computeScore(subs, er, days){
+  let s = Math.min(subs/10000, 25); // max 25
+  s += Math.min(er*8, 55);          // ER: max 55 (主要指標)
+  s += days<=90?20:days<=180?12:days<=365?5:0; // recency: max 20
+  return Math.round(s);
+}
+function getTier(score, er){
+  if(score>=65 && er>=5) return 'S';
+  if(score>=50) return 'A';
+  if(score>=35) return 'B';
+  if(score>=20) return 'C';
+  return 'D';
+}
+
+// ═══════════════════════════════════════════════════
+//  MAIN SEARCH
+// ═══════════════════════════════════════════════════
 async function searchChannels(){
   const apiKey = localStorage.getItem(API_KEY_STORAGE);
   if(!apiKey){ showStatus('❌ 請先設定 API Key','error'); return; }
 
   const region = document.getElementById('region').value;
-  const lang = document.getElementById('lang').value;
-  const category = document.getElementById('category').value.trim();
-  const maxResults = document.getElementById('maxResults').value;
-  const recentCount = parseInt(document.getElementById('recentCount').value);
+  const lang   = document.getElementById('lang').value;
+  const q      = document.getElementById('category').value.trim();
+  const maxRes = parseInt(document.getElementById('maxResults').value);
+  const recent = parseInt(document.getElementById('recentCount').value);
+  const cacheHours = parseInt(document.getElementById('cacheHours').value);
 
   setSearching(true);
-  showStatus('🔍 正在搜尋頻道...','loading');
+  showStatus('🔍 搜尋頻道中... (使用 search.list: 100 units)','loading');
   allResults = [];
 
   try {
-    // Step 1: Search channels
-    const searchUrl = `https://www.googleapis.com/youtube/v3/search?` +
-      `part=snippet&type=channel&regionCode=${region}&relevanceLanguage=${lang}` +
-      `&q=${encodeURIComponent(category)}&maxResults=${maxResults}&key=${apiKey}`;
-    const searchRes = await fetch(searchUrl);
-    if(!searchRes.ok){ const e=await searchRes.json(); throw new Error(e.error?.message||searchRes.status); }
-    const searchData = await searchRes.json();
+    // Step 1: search channel IDs (100 units — unavoidable for keyword search)
+    const searchData = await searchChannelIds(q, region, lang, maxRes, apiKey);
     if(!searchData.items?.length){ showStatus('❌ 找不到頻道','error'); setSearching(false); return; }
 
-    showStatus(`✅ 找到 ${searchData.items.length} 個頻道，正在取得詳細資料...`,'loading');
+    const channelIds = [...new Set(searchData.items.map(i=>i.snippet.channelId))];
+    showStatus(`✅ 找到 ${channelIds.length} 個頻道，取得統計資料中... (1 unit)`, 'loading');
 
-    // Step 2: Channel statistics
-    const channelIds = searchData.items.map(i=>i.snippet.channelId).join(',');
-    const chUrl = `https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics,contentDetails&id=${channelIds}&key=${apiKey}`;
-    const chRes = await fetch(chUrl);
-    if(!chRes.ok) throw new Error('取得頻道資料失敗');
-    const chData = await chRes.json();
+    // Step 2: channels.list for stats (1 unit per 50, so 1 unit for ≤50)
+    const chData = await fetchChannelStats(channelIds, apiKey);
+    const channels = chData.items||[];
 
-    showStatus(`📊 正在抓取各頻道近期影片互動率（共 ${chData.items.length} 個）...`,'loading');
+    // Step 3: Get uploads playlist IDs (1 unit)
+    showStatus(`📂 取得各頻道上傳播放清單... (1 unit)`, 'loading');
+    const plData = await fetchUploadsPlaylist(channelIds, apiKey);
+    const playlistMap = {};
+    (plData.items||[]).forEach(ch=>{
+      playlistMap[ch.id] = ch.contentDetails?.relatedPlaylists?.uploads||null;
+    });
 
-    // Step 3: For each channel, get recent videos
-    const enriched = [];
-    for(const ch of chData.items){
-      try{
-        const info = await getChannelActivity(ch, apiKey, recentCount);
-        enriched.push(info);
-      } catch(e){
-        // fallback without recent video data
-        enriched.push(buildFallback(ch));
+    // Step 4: For each channel, get recent video IDs (1 unit each via playlistItems.list)
+    // Then batch fetch video stats (1 unit per 50 videos)
+    const cache = getCache();
+    const toProcess = [];
+
+    for(const ch of channels){
+      const pid = playlistMap[ch.id];
+      const cacheEntry = cache[ch.id];
+
+      if(isCacheValid(cacheEntry, cacheHours)){
+        // Use cached data — 0 API units
+        toProcess.push({ ch, fromCache: true, cached: cacheEntry.data });
+      } else {
+        toProcess.push({ ch, fromCache: false, playlistId: pid });
       }
     }
 
-    allResults = enriched;
+    const cachedCount = toProcess.filter(t=>t.fromCache).length;
+    const freshCount  = toProcess.filter(t=>!t.fromCache).length;
+
+    showStatus(
+      `📊 分析互動率中... ${cachedCount} 個頻道從快取讀取（0 units），`+
+      `${freshCount} 個需要打 API (各 1 unit for playlist + 視影片批次)`,
+      'loading'
+    );
+
+    // Collect all fresh video IDs in batches per channel
+    const freshItems = toProcess.filter(t=>!t.fromCache);
+    const channelVideoMap = {}; // channelId -> videoIds[]
+    const channelLastDate = {};
+
+    for(const item of freshItems){
+      if(!item.playlistId) continue;
+      try{
+        const vids = await fetchRecentVideoIds(item.playlistId, recent, apiKey); // 1 unit each
+        channelVideoMap[item.ch.id] = vids;
+        // Get publish dates from playlistItems already fetched — we'll get from video snippet below
+      } catch(e){ channelVideoMap[item.ch.id] = []; }
+    }
+
+    // Collect all video IDs that need stats (batch!)
+    const allVideoIds = Object.values(channelVideoMap).flat();
+    const videoStatsMap = {};
+
+    if(allVideoIds.length){
+      showStatus(`🎬 批次取得 ${allVideoIds.length} 支影片統計（最多 ${Math.ceil(allVideoIds.length/50)} units）`, 'loading');
+      const videoItems = await fetchVideoStats(allVideoIds, apiKey);
+      videoItems.forEach(v=>{
+        videoStatsMap[v.id] = v;
+      });
+    }
+
+    // Now build results
+    const newCache = { ...cache };
+
+    for(const item of toProcess){
+      const ch = item.ch;
+      const stats = ch.statistics;
+      const snippet = ch.snippet;
+      const subs = parseInt(stats.subscriberCount||0);
+      const totalViews = parseInt(stats.viewCount||0);
+      const videoCount = parseInt(stats.videoCount||1);
+
+      let erData, daysSince=9999, lastDate=null;
+
+      if(item.fromCache){
+        erData = { er: item.cached.er, avgViews: item.cached.avgViews, avgLikes: item.cached.avgLikes, avgComments: item.cached.avgComments };
+        daysSince = item.cached.daysSince;
+        lastDate = item.cached.lastDate ? new Date(item.cached.lastDate) : null;
+      } else {
+        const vids = (channelVideoMap[ch.id]||[]).map(id=>videoStatsMap[id]).filter(Boolean);
+        erData = calcER(vids, subs);
+
+        // Get last upload date from the most recent video snippet
+        if(vids.length){
+          const dates = vids.map(v=>new Date(v.snippet?.publishedAt||0)).sort((a,b)=>b-a);
+          lastDate = dates[0];
+          daysSince = Math.round((Date.now()-lastDate)/(86400*1000));
+        }
+        // Cache this channel's data
+        newCache[ch.id] = {
+          ts: Date.now(),
+          data: { er: erData.er, avgViews: erData.avgViews, avgLikes: erData.avgLikes, avgComments: erData.avgComments, daysSince, lastDate: lastDate?.toISOString() }
+        };
+      }
+
+      const score = computeScore(subs, erData.er, daysSince);
+      allResults.push({
+        channelId: ch.id,
+        title: snippet.title,
+        customUrl: snippet.customUrl||'',
+        thumbnail: snippet.thumbnails?.default?.url||'',
+        subscriberCount: subs,
+        totalViews,
+        videoCount,
+        er: erData.er,
+        avgViews: erData.avgViews,
+        avgLikes: erData.avgLikes,
+        avgComments: erData.avgComments,
+        daysSince,
+        lastDate,
+        score,
+        tier: getTier(score, erData.er),
+        fromCache: item.fromCache
+      });
+    }
+
+    saveCache(newCache);
     renderResults();
     setSearching(false);
 
@@ -457,230 +641,163 @@ async function searchChannels(){
   }
 }
 
-async function getChannelActivity(ch, apiKey, recentCount){
-  const stats = ch.statistics;
-  const snippet = ch.snippet;
-  const subscriberCount = parseInt(stats.subscriberCount||0);
-  const viewCount = parseInt(stats.viewCount||0);
-  const videoCount = parseInt(stats.videoCount||1);
-
-  // Get recent videos via search on this channel
-  const vUrl = `https://www.googleapis.com/youtube/v3/search?` +
-    `part=snippet&channelId=${ch.id}&order=date&maxResults=${recentCount}&type=video&key=${apiKey}`;
-  const vRes = await fetch(vUrl);
-  const vData = await vRes.json();
-
-  let daysSinceUpdate = 9999;
-  let avgRecentViews = 0;
-  let engagementRate = 0;
-  let lastVideoDate = null;
-
-  if(vData.items?.length){
-    const videoIds = vData.items.map(v=>v.id.videoId).filter(Boolean).join(',');
-    lastVideoDate = new Date(vData.items[0].snippet.publishedAt);
-    daysSinceUpdate = Math.round((Date.now()-lastVideoDate)/(1000*86400));
-
-    if(videoIds){
-      // Get video stats
-      const vsUrl = `https://www.googleapis.com/youtube/v3/videos?part=statistics&id=${videoIds}&key=${apiKey}`;
-      const vsRes = await fetch(vsUrl);
-      const vsData = await vsRes.json();
-      if(vsData.items?.length){
-        const totalViews = vsData.items.reduce((s,v)=>s+parseInt(v.statistics.viewCount||0),0);
-        avgRecentViews = Math.round(totalViews/vsData.items.length);
-        // ER = avg recent views / subscribers * 100
-        engagementRate = subscriberCount>0 ? (avgRecentViews/subscriberCount)*100 : 0;
-      }
-    }
-  }
-
-  const score = computeScore(subscriberCount, engagementRate, daysSinceUpdate);
-
-  return {
-    channelId:ch.id,
-    title:snippet.title,
-    customUrl:snippet.customUrl||'',
-    thumbnail:snippet.thumbnails?.default?.url||'',
-    subscriberCount,
-    viewCount,
-    videoCount,
-    avgRecentViews,
-    engagementRate,
-    daysSinceUpdate,
-    lastVideoDate,
-    score,
-    tier:getTier(score,engagementRate)
-  };
-}
-
-function buildFallback(ch){
-  const stats = ch.statistics;
-  const snippet = ch.snippet;
-  const subscriberCount = parseInt(stats.subscriberCount||0);
-  const viewCount = parseInt(stats.viewCount||0);
-  const videoCount = parseInt(stats.videoCount||1);
-  return {
-    channelId:ch.id,
-    title:snippet.title,
-    customUrl:snippet.customUrl||'',
-    thumbnail:snippet.thumbnails?.default?.url||'',
-    subscriberCount,viewCount,videoCount,
-    avgRecentViews:0,engagementRate:0,daysSinceUpdate:9999,
-    lastVideoDate:null,score:0,tier:'D'
-  };
-}
-
-function computeScore(subs, er, days){
-  let score = 0;
-  // Subscriber weight (max 30)
-  score += Math.min(subs/10000, 30);
-  // Engagement rate weight (max 50) — this is the priority metric
-  score += Math.min(er*10, 50);
-  // Recency penalty: if updated within 90 days full points, decay after
-  const recencyScore = days <= 90 ? 20 : days <= 180 ? 12 : days <= 365 ? 5 : 0;
-  score += recencyScore;
-  return Math.round(score);
-}
-
-function getTier(score, er){
-  if(score >= 60 && er >= 5) return 'S';
-  if(score >= 45) return 'A';
-  if(score >= 30) return 'B';
-  if(score >= 15) return 'C';
-  return 'D';
-}
-
-// ─── Render ──────────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════
+//  RENDER
+// ═══════════════════════════════════════════════════
 function renderResults(){
-  const activeFilterDays = parseInt(document.getElementById('activeFilter').value);
-  const hideInactive = document.getElementById('hideInactive').checked;
-
+  const filterDays = parseInt(document.getElementById('activeFilter').value)||0;
   let results = [...allResults];
+  let filtered = 0;
 
-  // Filter inactive if requested
-  if(hideInactive && activeFilterDays > 0){
-    results = results.filter(r => r.daysSinceUpdate <= activeFilterDays);
+  if(filterDays > 0){
+    const before = results.length;
+    results = results.filter(r=>r.daysSince<=filterDays);
+    filtered = before - results.length;
   }
 
-  const total = allResults.length;
-  const shown = results.length;
-  const filtered = total - shown;
-  const avgER = shown > 0 ? (results.reduce((s,r)=>s+r.engagementRate,0)/shown) : 0;
-  const topER = shown > 0 ? Math.max(...results.map(r=>r.engagementRate)) : 0;
+  const cachedCount = results.filter(r=>r.fromCache).length;
+  const avgER = results.length ? results.reduce((s,r)=>s+r.er,0)/results.length : 0;
+  const topER  = results.length ? Math.max(...results.map(r=>r.er)) : 0;
 
-  // Summary
   document.getElementById('summaryBar').innerHTML = `
-    <div class="stat-card">
-      <div class="label">符合條件頻道</div>
-      <div class="value">${shown}</div>
-    </div>
-    <div class="stat-card ${filtered>0?'warn':''}">
-      <div class="label">已篩除（停更）</div>
-      <div class="value ${filtered>0?'':'muted'}">${filtered}</div>
-    </div>
-    <div class="stat-card">
-      <div class="label">平均近期互動率</div>
-      <div class="value">${avgER.toFixed(2)}%</div>
-    </div>
-    <div class="stat-card">
-      <div class="label">最高互動率</div>
-      <div class="value">${topER.toFixed(2)}%</div>
-    </div>
+    <div class="stat-card"><div class="slabel">有效頻道</div><div class="sval">${results.length}</div></div>
+    <div class="stat-card swarn"><div class="slabel">已篩除（停更）</div><div class="sval">${filtered}</div></div>
+    <div class="stat-card"><div class="slabel">平均互動率 ER</div><div class="sval">${avgER.toFixed(2)}%</div></div>
+    <div class="stat-card"><div class="slabel">最高 ER</div><div class="sval">${topER.toFixed(2)}%</div></div>
+    <div class="stat-card"><div class="slabel">從快取讀取</div><div class="sval">${cachedCount}</div></div>
+    <div class="stat-card"><div class="slabel">今日 API 用量</div><div class="sval">${getUnits()}</div></div>
   `;
 
-  // Sort
   const sorted = results.sort((a,b)=>{
-    let av = a[sortColumn], bv = b[sortColumn];
-    if(typeof av === 'string') return sortAsc ? av.localeCompare(bv) : bv.localeCompare(av);
-    return sortAsc ? av - bv : bv - av;
+    const av=a[sortColumn], bv=b[sortColumn];
+    if(typeof av==='string') return sortAsc?av.localeCompare(bv):bv.localeCompare(av);
+    return sortAsc?av-bv:bv-av;
   });
+  sorted.forEach((r,i)=>r.rank=i+1);
 
-  // Rank after sort
-  sorted.forEach((r,i)=>r.rank = i+1);
+  document.getElementById('resultsBody').innerHTML = sorted.map(ch=>{
+    const daysText = ch.daysSince===9999?'未知':
+      ch.daysSince<30?`${ch.daysSince}天前`:
+      ch.daysSince<365?`${Math.round(ch.daysSince/30)}個月前`:
+      `${(ch.daysSince/365).toFixed(1)}年前`;
+    const freshCls = ch.daysSince<=90?'fresh':ch.daysSince<=365?'stale':'dead';
 
-  const tbody = document.getElementById('resultsBody');
-  tbody.innerHTML = sorted.map(ch => {
-    const daysText = ch.daysSinceUpdate===9999 ? '未知' :
-      ch.daysSinceUpdate < 30 ? `${ch.daysSinceUpdate} 天前` :
-      ch.daysSinceUpdate < 365 ? `${Math.round(ch.daysSinceUpdate/30)} 個月前` :
-      `${(ch.daysSinceUpdate/365).toFixed(1)} 年前`;
+    const erColor = ch.er>=10?'#00e5a0':ch.er>=3?'#7c6af7':ch.er>=1?'#f7a56a':'#f87171';
+    const erPct = Math.min(ch.er,25)/25*100;
 
-    const freshClass = ch.daysSinceUpdate<=90 ? 'fresh' : ch.daysSinceUpdate<=365 ? 'stale' : 'dead';
-    const erColor = ch.engagementRate>=10 ? '#00e5a0' : ch.engagementRate>=3 ? '#7c6af7' : ch.engagementRate>=1 ? '#f7a56a' : '#f87171';
-    const erPct = Math.min(ch.engagementRate, 30) / 30 * 100; // cap bar at 30%
-    const isInactive = ch.daysSinceUpdate > (parseInt(document.getElementById('activeFilter').value)||9999);
+    const isInactive = filterDays>0 && ch.daysSince>filterDays;
+    const cacheBadge = ch.fromCache?'<span class="cbadge">快取</span>':'';
+    const inactiveBadge = isInactive?'<span class="ibadge">停更</span>':'';
 
-    return `<tr class="${isInactive&&!document.getElementById('hideInactive').checked?'inactive-row':''}">
-      <td class="muted" style="font-family:'Space Mono',monospace">${ch.rank}</td>
+    return `<tr class="${isInactive?'inactive-row':''}">
+      <td class="muted mono" style="font-size:.82em">${ch.rank}</td>
       <td>
         <div class="ch-cell">
-          <img src="${ch.thumbnail}" class="ch-thumb" alt="" onerror="this.style.background='#2a2f3e';this.src=''"  />
+          <img src="${ch.thumbnail}" class="ch-thumb" alt="" onerror="this.src='';this.style.display='none'" />
           <div>
-            <div class="ch-name"><a href="https://www.youtube.com/channel/${ch.channelId}" target="_blank">${escHtml(ch.title)}</a>${isInactive?'<span class="inactive-badge">停更</span>':''}</div>
-            <div class="ch-id">${escHtml(ch.customUrl||ch.channelId)}</div>
-            <div class="last-updated ${freshClass}">⏱ ${daysText}更新</div>
+            <div class="ch-name">
+              <a href="https://www.youtube.com/channel/${ch.channelId}" target="_blank">${esc(ch.title)}</a>
+              ${inactiveBadge}${cacheBadge}
+            </div>
+            <div class="ch-sub">${esc(ch.customUrl||ch.channelId)}</div>
+            <div class="ch-date ${freshCls}">⏱ ${daysText}更新</div>
           </div>
         </div>
       </td>
       <td><span class="tier tier-${ch.tier}">${ch.tier}</span></td>
-      <td class="mono">${fmtNum(ch.subscriberCount)}</td>
+      <td class="mono">${fmt(ch.subscriberCount)}</td>
       <td>
-        <div class="er-bar">
-          <div class="er-bar-track"><div class="er-bar-fill" style="width:${erPct.toFixed(1)}%;background:${erColor}"></div></div>
-          <span class="er-val" style="color:${erColor}">${ch.engagementRate.toFixed(2)}%</span>
+        <div class="er-wrap">
+          <div class="er-main">
+            <div class="er-track"><div class="er-fill" style="width:${erPct.toFixed(1)}%;background:${erColor}"></div></div>
+            <span class="er-val" style="color:${erColor}">${ch.er.toFixed(2)}%</span>
+          </div>
+          <div class="er-breakdown">V:${fmt(ch.avgViews)} L:${fmt(ch.avgLikes)} C:${fmt(ch.avgComments)}</div>
         </div>
       </td>
-      <td class="mono">${fmtNum(ch.avgRecentViews)}</td>
-      <td class="last-updated ${freshClass}" style="font-family:'Space Mono',monospace;font-size:.85em">${daysText}</td>
-      <td class="muted">${fmtNum(ch.videoCount)}</td>
+      <td class="mono">${fmt(ch.avgViews)}</td>
+      <td class="mono">${fmt(ch.avgLikes)}</td>
+      <td class="mono" style="color:${ch.avgComments>0?'#7c6af7':'var(--muted)'}">${fmt(ch.avgComments)}</td>
+      <td class="mono ${freshCls}" style="font-size:.82em">${daysText}</td>
     </tr>`;
   }).join('');
 
-  document.getElementById('resultsPanel').style.display = 'block';
-  showStatus(`✅ 顯示 ${shown} 個有效頻道（依近期互動率排序），已篩除 ${filtered} 個停更頻道`,'success');
+  document.getElementById('resultsPanel').style.display='block';
+  showStatus(
+    `✅ 顯示 ${results.length} 個頻道（依 ER 排序），篩除 ${filtered} 個停更 · `+
+    `本次 API: ${getUnits()} units`,
+    'success'
+  );
 }
 
-function sortTable(col){
-  if(sortColumn===col){ sortAsc=!sortAsc; } else { sortColumn=col; sortAsc=false; }
-  // Update header styles
-  document.querySelectorAll('thead th').forEach(th=>{th.classList.remove('sorted');th.innerHTML=th.innerHTML.replace(/ [▲▼]/g,'')});
+// ═══════════════════════════════════════════════════
+//  UI HELPERS
+// ═══════════════════════════════════════════════════
+function st(col){
+  sortAsc = sortColumn===col ? !sortAsc : false;
+  sortColumn = col;
+  document.querySelectorAll('thead th').forEach(th=>th.classList.remove('sorted'));
   const th = document.getElementById('th-'+col);
-  if(th){th.classList.add('sorted');th.innerHTML+=sortAsc?' ▲':' ▼';}
+  if(th) th.classList.add('sorted');
   renderResults();
 }
 
-function fmtNum(n){
+function fmt(n){
+  if(n===0) return '-';
   if(n>=1000000) return (n/1000000).toFixed(1)+'M';
   if(n>=1000) return (n/1000).toFixed(1)+'K';
-  return n===0?'-':n.toString();
+  return n.toString();
 }
 
-function escHtml(s){
+function esc(s){
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-function exportCSV(){
-  if(!allResults.length){ showStatus('❌ 沒有資料可匯出','error'); return; }
-  const h = ['排名','評級','頻道名稱','頻道ID','訂閱數','近期互動率%','近期平均觀看','最後更新（天前）','總影片數','綜合分數'];
-  const rows = allResults.map((ch,i)=>[
-    i+1,ch.tier,`"${ch.title.replace(/"/g,'""')}"`,ch.channelId,
-    ch.subscriberCount,ch.engagementRate.toFixed(3),ch.avgRecentViews,
-    ch.daysSinceUpdate===9999?'未知':ch.daysSinceUpdate,ch.videoCount,ch.score
-  ]);
-  const csv = [h,...rows].map(r=>r.join(',')).join('\n');
-  const blob = new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = `VGV_KOL分析_${new Date().toISOString().slice(0,10)}.csv`;
-  a.click();
-  showStatus('✅ CSV 已匯出','success');
+function showStatus(msg, type='loading'){
+  const d = document.getElementById('status');
+  d.className = 'status '+type;
+  d.innerHTML = (type==='loading'?'<span class="spinner"></span>':'')+msg;
+}
+
+function setSearching(on){
+  document.getElementById('searchSpinner').style.display = on?'inline-block':'none';
+}
+
+function saveApiKey(){
+  const k = document.getElementById('apiKey').value.trim();
+  if(!k){ showStatus('請輸入 API Key','error'); return; }
+  localStorage.setItem(API_KEY_STORAGE,k);
+  showStatus('✅ API Key 已儲存','success');
 }
 
 function clearResults(){
   allResults=[];
   document.getElementById('resultsPanel').style.display='none';
-  hideStatus();
+  document.getElementById('status').style.display='none';
 }
+
+function exportCSV(){
+  if(!allResults.length){ showStatus('❌ 沒有資料','error'); return; }
+  const h=['排名','評級','頻道名稱','頻道ID','訂閱數','互動率ER%','均觀看','均按讚','均留言','最後更新(天前)','總影片數','快取'];
+  const rows = allResults.map((ch,i)=>[
+    i+1,ch.tier,`"${ch.title.replace(/"/g,'""')}"`,ch.channelId,
+    ch.subscriberCount,ch.er.toFixed(4),ch.avgViews,ch.avgLikes,ch.avgComments,
+    ch.daysSince===9999?'未知':ch.daysSince,ch.videoCount,ch.fromCache?'是':'否'
+  ]);
+  const csv=[h,...rows].map(r=>r.join(',')).join('\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'}));
+  a.download=`VGV_KOL_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  showStatus('✅ CSV 匯出完成','success');
+}
+
+// Init
+window.onload=()=>{
+  const saved=localStorage.getItem(API_KEY_STORAGE);
+  if(saved) document.getElementById('apiKey').value=saved;
+  updateUnitsUI();
+};
 </script>
 </body>
 </html>
