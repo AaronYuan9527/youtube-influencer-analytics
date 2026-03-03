@@ -1,693 +1,965 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>VGV YouTube 影響力分析工具 v3</title>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
-  <style>
-    :root{
-      --bg:#0d0f14;--surface:#161921;--surface2:#1e2230;--border:#2a2f3e;
-      --accent:#00e5a0;--accent2:#7c6af7;--accent3:#f7a56a;
-      --text:#e8eaf0;--muted:#6b7280;--danger:#f87171;--warn:#fbbf24;
-    }
-    *{margin:0;padding:0;box-sizing:border-box}
-    body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
-    body::before{
-      content:'';position:fixed;inset:0;z-index:0;
-      background-image:radial-gradient(circle,#2a2f3e 1px,transparent 1px);
-      background-size:28px 28px;opacity:.4;pointer-events:none;
-    }
-    .container{max-width:1380px;margin:0 auto;padding:24px 20px;position:relative;z-index:1}
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>VGV KOL Analyzer</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#080b10;
+  --s1:#0e1318;
+  --s2:#141a22;
+  --s3:#1c2535;
+  --border:#1f2d3d;
+  --border2:#2a3a4f;
+  --g1:#00d4a0;
+  --g2:#00b8e6;
+  --g3:#6366f1;
+  --warn:#f59e0b;
+  --danger:#ef4444;
+  --text:#e2e8f0;
+  --text2:#94a3b8;
+  --text3:#4a5568;
+  --white:#fff;
+  --radius:12px;
+  --mono:'DM Mono',monospace;
+  --sans:'DM Sans',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
 
-    /* Header */
-    .header{
-      display:flex;align-items:center;justify-content:space-between;gap:16px;
-      background:var(--surface);border:1px solid var(--border);
-      border-radius:16px;padding:22px 30px;margin-bottom:18px;overflow:hidden;position:relative;
-    }
-    .header::after{
-      content:'';position:absolute;top:-80px;right:-80px;width:260px;height:260px;border-radius:50%;
-      background:radial-gradient(circle,rgba(0,229,160,.12),transparent 70%);pointer-events:none;
-    }
-    .header h1{font-family:'Space Mono',monospace;font-size:1.5em;color:var(--accent);letter-spacing:-.5px}
-    .header p{color:var(--muted);font-size:.85em;margin-top:4px}
-    .header-badges{display:flex;gap:8px;flex-shrink:0;flex-wrap:wrap}
-    .badge{padding:5px 14px;border-radius:999px;font-size:.75em;font-weight:700;font-family:'Space Mono',monospace;white-space:nowrap}
-    .badge-v{background:linear-gradient(135deg,var(--accent2),var(--accent));color:#fff}
-    .badge-units{background:var(--surface2);color:var(--accent);border:1px solid var(--border)}
+/* animated gradient orbs */
+body::before,body::after{
+  content:'';position:fixed;border-radius:50%;pointer-events:none;z-index:0;
+  filter:blur(80px);opacity:.12;
+}
+body::before{width:600px;height:600px;background:radial-gradient(circle,var(--g1),transparent);top:-200px;left:-200px;animation:orb1 20s ease-in-out infinite alternate}
+body::after{width:500px;height:500px;background:radial-gradient(circle,var(--g3),transparent);bottom:-150px;right:-150px;animation:orb2 15s ease-in-out infinite alternate}
+@keyframes orb1{to{transform:translate(100px,100px)}}
+@keyframes orb2{to{transform:translate(-80px,-80px)}}
 
-    /* Panel */
-    .panel{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:22px;margin-bottom:16px;}
-    .pt{font-family:'Space Mono',monospace;font-size:.78em;color:var(--accent);text-transform:uppercase;letter-spacing:2px;margin-bottom:14px;display:flex;align-items:center;gap:8px}
-    .pt::before{content:'';display:block;width:3px;height:14px;background:var(--accent);border-radius:2px}
+.wrap{max-width:1440px;margin:0 auto;padding:0 24px 60px;position:relative;z-index:1}
 
-    /* API row */
-    .api-row{display:flex;gap:10px}
-    .api-row input{flex:1;padding:11px 14px;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:10px;font-size:14px;font-family:'Space Mono',monospace;transition:.2s}
-    .api-row input:focus{outline:0;border-color:var(--accent)}
-    .note{background:rgba(251,191,36,.07);border-left:3px solid var(--warn);padding:10px 14px;border-radius:8px;margin-top:10px;font-size:.82em;color:#d97706;line-height:1.7}
-    .note a{color:var(--accent);text-decoration:none}
-    .note code{background:rgba(0,229,160,.1);color:var(--accent);padding:1px 5px;border-radius:4px;font-family:'Space Mono',monospace}
+/* ── HEADER ─────────────────────────────── */
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:20px 0 16px;border-bottom:1px solid var(--border);margin-bottom:28px;
+  position:sticky;top:0;background:rgba(8,11,16,.85);backdrop-filter:blur(16px);z-index:100;
+}
+.logo{display:flex;align-items:center;gap:12px}
+.logo-mark{
+  width:36px;height:36px;border-radius:10px;
+  background:linear-gradient(135deg,var(--g1),var(--g2));
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-weight:500;font-size:13px;color:#000;letter-spacing:-.5px;
+}
+.logo-text{font-family:var(--mono);font-size:15px;color:var(--text);letter-spacing:-.3px}
+.logo-sub{font-size:11px;color:var(--text2);margin-top:1px}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.units-pill{
+  display:flex;align-items:center;gap:8px;
+  background:var(--s2);border:1px solid var(--border);border-radius:999px;
+  padding:6px 14px;font-family:var(--mono);font-size:11px;
+}
+.units-dot{width:7px;height:7px;border-radius:50%;background:var(--g1);flex-shrink:0}
+.units-dot.warn{background:var(--warn)}
+.units-dot.danger{background:var(--danger);animation:pulse .8s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.units-val{color:var(--g1)}
+.units-val.warn{color:var(--warn)}
+.units-val.danger{color:var(--danger)}
 
-    /* Units tracker */
-    .units-bar{
-      display:flex;align-items:center;gap:12px;margin-top:14px;
-      padding:12px 16px;background:var(--surface2);border-radius:10px;border:1px solid var(--border);
-    }
-    .units-label{font-size:.8em;color:var(--muted);font-family:'Space Mono',monospace;flex-shrink:0}
-    .units-track{flex:1;height:8px;background:var(--border);border-radius:4px;overflow:hidden}
-    .units-fill{height:100%;background:var(--accent);border-radius:4px;transition:width .4s}
-    .units-fill.warn{background:var(--warn)}
-    .units-fill.danger{background:var(--danger)}
-    .units-num{font-family:'Space Mono',monospace;font-size:.85em;font-weight:700;color:var(--accent);white-space:nowrap}
-    .units-num.warn{color:var(--warn)}
-    .units-num.danger{color:var(--danger)}
-    .btn-reset-cache{padding:5px 12px;border-radius:7px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:.78em;cursor:pointer;transition:.2s}
-    .btn-reset-cache:hover{border-color:var(--danger);color:var(--danger)}
+/* ── API KEY PANEL ──────────────────────── */
+.apibar{
+  background:linear-gradient(135deg,rgba(0,212,160,.06),rgba(99,102,241,.06));
+  border:1px solid rgba(0,212,160,.2);border-radius:var(--radius);
+  padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+}
+.apibar-icon{color:var(--g1);font-size:18px;flex-shrink:0}
+.apibar-label{font-size:12px;color:var(--text2);flex-shrink:0;font-weight:500}
+.apibar input{
+  flex:1;min-width:260px;background:var(--s2);border:1px solid var(--border2);
+  color:var(--text);border-radius:8px;padding:9px 14px;font-size:13px;font-family:var(--mono);
+  transition:.2s;
+}
+.apibar input:focus{outline:0;border-color:var(--g1);box-shadow:0 0 0 3px rgba(0,212,160,.1)}
+.apibar-btns{display:flex;gap:8px}
+.btn{
+  padding:9px 18px;border:0;border-radius:8px;font-size:13px;font-weight:600;
+  cursor:pointer;transition:all .18s;font-family:var(--sans);display:inline-flex;align-items:center;gap:6px;
+  white-space:nowrap;
+}
+.btn-primary{background:linear-gradient(135deg,var(--g1),var(--g2));color:#000}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 4px 20px rgba(0,212,160,.3)}
+.btn-primary:active{transform:none}
+.btn-ghost{background:var(--s3);color:var(--text2);border:1px solid var(--border2)}
+.btn-ghost:hover{border-color:var(--g1);color:var(--g1)}
+.btn-sm{padding:7px 14px;font-size:12px}
+.btn-danger{background:rgba(239,68,68,.1);color:var(--danger);border:1px solid rgba(239,68,68,.2)}
+.btn-danger:hover{background:rgba(239,68,68,.2)}
 
-    /* Controls */
-    .controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:14px}
-    .ctrl label{display:block;font-size:.75em;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px;font-weight:700}
-    .ctrl select,.ctrl input[type=text]{width:100%;padding:10px 12px;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:10px;font-size:.9em;font-family:inherit;transition:.2s}
-    .ctrl select:focus,.ctrl input:focus{outline:0;border-color:var(--accent)}
+/* ── MAIN LAYOUT ────────────────────────── */
+.layout{display:grid;grid-template-columns:320px 1fr;gap:20px;align-items:start}
+@media(max-width:960px){.layout{grid-template-columns:1fr}}
 
-    /* Filter panel */
-    .filter-box{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;padding:16px;background:var(--surface2);border-radius:12px;border:1px solid var(--border);margin-bottom:16px}
+/* ── SIDEBAR (Search Panel) ─────────────── */
+.sidebar{position:sticky;top:80px}
+.card{background:var(--s1);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.card-head{
+  padding:14px 18px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.card-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--text2)}
+.card-body{padding:16px 18px}
 
-    /* Buttons */
-    .btn-group{display:flex;gap:10px;flex-wrap:wrap}
-    .btn{padding:10px 20px;border:0;border-radius:10px;font-weight:700;cursor:pointer;transition:all .2s;font-size:.88em;font-family:inherit;display:inline-flex;align-items:center;gap:6px}
-    .btn-primary{background:var(--accent);color:#0d0f14}
-    .btn-primary:hover{background:#00c98e;transform:translateY(-1px)}
-    .btn-ghost{background:var(--surface2);color:var(--text);border:1px solid var(--border)}
-    .btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
-    .btn-danger{background:rgba(248,113,113,.1);color:var(--danger);border:1px solid rgba(248,113,113,.2)}
-    .btn-danger:hover{background:rgba(248,113,113,.2)}
+/* Region selector with flags */
+.region-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
+.region-btn{
+  display:flex;align-items:center;gap:8px;padding:10px 12px;
+  background:var(--s2);border:1px solid var(--border);border-radius:10px;
+  cursor:pointer;transition:all .15s;font-size:13px;color:var(--text2);font-weight:500;
+}
+.region-btn:hover{border-color:var(--border2);color:var(--text)}
+.region-btn.active{
+  background:rgba(0,212,160,.08);border-color:var(--g1);color:var(--g1);
+}
+.region-flag{font-size:18px;line-height:1}
+.region-name{font-size:12px}
+.region-hint{font-size:10px;color:var(--text3);margin-top:1px;font-family:var(--mono)}
 
-    /* Status */
-    .status{margin:12px 0;padding:11px 16px;border-radius:10px;font-size:.88em;font-weight:600;display:none;align-items:center;gap:8px;line-height:1.5}
-    .status.loading{background:rgba(124,106,247,.12);color:#a89af5;border:1px solid rgba(124,106,247,.2);display:flex}
-    .status.success{background:rgba(0,229,160,.08);color:var(--accent);border:1px solid rgba(0,229,160,.15);display:flex}
-    .status.error{background:rgba(248,113,113,.08);color:var(--danger);border:1px solid rgba(248,113,113,.15);display:flex}
+/* Category selector */
+.cat-section{margin-bottom:14px}
+.cat-section-label{
+  font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;
+  color:var(--text3);margin-bottom:8px;
+}
+.cat-tags{display:flex;flex-wrap:wrap;gap:6px}
+.cat-tag{
+  padding:5px 12px;border-radius:999px;font-size:12px;font-weight:500;
+  background:var(--s2);border:1px solid var(--border);color:var(--text2);
+  cursor:pointer;transition:all .15s;user-select:none;
+}
+.cat-tag:hover{border-color:var(--border2);color:var(--text)}
+.cat-tag.active{
+  background:rgba(99,102,241,.15);border-color:var(--g3);color:#a5b4fc;
+}
+.cat-tag.active-primary{
+  background:rgba(0,212,160,.12);border-color:var(--g1);color:var(--g1);
+}
 
-    /* Summary */
-    .summary-bar{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:16px}
-    .stat-card{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px}
-    .stat-card .slabel{font-size:.72em;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
-    .stat-card .sval{font-family:'Space Mono',monospace;font-size:1.4em;font-weight:700;color:var(--accent)}
-    .stat-card.swarn .sval{color:var(--warn)}
+/* selected display */
+.selected-cats{
+  margin-top:10px;padding:10px 12px;background:var(--s2);border-radius:8px;
+  border:1px solid var(--border);min-height:40px;
+  font-size:12px;color:var(--text2);
+}
+.selected-cats.empty{color:var(--text3);font-style:italic}
+.sel-chip{
+  display:inline-flex;align-items:center;gap:4px;
+  background:rgba(0,212,160,.1);border:1px solid rgba(0,212,160,.25);
+  border-radius:999px;padding:3px 10px 3px 10px;margin:2px;
+  font-size:11px;color:var(--g1);font-weight:500;
+}
+.sel-chip button{background:none;border:0;color:var(--g1);cursor:pointer;padding:0 0 0 2px;font-size:13px;line-height:1;opacity:.7}
+.sel-chip button:hover{opacity:1}
 
-    /* Cache info */
-    .cache-tag{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;background:rgba(0,229,160,.1);border:1px solid rgba(0,229,160,.2);border-radius:6px;font-size:.72em;color:var(--accent);font-family:'Space Mono',monospace;margin-left:8px;vertical-align:middle}
-    .cache-tag.stale{background:rgba(251,191,36,.1);border-color:rgba(251,191,36,.2);color:var(--warn)}
+/* Custom keyword input */
+.kw-row{display:flex;gap:8px;margin-top:8px}
+.kw-row input{
+  flex:1;background:var(--s2);border:1px solid var(--border);color:var(--text);
+  border-radius:8px;padding:8px 12px;font-size:13px;transition:.2s;font-family:var(--sans);
+}
+.kw-row input:focus{outline:0;border-color:var(--g3);box-shadow:0 0 0 3px rgba(99,102,241,.1)}
+.kw-row input::placeholder{color:var(--text3)}
 
-    /* Table */
-    .table-wrap{overflow-x:auto;border-radius:12px;border:1px solid var(--border)}
-    table{width:100%;border-collapse:collapse}
-    thead th{
-      background:var(--surface2);padding:11px 12px;text-align:left;font-size:.75em;
-      color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;font-weight:700;
-      cursor:pointer;user-select:none;white-space:nowrap;border-bottom:1px solid var(--border);transition:.15s;
-    }
-    thead th:hover,thead th.sorted{color:var(--accent)}
-    tbody td{padding:11px 12px;border-bottom:1px solid rgba(42,47,62,.5);font-size:.88em;vertical-align:middle}
-    tbody tr:last-child td{border-bottom:0}
-    tbody tr:hover td{background:rgba(255,255,255,.02)}
-    .inactive-row td{opacity:.4}
+/* Form fields */
+.field{margin-bottom:14px}
+.field-label{font-size:11px;font-weight:600;color:var(--text2);margin-bottom:6px;display:block;text-transform:uppercase;letter-spacing:1px}
+.field select,.field input{
+  width:100%;background:var(--s2);border:1px solid var(--border);color:var(--text);
+  border-radius:8px;padding:9px 12px;font-size:13px;transition:.2s;font-family:var(--sans);
+  appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2394a3b8' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;
+}
+.field select:focus,.field input:focus{outline:0;border-color:var(--g1)}
+.field-hint{font-size:10px;color:var(--text3);margin-top:4px;line-height:1.5}
 
-    /* Channel cell */
-    .ch-cell{display:flex;align-items:center;gap:11px}
-    .ch-thumb{width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid var(--border);background:var(--surface2)}
-    .ch-name{font-weight:700;color:var(--text);font-size:.93em}
-    .ch-name a{color:inherit;text-decoration:none}
-    .ch-name a:hover{color:var(--accent)}
-    .ch-sub{font-size:.75em;color:var(--muted);margin-top:2px;font-family:'Space Mono',monospace}
-    .ch-date{font-size:.73em;margin-top:3px}
-    .fresh{color:var(--accent)}.stale{color:var(--warn)}.dead{color:var(--danger)}
+.divider{height:1px;background:var(--border);margin:16px 0}
 
-    /* Tier */
-    .tier{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:7px;font-weight:900;font-family:'Space Mono',monospace;font-size:.88em}
-    .tier-S{background:rgba(0,229,160,.15);color:var(--accent);border:1px solid rgba(0,229,160,.3)}
-    .tier-A{background:rgba(124,106,247,.15);color:#a89af5;border:1px solid rgba(124,106,247,.3)}
-    .tier-B{background:rgba(247,165,106,.12);color:var(--accent3);border:1px solid rgba(247,165,106,.25)}
-    .tier-C{background:rgba(251,191,36,.1);color:var(--warn);border:1px solid rgba(251,191,36,.2)}
-    .tier-D{background:rgba(248,113,113,.1);color:var(--danger);border:1px solid rgba(248,113,113,.2)}
+/* ER formula display */
+.er-formula{
+  background:var(--s2);border-radius:8px;padding:12px;border:1px solid var(--border);
+  font-family:var(--mono);font-size:11px;line-height:1.8;
+}
+.er-formula .formula-line{color:var(--text2)}
+.er-formula .hl{color:var(--g1)}
+.er-formula .hl2{color:#a5b4fc}
+.er-formula .hl3{color:var(--warn)}
 
-    /* ER bar */
-    .er-wrap{display:flex;flex-direction:column;gap:4px;min-width:140px}
-    .er-main{display:flex;align-items:center;gap:8px}
-    .er-track{flex:1;height:5px;background:var(--surface2);border-radius:3px}
-    .er-fill{height:100%;border-radius:3px}
-    .er-val{font-family:'Space Mono',monospace;font-size:.85em;font-weight:700;white-space:nowrap}
-    .er-breakdown{font-size:.7em;color:var(--muted);font-family:'Space Mono',monospace}
+/* Run button */
+.run-btn{
+  width:100%;padding:14px;border:0;border-radius:10px;
+  background:linear-gradient(135deg,var(--g1),var(--g2));
+  color:#000;font-size:14px;font-weight:700;cursor:pointer;
+  transition:all .2s;font-family:var(--sans);margin-top:4px;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  position:relative;overflow:hidden;
+}
+.run-btn::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,var(--g2),var(--g1));
+  opacity:0;transition:.2s;
+}
+.run-btn:hover::before{opacity:1}
+.run-btn:hover{box-shadow:0 6px 24px rgba(0,212,160,.35);transform:translateY(-1px)}
+.run-btn:active{transform:none}
+.run-btn span{position:relative}
+.run-btn:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
 
-    /* Inactive badge */
-    .ibadge{display:inline-block;padding:1px 7px;background:rgba(248,113,113,.1);color:var(--danger);border-radius:4px;font-size:.7em;font-weight:700;border:1px solid rgba(248,113,113,.18);margin-left:5px}
-    .cbadge{display:inline-block;padding:1px 7px;background:rgba(0,229,160,.1);color:var(--accent);border-radius:4px;font-size:.7em;font-weight:700;border:1px solid rgba(0,229,160,.18);margin-left:5px}
+/* ── RESULTS AREA ───────────────────────── */
+.results-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px}
+.results-title{font-size:13px;font-weight:600;color:var(--text2);display:flex;align-items:center;gap:8px}
+.results-count{font-family:var(--mono);color:var(--g1);font-size:16px;font-weight:500}
 
-    .mono{font-family:'Space Mono',monospace;font-weight:700}
-    .muted{color:var(--muted)}
+/* Stats row */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-bottom:16px}
+.stat{
+  background:var(--s1);border:1px solid var(--border);border-radius:10px;
+  padding:12px 14px;
+}
+.stat-l{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;font-weight:600}
+.stat-v{font-family:var(--mono);font-size:18px;font-weight:500;color:var(--text)}
+.stat-v.accent{color:var(--g1)}
+.stat-v.warn{color:var(--warn)}
+.stat-v.purple{color:#a5b4fc}
 
-    @keyframes spin{to{transform:rotate(360deg)}}
-    .spinner{display:inline-block;width:13px;height:13px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:spin .6s linear infinite}
+/* Status bar */
+.status-bar{
+  padding:12px 16px;border-radius:10px;font-size:12px;font-weight:500;
+  margin-bottom:16px;display:none;align-items:center;gap:8px;line-height:1.5;
+}
+.status-bar.loading{background:rgba(99,102,241,.08);color:#a5b4fc;border:1px solid rgba(99,102,241,.15);display:flex}
+.status-bar.success{background:rgba(0,212,160,.06);color:var(--g1);border:1px solid rgba(0,212,160,.12);display:flex}
+.status-bar.error{background:rgba(239,68,68,.06);color:var(--danger);border:1px solid rgba(239,68,68,.12);display:flex}
+.progress-text{flex:1}
 
-    @media(max-width:640px){.header{flex-direction:column;text-align:center}.btn-group{flex-direction:column}}
-  </style>
+/* Table */
+.table-card{background:var(--s1);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.table-scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:860px}
+thead th{
+  background:var(--s2);padding:11px 14px;text-align:left;
+  font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1.5px;font-weight:700;
+  cursor:pointer;user-select:none;white-space:nowrap;border-bottom:1px solid var(--border);
+  transition:.15s;
+}
+thead th:hover,thead th.sorted{color:var(--g1)}
+thead th .si{display:inline-block;margin-left:4px;opacity:.5;font-style:normal}
+thead th.sorted .si{opacity:1;color:var(--g1)}
+tbody td{
+  padding:12px 14px;border-bottom:1px solid rgba(31,45,61,.6);
+  vertical-align:middle;
+}
+tbody tr:last-child td{border-bottom:0}
+tbody tr:hover td{background:rgba(255,255,255,.018)}
+.inactive-row td{opacity:.35}
+
+/* Channel cell */
+.ch-cell{display:flex;align-items:center;gap:12px;min-width:200px}
+.ch-avatar{position:relative;flex-shrink:0}
+.ch-img{width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid var(--border2);background:var(--s3)}
+.ch-online{position:absolute;bottom:1px;right:1px;width:10px;height:10px;border-radius:50%;border:2px solid var(--s1)}
+.ch-online.fresh{background:var(--g1)}
+.ch-online.stale{background:var(--warn)}
+.ch-online.dead{background:var(--danger)}
+.ch-info .ch-name{font-size:13px;font-weight:600;color:var(--text);line-height:1.3}
+.ch-info .ch-name a{color:inherit;text-decoration:none;transition:.15s}
+.ch-info .ch-name a:hover{color:var(--g1)}
+.ch-info .ch-handle{font-size:11px;color:var(--text3);font-family:var(--mono);margin-top:2px}
+.ch-info .ch-date{font-size:10px;margin-top:3px;display:flex;align-items:center;gap:4px}
+.ch-date.fresh{color:var(--g1)}
+.ch-date.stale{color:var(--warn)}
+.ch-date.dead{color:var(--danger)}
+
+/* Tier badge */
+.tier{
+  width:28px;height:28px;border-radius:7px;display:inline-flex;
+  align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;font-weight:500;
+  flex-shrink:0;
+}
+.tier-S{background:rgba(0,212,160,.12);color:var(--g1);border:1px solid rgba(0,212,160,.25)}
+.tier-A{background:rgba(99,102,241,.12);color:#a5b4fc;border:1px solid rgba(99,102,241,.25)}
+.tier-B{background:rgba(245,158,11,.1);color:var(--warn);border:1px solid rgba(245,158,11,.2)}
+.tier-C{background:rgba(100,116,139,.1);color:#64748b;border:1px solid rgba(100,116,139,.2)}
+.tier-D{background:rgba(239,68,68,.08);color:var(--danger);border:1px solid rgba(239,68,68,.15)}
+
+/* ER cell */
+.er-cell{min-width:150px}
+.er-top{display:flex;align-items:baseline;gap:6px}
+.er-num{font-family:var(--mono);font-size:14px;font-weight:500}
+.er-raw{font-family:var(--mono);font-size:10px;color:var(--text3)}
+.er-bar{height:4px;background:var(--s3);border-radius:2px;margin:5px 0;overflow:hidden}
+.er-fill{height:100%;border-radius:2px;transition:width .5s ease}
+.er-meta{font-size:10px;color:var(--text3);font-family:var(--mono)}
+.er-meta span{margin-right:6px}
+.er-meta .cmt{color:#a5b4fc}
+
+/* Sub cell */
+.sub-cell{text-align:right}
+.sub-num{font-family:var(--mono);font-size:13px;font-weight:500;color:var(--text)}
+.sub-bar{height:3px;background:var(--s3);border-radius:2px;margin-top:5px;overflow:hidden}
+.sub-fill{height:100%;background:linear-gradient(90deg,var(--g3),var(--g2));border-radius:2px}
+
+/* Badges */
+.badge-sm{
+  display:inline-flex;align-items:center;padding:2px 7px;border-radius:4px;
+  font-size:10px;font-weight:600;margin-left:5px;vertical-align:middle;
+}
+.badge-inactive{background:rgba(239,68,68,.08);color:var(--danger);border:1px solid rgba(239,68,68,.15)}
+.badge-cache{background:rgba(0,212,160,.08);color:var(--g1);border:1px solid rgba(0,212,160,.15)}
+.badge-scale{background:rgba(99,102,241,.1);color:#a5b4fc;border:1px solid rgba(99,102,241,.2)}
+
+/* Empty state */
+.empty-state{
+  padding:60px 20px;text-align:center;
+}
+.empty-icon{font-size:48px;margin-bottom:16px;opacity:.4}
+.empty-title{font-size:15px;font-weight:600;color:var(--text2);margin-bottom:6px}
+.empty-sub{font-size:13px;color:var(--text3)}
+
+/* Spinner */
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:spin .55s linear infinite}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--text3)}
+
+@media(max-width:640px){
+  .topbar{flex-wrap:wrap;gap:10px}
+  .region-grid{grid-template-columns:1fr 1fr 1fr}
+  .stats-grid{grid-template-columns:1fr 1fr}
+}
+</style>
 </head>
 <body>
-<div class="container">
+<div class="wrap">
 
-  <!-- Header -->
-  <div class="header">
+<!-- ── TOPBAR ── -->
+<div class="topbar">
+  <div class="logo">
+    <div class="logo-mark">VGV</div>
     <div>
-      <h1>VGV YouTube KOL Analyzer</h1>
-      <p>VGV 圈粉行銷科技 · 影響力行銷數據分析平台</p>
-    </div>
-    <div class="header-badges">
-      <span class="badge badge-v">v3.0 · OPTIMIZED</span>
-      <span class="badge badge-units" id="headerUnits">API 0 / 10000 units</span>
+      <div class="logo-text">KOL Analyzer</div>
+      <div class="logo-sub">VGV 圈粉行銷科技 · YouTube 影響力分析</div>
     </div>
   </div>
-
-  <!-- API 設定 -->
-  <div class="panel">
-    <div class="pt">API 金鑰設定</div>
-    <div class="api-row">
-      <input type="password" id="apiKey" placeholder="YouTube Data API v3 金鑰" />
-      <button class="btn btn-primary" onclick="saveApiKey()">儲存</button>
+  <div class="topbar-right">
+    <div class="units-pill">
+      <div class="units-dot" id="unitsDot"></div>
+      <span class="units-val" id="unitsVal">0 / 10,000 units</span>
     </div>
-    <div class="note">
-      取得 API Key：<a href="https://console.cloud.google.com/" target="_blank">Google Cloud Console</a> → 啟用 YouTube Data API v3 → 建立憑證<br>
-      <small>※ API Key 只存在您的瀏覽器，不會傳送到任何伺服器</small>
-    </div>
-    <!-- Units tracker -->
-    <div class="units-bar">
-      <span class="units-label">今日 API 用量</span>
-      <div class="units-track"><div class="units-fill" id="unitsFill" style="width:0%"></div></div>
-      <span class="units-num" id="unitsNum">0 / 10,000 units</span>
-      <button class="btn-reset-cache" onclick="resetUnits()">重置計數</button>
-      <button class="btn-reset-cache" onclick="clearCache()">清除快取</button>
-    </div>
-    <div class="note" style="margin-top:10px">
-      ⚡ <strong>API 省用量策略：</strong>
-      <code>channels.list</code> = 1 unit・
-      <code>videos.list(批次50)</code> = 1 unit・
-      <code>search.list</code> = 100 units（盡量避免）<br>
-      🗄️ 抓過的頻道會存入本地快取（localStorage），重複搜尋不重打 API
-    </div>
+    <button class="btn btn-ghost btn-sm" onclick="clearCache()">清除快取</button>
+    <button class="btn btn-ghost btn-sm" onclick="resetUnits()">重置用量</button>
   </div>
+</div>
 
-  <!-- 搜尋條件 -->
-  <div class="panel">
-    <div class="pt">搜尋條件</div>
-    <div class="controls">
-      <div class="ctrl">
-        <label>地區</label>
-        <select id="region">
-          <option value="TW">台灣 🇹🇼</option>
-          <option value="HK">香港 🇭🇰</option>
-          <option value="SG">新加坡 🇸🇬</option>
-          <option value="JP">日本 🇯🇵</option>
-          <option value="KR">韓國 🇰🇷</option>
-          <option value="US">美國 🇺🇸</option>
-        </select>
-      </div>
-      <div class="ctrl">
-        <label>語言</label>
-        <select id="lang">
-          <option value="zh-Hant">繁體中文</option>
-          <option value="zh-Hans">簡體中文</option>
-          <option value="en">英文</option>
-          <option value="ja">日文</option>
-          <option value="ko">韓文</option>
-        </select>
-      </div>
-      <div class="ctrl">
-        <label>品類關鍵字</label>
-        <input type="text" id="category" placeholder="科技、美食、旅遊…" value="科技" />
-      </div>
-      <div class="ctrl">
-        <label>搜尋頻道數</label>
-        <select id="maxResults">
-          <option value="20">20 個（省 API）</option>
-          <option value="50" selected>50 個（建議）</option>
-        </select>
-      </div>
-    </div>
+<!-- ── API KEY BAR ── -->
+<div class="apibar">
+  <span class="apibar-icon">🔑</span>
+  <span class="apibar-label">YouTube API Key</span>
+  <input type="password" id="apiKey" placeholder="AIza..." />
+  <div class="apibar-btns">
+    <button class="btn btn-primary btn-sm" onclick="saveApiKey()">儲存</button>
+    <a href="https://console.cloud.google.com/" target="_blank" class="btn btn-ghost btn-sm">取得 Key ↗</a>
+  </div>
+</div>
 
-    <div class="pt" style="margin-top:4px">活躍度 & 互動率設定</div>
-    <div class="filter-box">
-      <div class="ctrl">
-        <label>最後發片篩選（超過此時間自動隱藏）</label>
-        <select id="activeFilter">
-          <option value="90">3 個月內</option>
-          <option value="180" selected>6 個月內</option>
-          <option value="365">1 年內</option>
-          <option value="0">不篩選</option>
-        </select>
+<!-- ── MAIN LAYOUT ── -->
+<div class="layout">
+
+  <!-- ─ SIDEBAR ─ -->
+  <div class="sidebar">
+
+    <!-- Region -->
+    <div class="card" style="margin-bottom:14px">
+      <div class="card-head">
+        <span class="card-title">目標地區</span>
+        <span style="font-size:10px;color:var(--text3)">影響搜尋排序與語言</span>
       </div>
-      <div class="ctrl">
-        <label>最低訂閱數門檻（過濾微型頻道）</label>
-        <select id="minSubs">
-          <option value="0">不限制</option>
-          <option value="1000" selected>1,000+（建議）</option>
-          <option value="5000">5,000+</option>
-          <option value="10000">1 萬+</option>
-          <option value="50000">5 萬+</option>
-          <option value="100000">10 萬+</option>
-        </select>
-      </div>
-      <div class="ctrl">
-        <label>近期影片取樣（用於 ER 計算）</label>
-        <select id="recentCount">
-          <option value="5">最近 5 支</option>
-          <option value="10" selected>最近 10 支</option>
-          <option value="20">最近 20 支</option>
-        </select>
-      </div>
-      <div class="ctrl">
-        <label>ER 計算方式說明</label>
-        <div style="padding:10px 0;font-size:.82em;color:var(--muted);line-height:1.7">
-          ER = (觀看 + 留言×5 + 按讚×2) / 訂閱數<br>
-          × <span style="color:var(--accent2)">訂閱規模修正係數</span><br>
-          <span style="color:var(--accent);font-size:.9em">小頻道 ER 自動降權，避免微型頻道暴衝 ✓</span>
+      <div class="card-body" style="padding-bottom:12px">
+        <div class="region-grid" id="regionGrid">
+          <!-- populated by JS -->
+        </div>
+        <div style="font-size:10px;color:var(--text3);line-height:1.6;padding:8px 10px;background:var(--s2);border-radius:8px;border:1px solid var(--border)">
+          ⚠️ YouTube API 地區參數影響搜尋排序，非嚴格過濾。本工具額外注入地區關鍵字強化精準度。
         </div>
       </div>
-      <div class="ctrl">
-        <label>快取時效</label>
-        <select id="cacheHours">
-          <option value="24" selected>24 小時（節省 API）</option>
-          <option value="6">6 小時（較新鮮）</option>
-          <option value="0">不使用快取</option>
-        </select>
+    </div>
+
+    <!-- Category -->
+    <div class="card" style="margin-bottom:14px">
+      <div class="card-head">
+        <span class="card-title">頻道品類</span>
+        <button class="btn btn-ghost btn-sm" onclick="clearCats()" style="padding:3px 8px;font-size:10px">清除</button>
+      </div>
+      <div class="card-body" id="catBody">
+        <!-- populated by JS -->
       </div>
     </div>
 
-    <div class="btn-group">
-      <button class="btn btn-primary" onclick="searchChannels()">
-        <span id="searchSpinner" style="display:none" class="spinner"></span>
-        🔍 開始分析
-      </button>
-      <button class="btn btn-ghost" onclick="exportCSV()">📥 匯出 CSV</button>
-      <button class="btn btn-danger" onclick="clearResults()">🗑️ 清除結果</button>
-    </div>
-
-    <div class="status" id="status"></div>
-  </div>
-
-  <!-- 結果 -->
-  <div id="resultsPanel" style="display:none">
-    <div class="panel">
-      <div class="pt">分析結果</div>
-      <div class="summary-bar" id="summaryBar"></div>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th onclick="st('rank')" id="th-rank">#</th>
-              <th onclick="st('title')" id="th-title">頻道</th>
-              <th onclick="st('tier')" id="th-tier">評級</th>
-              <th onclick="st('subscriberCount')" id="th-subscriberCount">訂閱數</th>
-              <th onclick="st('er')" id="th-er" class="sorted">近期 ER ↓</th>
-              <th onclick="st('avgViews')" id="th-avgViews">近期均觀看</th>
-              <th onclick="st('avgLikes')" id="th-avgLikes">近期均按讚</th>
-              <th onclick="st('avgComments')" id="th-avgComments">近期均留言</th>
-              <th onclick="st('daysSince')" id="th-daysSince">最後更新</th>
-            </tr>
-          </thead>
-          <tbody id="resultsBody"></tbody>
-        </table>
+    <!-- Settings -->
+    <div class="card" style="margin-bottom:14px">
+      <div class="card-head"><span class="card-title">篩選與設定</span></div>
+      <div class="card-body">
+        <div class="field">
+          <label class="field-label">搜尋頻道數</label>
+          <select id="maxResults">
+            <option value="20">20 個（快速）</option>
+            <option value="50" selected>50 個（建議）</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="field-label">活躍篩選（最後發片）</label>
+          <select id="activeFilter">
+            <option value="90">3 個月內</option>
+            <option value="180" selected>6 個月內</option>
+            <option value="365">1 年內</option>
+            <option value="0">不限制</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="field-label">最低訂閱門檻</label>
+          <select id="minSubs">
+            <option value="0">不限制</option>
+            <option value="1000" selected>1,000+</option>
+            <option value="5000">5,000+</option>
+            <option value="10000">10,000+</option>
+            <option value="50000">50,000+</option>
+            <option value="100000">100,000+</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="field-label">近期影片取樣數（ER 計算）</label>
+          <select id="recentCount">
+            <option value="5">最近 5 支</option>
+            <option value="10" selected>最近 10 支</option>
+            <option value="20">最近 20 支</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="field-label">快取時效</label>
+          <select id="cacheHours">
+            <option value="24" selected>24 小時</option>
+            <option value="6">6 小時</option>
+            <option value="0">不快取</option>
+          </select>
+        </div>
+        <div class="divider"></div>
+        <div class="er-formula">
+          <div class="formula-line">ER = <span class="hl">原始互動率</span> × <span class="hl2">規模係數</span></div>
+          <div class="formula-line" style="font-size:10px;margin-top:4px">原始 = (觀看 + 留言×<span class="hl">5</span> + 按讚×<span class="hl2">2</span>) / 訂閱</div>
+          <div class="formula-line" style="font-size:10px">規模 = log₁₀(訂閱) / 6 <span style="color:var(--text3)">（小頻道降權）</span></div>
+        </div>
       </div>
     </div>
-  </div>
 
-</div>
+    <!-- Run -->
+    <button class="run-btn" id="runBtn" onclick="searchChannels()">
+      <span id="runSpinner" style="display:none" class="spinner"></span>
+      <span>🔍 開始分析</span>
+    </button>
+    <div style="display:flex;gap:8px;margin-top:10px">
+      <button class="btn btn-ghost" style="flex:1;justify-content:center" onclick="exportCSV()">📥 匯出 CSV</button>
+      <button class="btn btn-danger" style="flex:1;justify-content:center" onclick="clearResults()">🗑️ 清除</button>
+    </div>
+
+  </div><!-- /sidebar -->
+
+  <!-- ─ RESULTS ─ -->
+  <div class="results-area">
+
+    <div class="status-bar" id="statusBar"></div>
+
+    <div id="resultsEmpty" class="table-card">
+      <div class="empty-state">
+        <div class="empty-icon">📡</div>
+        <div class="empty-title">尚未執行分析</div>
+        <div class="empty-sub">選擇地區與品類，點擊「開始分析」</div>
+      </div>
+    </div>
+
+    <div id="resultsPanel" style="display:none">
+      <div class="results-top">
+        <div class="results-title">
+          <span class="results-count" id="resultsCount">0</span> 個頻道
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-ghost btn-sm" onclick="exportCSV()">📥 匯出 CSV</button>
+        </div>
+      </div>
+
+      <div class="stats-grid" id="statsGrid"></div>
+
+      <div class="table-card">
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:36px" onclick="st('rank')" id="th-rank"># <i class="si">↕</i></th>
+                <th onclick="st('title')" id="th-title">頻道 <i class="si">↕</i></th>
+                <th onclick="st('tier')" id="th-tier">評級 <i class="si">↕</i></th>
+                <th onclick="st('subscriberCount')" id="th-subscriberCount">訂閱數 <i class="si">↕</i></th>
+                <th onclick="st('er')" id="th-er" class="sorted">互動率 ER ↓ <i class="si sorted">↓</i></th>
+                <th onclick="st('avgViews')" id="th-avgViews">均觀看 <i class="si">↕</i></th>
+                <th onclick="st('avgComments')" id="th-avgComments">均留言 <i class="si">↕</i></th>
+                <th onclick="st('daysSince')" id="th-daysSince">更新 <i class="si">↕</i></th>
+              </tr>
+            </thead>
+            <tbody id="resultsBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /results -->
+
+</div><!-- /layout -->
+</div><!-- /wrap -->
+
 <script>
 // ═══════════════════════════════════════════════════
-//  CONSTANTS & STATE
+//  DATA: Regions & Categories
 // ═══════════════════════════════════════════════════
-const CACHE_KEY = 'vgv_ch_cache_v3';
-const UNITS_KEY = 'vgv_units_today';
-const UNITS_DATE_KEY = 'vgv_units_date';
-const API_KEY_STORAGE = 'vgv_youtube_api_key';
+
+const REGIONS = [
+  { id:'TW', flag:'🇹🇼', name:'台灣', hint:'zh-Hant', kw:'台灣' },
+  { id:'HK', flag:'🇭🇰', name:'香港', hint:'zh-Hant', kw:'香港' },
+  { id:'SG', flag:'🇸🇬', name:'新加坡', hint:'zh-Hans', kw:'新加坡' },
+  { id:'MY', flag:'🇲🇾', name:'馬來西亞', hint:'zh-Hans', kw:'馬來西亞' },
+  { id:'JP', flag:'🇯🇵', name:'日本', hint:'ja', kw:'日本' },
+  { id:'KR', flag:'🇰🇷', name:'韓國', hint:'ko', kw:'한국' },
+  { id:'US', flag:'🇺🇸', name:'美國', hint:'en', kw:'' },
+  { id:'GB', flag:'🇬🇧', name:'英國', hint:'en', kw:'UK' },
+];
+
+// Category taxonomy: group → tags (each tag has id, label, keywords[])
+const CATEGORIES = [
+  {
+    group:'美食 & 生活',
+    tags:[
+      { id:'cooking',   label:'料理食譜', kw:['料理','食譜','烹飪','cooking'] },
+      { id:'food_vlog', label:'美食探店', kw:['美食','吃播','foodvlog','restaurant'] },
+      { id:'baking',    label:'烘焙甜點', kw:['烘焙','甜點','蛋糕','baking'] },
+      { id:'lifestyle', label:'生活日常', kw:['生活','vlog','日常','lifestyle'] },
+      { id:'travel',    label:'旅遊', kw:['旅遊','旅行','travel','景點'] },
+    ]
+  },
+  {
+    group:'科技 & 商業',
+    tags:[
+      { id:'tech',      label:'科技評測', kw:['科技','3C','開箱','tech review'] },
+      { id:'ai',        label:'AI & 軟體', kw:['AI','人工智慧','軟體','ChatGPT'] },
+      { id:'finance',   label:'投資理財', kw:['投資','理財','股票','finance'] },
+      { id:'startup',   label:'創業商業', kw:['創業','商業','entrepreneur','brand'] },
+      { id:'gadget',    label:'3C 開箱', kw:['開箱','unboxing','gadget','評測'] },
+    ]
+  },
+  {
+    group:'美妝 & 時尚',
+    tags:[
+      { id:'beauty',    label:'美妝保養', kw:['美妝','彩妝','保養','makeup','skincare'] },
+      { id:'fashion',   label:'穿搭時尚', kw:['穿搭','時尚','ootd','fashion'] },
+      { id:'haircare',  label:'髮型美髮', kw:['髮型','美髮','hair','hairstyle'] },
+    ]
+  },
+  {
+    group:'健康 & 運動',
+    tags:[
+      { id:'fitness',   label:'健身運動', kw:['健身','運動','workout','fitness'] },
+      { id:'yoga',      label:'瑜珈舒壓', kw:['瑜珈','冥想','yoga','meditation'] },
+      { id:'sport',     label:'球類競技', kw:['籃球','足球','棒球','sport','NBA'] },
+      { id:'outdoor',   label:'戶外活動', kw:['登山','露營','outdoor','hiking'] },
+    ]
+  },
+  {
+    group:'娛樂 & 遊戲',
+    tags:[
+      { id:'gaming',    label:'電玩遊戲', kw:['遊戲','gaming','直播','game'] },
+      { id:'anime',     label:'動漫', kw:['動漫','anime','漫畫','二次元'] },
+      { id:'music',     label:'音樂', kw:['音樂','歌曲','music','cover'] },
+      { id:'comedy',    label:'搞笑娛樂', kw:['搞笑','娛樂','comedy','funny'] },
+    ]
+  },
+  {
+    group:'教育 & 親子',
+    tags:[
+      { id:'edu',       label:'學習教育', kw:['教育','學習','education','語言'] },
+      { id:'kids',      label:'親子育兒', kw:['親子','育兒','寶寶','kids','family'] },
+      { id:'language',  label:'語言學習', kw:['英文','日文','語言學習','language'] },
+    ]
+  },
+];
+
+// ═══════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════
+const CACHE_KEY   = 'vgv_ch_cache_v4';
+const UNITS_KEY   = 'vgv_units_today';
+const UNITS_DATE  = 'vgv_units_date';
+const APIKEY_STOR = 'vgv_youtube_api_key';
 const DAILY_LIMIT = 10000;
+const W_VIEW=1, W_LIKE=2, W_CMT=5;
 
-// ER weights
-const W_VIEW = 1;
-const W_LIKE = 2;
-const W_COMMENT = 5;
-
-let allResults = [];
-let sortColumn = 'er';
-let sortAsc = false;
+let selectedRegion = 'TW';
+let selectedCats   = new Set();
+let allResults     = [];
+let sortCol        = 'er';
+let sortAsc        = false;
 
 // ═══════════════════════════════════════════════════
-//  API UNIT TRACKER
+//  INIT
 // ═══════════════════════════════════════════════════
-function todayStr(){ return new Date().toISOString().slice(0,10); }
+window.onload = () => {
+  const k = localStorage.getItem(APIKEY_STOR);
+  if(k) document.getElementById('apiKey').value = k;
+  buildRegionGrid();
+  buildCatBody();
+  updateUnitsUI();
+};
 
+function buildRegionGrid(){
+  const grid = document.getElementById('regionGrid');
+  grid.innerHTML = REGIONS.map(r => `
+    <div class="region-btn ${r.id===selectedRegion?'active':''}" onclick="selectRegion('${r.id}')">
+      <span class="region-flag">${r.flag}</span>
+      <div>
+        <div class="region-name">${r.name}</div>
+        <div class="region-hint">${r.hint}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function selectRegion(id){
+  selectedRegion = id;
+  buildRegionGrid();
+}
+
+function buildCatBody(){
+  const body = document.getElementById('catBody');
+  body.innerHTML = CATEGORIES.map(grp => `
+    <div class="cat-section">
+      <div class="cat-section-label">${grp.group}</div>
+      <div class="cat-tags">
+        ${grp.tags.map(t=>`
+          <div class="cat-tag ${selectedCats.has(t.id)?'active-primary':''}"
+               onclick="toggleCat('${t.id}','${t.label.replace(/'/g,"\\'")}',${JSON.stringify(t.kw).replace(/"/g,"'")})">
+            ${t.label}
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `).join('') + `
+    <div class="divider"></div>
+    <div class="cat-section-label">自訂關鍵字</div>
+    <div class="kw-row">
+      <input type="text" id="customKw" placeholder="輸入自訂關鍵字..." />
+      <button class="btn btn-ghost btn-sm" onclick="addCustomKw()">+ 加入</button>
+    </div>
+    <div id="selectedDisplay" class="selected-cats ${selectedCats.size===0?'empty':''}">
+      ${selectedCats.size===0?'尚未選擇品類':''}
+    </div>
+  `;
+  updateSelectedDisplay();
+}
+
+const catMeta = {}; // id -> {label, kw}
+CATEGORIES.forEach(g=>g.tags.forEach(t=>{ catMeta[t.id]={label:t.label,kw:t.kw}; }));
+
+function toggleCat(id, label, kw){
+  if(selectedCats.has(id)) selectedCats.delete(id);
+  else selectedCats.add(id);
+  buildCatBody();
+}
+
+function addCustomKw(){
+  const inp = document.getElementById('customKw');
+  const val = inp.value.trim();
+  if(!val) return;
+  const id = 'custom_'+Date.now();
+  catMeta[id] = { label: val, kw: [val] };
+  selectedCats.add(id);
+  inp.value = '';
+  buildCatBody();
+}
+
+function clearCats(){
+  selectedCats.clear();
+  // Also clear custom metas
+  Object.keys(catMeta).filter(k=>k.startsWith('custom_')).forEach(k=>{
+    delete catMeta[k];
+    selectedCats.delete(k);
+  });
+  buildCatBody();
+}
+
+function updateSelectedDisplay(){
+  const disp = document.getElementById('selectedDisplay');
+  if(!disp) return;
+  if(selectedCats.size===0){
+    disp.className='selected-cats empty';
+    disp.innerHTML='尚未選擇品類';
+    return;
+  }
+  disp.className='selected-cats';
+  disp.innerHTML = [...selectedCats].map(id => {
+    const m = catMeta[id];
+    if(!m) return '';
+    return `<span class="sel-chip">${m.label}<button onclick="event.stopPropagation();removeCat('${id}')">×</button></span>`;
+  }).join('');
+}
+
+function removeCat(id){ selectedCats.delete(id); buildCatBody(); }
+
+// ═══════════════════════════════════════════════════
+//  UNITS
+// ═══════════════════════════════════════════════════
+function today(){ return new Date().toISOString().slice(0,10) }
 function getUnits(){
-  if(localStorage.getItem(UNITS_DATE_KEY) !== todayStr()){
-    localStorage.setItem(UNITS_DATE_KEY, todayStr());
-    localStorage.setItem(UNITS_KEY, '0');
+  if(localStorage.getItem(UNITS_DATE)!==today()){
+    localStorage.setItem(UNITS_DATE,today());
+    localStorage.setItem(UNITS_KEY,'0');
   }
   return parseInt(localStorage.getItem(UNITS_KEY)||'0');
 }
-
-function addUnits(n){
-  const u = getUnits() + n;
-  localStorage.setItem(UNITS_KEY, String(u));
-  updateUnitsUI(u);
-  return u;
-}
-
+function addUnits(n){ const u=getUnits()+n; localStorage.setItem(UNITS_KEY,String(u)); updateUnitsUI(u); return u; }
+function resetUnits(){ localStorage.setItem(UNITS_KEY,'0');localStorage.setItem(UNITS_DATE,today());updateUnitsUI(0); }
 function updateUnitsUI(u){
-  u = u ?? getUnits();
-  const pct = Math.min(u/DAILY_LIMIT*100,100);
-  const fill = document.getElementById('unitsFill');
-  const num = document.getElementById('unitsNum');
-  const header = document.getElementById('headerUnits');
-  if(!fill) return;
-  fill.style.width = pct+'%';
-  fill.className = 'units-fill'+(pct>=90?' danger':pct>=60?' warn':'');
-  const cls = pct>=90?' danger':pct>=60?' warn':'';
-  num.className = 'units-num'+cls;
-  num.textContent = u.toLocaleString()+' / 10,000 units';
-  header.textContent = `API ${u.toLocaleString()} / 10,000 units`;
-}
-
-function resetUnits(){
-  localStorage.setItem(UNITS_KEY,'0');
-  localStorage.setItem(UNITS_DATE_KEY, todayStr());
-  updateUnitsUI(0);
+  u=u??getUnits();
+  const pct=u/DAILY_LIMIT*100;
+  const dot=document.getElementById('unitsDot');
+  const val=document.getElementById('unitsVal');
+  if(!dot) return;
+  const cls=pct>=90?'danger':pct>=60?'warn':'';
+  dot.className='units-dot'+(cls?' '+cls:'');
+  val.className='units-val'+(cls?' '+cls:'');
+  val.textContent=`${u.toLocaleString()} / 10,000 units`;
 }
 
 // ═══════════════════════════════════════════════════
-//  LOCAL CACHE
+//  CACHE
 // ═══════════════════════════════════════════════════
-function getCache(){
-  try{ return JSON.parse(localStorage.getItem(CACHE_KEY)||'{}'); } catch{ return {}; }
-}
-function saveCache(obj){ localStorage.setItem(CACHE_KEY, JSON.stringify(obj)); }
-function clearCache(){
-  localStorage.removeItem(CACHE_KEY);
-  showStatus('✅ 快取已清除','success');
-}
-function isCacheValid(entry, hours){
-  if(!entry || hours===0) return false;
-  return (Date.now() - entry.ts) < hours*3600*1000;
-}
+function getCache(){ try{return JSON.parse(localStorage.getItem(CACHE_KEY)||'{}')}catch{return{}} }
+function saveCache(o){ localStorage.setItem(CACHE_KEY,JSON.stringify(o)) }
+function clearCache(){ localStorage.removeItem(CACHE_KEY); showStatus('✅ 快取已清除','success') }
+function cacheValid(e,h){ return e&&h>0&&(Date.now()-e.ts)<h*3600*1000 }
 
 // ═══════════════════════════════════════════════════
-//  API HELPERS  (all track units)
+//  API HELPERS
 // ═══════════════════════════════════════════════════
-async function apiGet(url, units=1, label=''){
-  const res = await fetch(url);
-  if(!res.ok){
-    const e = await res.json().catch(()=>({error:{message:res.status}}));
-    throw new Error((e.error?.message)||res.status);
-  }
+async function apiGet(url, units=1){
+  const r=await fetch(url);
+  if(!r.ok){ const e=await r.json().catch(()=>({error:{message:r.status}})); throw new Error(e.error?.message||r.status) }
   addUnits(units);
-  return res.json();
-}
-
-// channels.list — 1 unit per call (up to 50 ids)
-async function fetchChannelStats(channelIds, apiKey){
-  const url = `https://www.googleapis.com/youtube/v3/channels?`+
-    `part=snippet,statistics&id=${channelIds.join(',')}&key=${apiKey}`;
-  return apiGet(url, 1, 'channels.list');
-}
-
-// search.list (channel search) — 100 units per call
-async function searchChannelIds(q, region, lang, maxResults, apiKey){
-  const url = `https://www.googleapis.com/youtube/v3/search?`+
-    `part=snippet&type=channel&regionCode=${region}&relevanceLanguage=${lang}`+
-    `&q=${encodeURIComponent(q)}&maxResults=${maxResults}&key=${apiKey}`;
-  return apiGet(url, 100, 'search.list');
-}
-
-// search.list (channel videos) — 100 units  ← we now avoid this!
-// Instead we use: channels.list contentDetails to get playlist, then playlistItems.list
-// playlistItems.list — 1 unit per call (up to 50 videos)
-async function fetchRecentVideoIds(uploadsPlaylistId, maxResults, apiKey){
-  const url = `https://www.googleapis.com/youtube/v3/playlistItems?`+
-    `part=snippet&playlistId=${uploadsPlaylistId}&maxResults=${maxResults}&key=${apiKey}`;
-  const data = await apiGet(url, 1, 'playlistItems.list');
-  return data.items?.map(i=>i.snippet?.resourceId?.videoId).filter(Boolean)||[];
-}
-
-// channels.list with contentDetails — 1 unit
-async function fetchUploadsPlaylist(channelIds, apiKey){
-  const url = `https://www.googleapis.com/youtube/v3/channels?`+
-    `part=contentDetails&id=${channelIds.join(',')}&key=${apiKey}`;
-  return apiGet(url, 1, 'channels.list(contentDetails)');
-}
-
-// videos.list — 1 unit per batch of up to 50
-async function fetchVideoStats(videoIds, apiKey){
-  // batch into chunks of 50
-  const chunks = [];
-  for(let i=0;i<videoIds.length;i+=50) chunks.push(videoIds.slice(i,i+50));
-  const results = [];
-  for(const chunk of chunks){
-    const url = `https://www.googleapis.com/youtube/v3/videos?`+
-      `part=statistics,snippet&id=${chunk.join(',')}&key=${apiKey}`;
-    const data = await apiGet(url, 1, 'videos.list');
-    if(data.items) results.push(...data.items);
-  }
-  return results;
+  return r.json();
 }
 
 // ═══════════════════════════════════════════════════
-//  ER CALCULATION  (with subscriber scale correction)
+//  ER CALCULATION with subscriber scale correction
 // ═══════════════════════════════════════════════════
-//
-//  Problem: tiny channels (e.g. 1.3K subs) get inflated ER
-//  because raw ER = interactions / subs gives a huge number
-//  when subs is small.
-//
-//  Solution: apply a subscriber scale correction factor.
-//  We use log10-based normalization so that:
-//    - 1K subs   → factor ≈ 0.25  (heavy penalty)
-//    - 10K subs  → factor ≈ 0.50
-//    - 100K subs → factor ≈ 0.75
-//    - 1M  subs  → factor ≈ 1.00  (no penalty)
-//
-//  This means a 1K channel needs 4× the raw ER of a 1M channel
-//  to achieve the same corrected ER — fair for KOL evaluation.
-//
-function subsScaleFactor(subs){
-  if(subs <= 0) return 0;
-  // log10(1M) = 6 → factor = 1.0
-  // log10(1K) = 3 → factor = 0.5
-  // clamp between 0.1 and 1.0
-  const factor = Math.log10(Math.max(subs, 100)) / 6;
-  return Math.min(Math.max(factor, 0.1), 1.0);
+function scaleFactor(subs){
+  if(subs<=0) return 0;
+  return Math.min(Math.max(Math.log10(Math.max(subs,100))/6, 0.1), 1.0);
 }
-
-function calcER(videos, subscriberCount){
-  if(!videos.length || subscriberCount===0) return { er:0, rawEr:0, avgViews:0, avgLikes:0, avgComments:0, scaleFactor:0 };
-  let tv=0, tl=0, tc=0;
-  for(const v of videos){
-    tv += parseInt(v.statistics?.viewCount||0);
-    tl += parseInt(v.statistics?.likeCount||0);
-    tc += parseInt(v.statistics?.commentCount||0);
-  }
-  const n = videos.length;
-  const avgViews    = Math.round(tv/n);
-  const avgLikes    = Math.round(tl/n);
-  const avgComments = Math.round(tc/n);
-
-  // Raw weighted ER (views×1 + likes×2 + comments×5) / subs
-  const weightedSum = (avgViews*W_VIEW + avgLikes*W_LIKE + avgComments*W_COMMENT);
-  const rawEr = (weightedSum / subscriberCount) * 100;
-
-  // Apply subscriber scale correction
-  const scaleFactor = subsScaleFactor(subscriberCount);
-  const er = rawEr * scaleFactor;
-
-  return { er, rawEr, avgViews, avgLikes, avgComments, scaleFactor };
+function calcER(videos, subs){
+  if(!videos.length||subs===0) return {er:0,rawEr:0,sf:0,avgViews:0,avgLikes:0,avgCmt:0};
+  let tv=0,tl=0,tc=0;
+  videos.forEach(v=>{
+    tv+=parseInt(v.statistics?.viewCount||0);
+    tl+=parseInt(v.statistics?.likeCount||0);
+    tc+=parseInt(v.statistics?.commentCount||0);
+  });
+  const n=videos.length;
+  const avgViews=Math.round(tv/n), avgLikes=Math.round(tl/n), avgCmt=Math.round(tc/n);
+  const rawEr=((avgViews*W_VIEW+avgLikes*W_LIKE+avgCmt*W_CMT)/subs)*100;
+  const sf=scaleFactor(subs);
+  return {er:rawEr*sf, rawEr, sf, avgViews, avgLikes, avgCmt};
 }
 
 // ═══════════════════════════════════════════════════
-//  SCORING & TIER
+//  SCORING
 // ═══════════════════════════════════════════════════
-function computeScore(subs, er, days){
-  // Subscriber tier score: log-scaled, max 35pts
-  // 1K→3, 10K→12, 100K→23, 1M→35
-  const subScore = Math.min(Math.log10(Math.max(subs,100)) / 6 * 35, 35);
-  // Corrected ER score: max 45pts (already scale-corrected so fair)
-  const erScore  = Math.min(er * 5, 45);
-  // Recency: max 20pts
-  const recency  = days<=90?20:days<=180?12:days<=365?5:0;
-  return Math.round(subScore + erScore + recency);
+function score(subs,er,days){
+  const ss=Math.min(Math.log10(Math.max(subs,100))/6*35,35);
+  const es=Math.min(er*5,45);
+  const rs=days<=90?20:days<=180?12:days<=365?5:0;
+  return Math.round(ss+es+rs);
 }
-
-function getTier(score, subs, er){
-  // Require minimum subscriber base for S/A tier
-  if(score>=65 && er>=3  && subs>=10000) return 'S';
-  if(score>=50 && subs>=5000)  return 'A';
-  if(score>=35 && subs>=1000)  return 'B';
-  if(score>=20) return 'C';
+function tier(sc,subs,er){
+  if(sc>=65&&er>=3&&subs>=10000) return 'S';
+  if(sc>=50&&subs>=5000) return 'A';
+  if(sc>=35&&subs>=1000) return 'B';
+  if(sc>=20) return 'C';
   return 'D';
+}
+
+// ═══════════════════════════════════════════════════
+//  BUILD SEARCH QUERY
+//  Region accuracy improvement:
+//  1. Inject region keyword into query string
+//  2. Use region's native language as relevanceLanguage
+//  3. Combine multiple category keywords into OR query
+// ═══════════════════════════════════════════════════
+function buildQuery(){
+  const reg = REGIONS.find(r=>r.id===selectedRegion) || REGIONS[0];
+
+  // Collect all keywords from selected categories
+  let kwList = [];
+  selectedCats.forEach(id => {
+    const m = catMeta[id];
+    if(m) kwList.push(...m.kw);
+  });
+
+  // Deduplicate and take top 3 most specific keywords
+  kwList = [...new Set(kwList)].slice(0,3);
+
+  // Build query: region keyword + category keywords
+  const parts = [];
+  if(reg.kw) parts.push(reg.kw);
+  if(kwList.length) parts.push(kwList[0]); // primary keyword
+  else parts.push('');  // no category = broad search
+
+  return {
+    q: parts.filter(Boolean).join(' '),
+    lang: reg.hint,
+    regionCode: reg.id,
+    extraKws: kwList,
+  };
 }
 
 // ═══════════════════════════════════════════════════
 //  MAIN SEARCH
 // ═══════════════════════════════════════════════════
 async function searchChannels(){
-  const apiKey = localStorage.getItem(API_KEY_STORAGE);
-  if(!apiKey){ showStatus('❌ 請先設定 API Key','error'); return; }
+  const apiKey=localStorage.getItem(APIKEY_STOR);
+  if(!apiKey){ showStatus('❌ 請先儲存 API Key','error'); return; }
+  if(selectedCats.size===0){ showStatus('⚠️ 請至少選擇一個品類','error'); return; }
 
-  const region = document.getElementById('region').value;
-  const lang   = document.getElementById('lang').value;
-  const q      = document.getElementById('category').value.trim();
   const maxRes = parseInt(document.getElementById('maxResults').value);
   const recent = parseInt(document.getElementById('recentCount').value);
-  const cacheHours = parseInt(document.getElementById('cacheHours').value);
+  const cacheH = parseInt(document.getElementById('cacheHours').value);
 
-  setSearching(true);
-  showStatus('🔍 搜尋頻道中... (使用 search.list: 100 units)','loading');
-  allResults = [];
+  setRunning(true);
+  allResults=[];
+  showStatus(`🔍 搜尋中... (search.list: 100 units)`,'loading');
 
   try {
-    // Step 1: search channel IDs (100 units — unavoidable for keyword search)
-    const searchData = await searchChannelIds(q, region, lang, maxRes, apiKey);
-    if(!searchData.items?.length){ showStatus('❌ 找不到頻道','error'); setSearching(false); return; }
+    const {q,lang,regionCode} = buildQuery();
 
-    const channelIds = [...new Set(searchData.items.map(i=>i.snippet.channelId))];
-    showStatus(`✅ 找到 ${channelIds.length} 個頻道，取得統計資料中... (1 unit)`, 'loading');
+    // Step 1: search channel IDs
+    const searchData = await apiGet(
+      `https://www.googleapis.com/youtube/v3/search?part=snippet&type=channel`+
+      `&regionCode=${regionCode}&relevanceLanguage=${lang}`+
+      `&q=${encodeURIComponent(q)}&maxResults=${maxRes}&key=${apiKey}`, 100);
 
-    // Step 2: channels.list for stats (1 unit per 50, so 1 unit for ≤50)
-    const chData = await fetchChannelStats(channelIds, apiKey);
-    const channels = chData.items||[];
+    if(!searchData.items?.length){ showStatus('❌ 找不到相關頻道，請換個關鍵字試試','error'); setRunning(false); return; }
 
-    // Step 3: Get uploads playlist IDs (1 unit)
-    showStatus(`📂 取得各頻道上傳播放清單... (1 unit)`, 'loading');
-    const plData = await fetchUploadsPlaylist(channelIds, apiKey);
-    const playlistMap = {};
-    (plData.items||[]).forEach(ch=>{
-      playlistMap[ch.id] = ch.contentDetails?.relatedPlaylists?.uploads||null;
-    });
+    const ids=[...new Set(searchData.items.map(i=>i.snippet.channelId))];
+    showStatus(`📊 取得 ${ids.length} 個頻道統計資料...`,'loading');
 
-    // Step 4: For each channel, get recent video IDs (1 unit each via playlistItems.list)
-    // Then batch fetch video stats (1 unit per 50 videos)
-    const cache = getCache();
-    const toProcess = [];
+    // Step 2: channel stats (1 unit)
+    const chData = await apiGet(
+      `https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&id=${ids.join(',')}&key=${apiKey}`, 1);
 
-    for(const ch of channels){
-      const pid = playlistMap[ch.id];
-      const cacheEntry = cache[ch.id];
+    // Step 3: uploads playlist IDs (1 unit)
+    const plData = await apiGet(
+      `https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=${ids.join(',')}&key=${apiKey}`, 1);
+    const plMap={};
+    (plData.items||[]).forEach(c=>{ plMap[c.id]=c.contentDetails?.relatedPlaylists?.uploads||null });
 
-      if(isCacheValid(cacheEntry, cacheHours)){
-        // Use cached data — 0 API units
-        toProcess.push({ ch, fromCache: true, cached: cacheEntry.data });
-      } else {
-        toProcess.push({ ch, fromCache: false, playlistId: pid });
-      }
-    }
+    // Step 4: process each channel
+    const cache=getCache(), newCache={...cache};
+    const channels=chData.items||[];
+    const toProcess=channels.map(ch=>({
+      ch,
+      fromCache: cacheValid(cache[ch.id],cacheH),
+      cached: cache[ch.id]?.data,
+      playlistId: plMap[ch.id]
+    }));
 
-    const cachedCount = toProcess.filter(t=>t.fromCache).length;
-    const freshCount  = toProcess.filter(t=>!t.fromCache).length;
+    const fresh=toProcess.filter(t=>!t.fromCache);
+    showStatus(`🎬 分析互動率：${toProcess.filter(t=>t.fromCache).length} 快取 + ${fresh.length} 新抓取...`,'loading');
 
-    showStatus(
-      `📊 分析互動率中... ${cachedCount} 個頻道從快取讀取（0 units），`+
-      `${freshCount} 個需要打 API (各 1 unit for playlist + 視影片批次)`,
-      'loading'
-    );
-
-    // Collect all fresh video IDs in batches per channel
-    const freshItems = toProcess.filter(t=>!t.fromCache);
-    const channelVideoMap = {}; // channelId -> videoIds[]
-    const channelLastDate = {};
-
-    for(const item of freshItems){
-      if(!item.playlistId) continue;
+    // Collect video IDs for fresh channels
+    const chVideoMap={};
+    for(const item of fresh){
+      if(!item.playlistId){ chVideoMap[item.ch.id]=[]; continue; }
       try{
-        const vids = await fetchRecentVideoIds(item.playlistId, recent, apiKey); // 1 unit each
-        channelVideoMap[item.ch.id] = vids;
-        // Get publish dates from playlistItems already fetched — we'll get from video snippet below
-      } catch(e){ channelVideoMap[item.ch.id] = []; }
+        const pld = await apiGet(
+          `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${item.playlistId}&maxResults=${recent}&key=${apiKey}`, 1);
+        chVideoMap[item.ch.id]=(pld.items||[]).map(i=>i.snippet?.resourceId?.videoId).filter(Boolean);
+      }catch{ chVideoMap[item.ch.id]=[] }
     }
 
-    // Collect all video IDs that need stats (batch!)
-    const allVideoIds = Object.values(channelVideoMap).flat();
-    const videoStatsMap = {};
-
-    if(allVideoIds.length){
-      showStatus(`🎬 批次取得 ${allVideoIds.length} 支影片統計（最多 ${Math.ceil(allVideoIds.length/50)} units）`, 'loading');
-      const videoItems = await fetchVideoStats(allVideoIds, apiKey);
-      videoItems.forEach(v=>{
-        videoStatsMap[v.id] = v;
-      });
+    // Batch fetch video stats
+    const allVids=[...new Set(Object.values(chVideoMap).flat())];
+    const vMap={};
+    for(let i=0;i<allVids.length;i+=50){
+      const chunk=allVids.slice(i,i+50);
+      const vd=await apiGet(
+        `https://www.googleapis.com/youtube/v3/videos?part=statistics,snippet&id=${chunk.join(',')}&key=${apiKey}`,1);
+      (vd.items||[]).forEach(v=>{ vMap[v.id]=v });
     }
 
-    // Now build results
-    const newCache = { ...cache };
-
+    // Build results
     for(const item of toProcess){
-      const ch = item.ch;
-      const stats = ch.statistics;
-      const snippet = ch.snippet;
-      const subs = parseInt(stats.subscriberCount||0);
-      const totalViews = parseInt(stats.viewCount||0);
-      const videoCount = parseInt(stats.videoCount||1);
-
+      const ch=item.ch, sn=ch.snippet, st=ch.statistics;
+      const subs=parseInt(st.subscriberCount||0);
       let erData, daysSince=9999, lastDate=null;
 
       if(item.fromCache){
-        erData = { er: item.cached.er, rawEr: item.cached.rawEr||0, scaleFactor: item.cached.scaleFactor||0, avgViews: item.cached.avgViews, avgLikes: item.cached.avgLikes, avgComments: item.cached.avgComments };
-        daysSince = item.cached.daysSince;
-        lastDate = item.cached.lastDate ? new Date(item.cached.lastDate) : null;
+        erData=item.cached;
+        daysSince=item.cached.daysSince;
+        lastDate=item.cached.lastDate?new Date(item.cached.lastDate):null;
       } else {
-        const vids = (channelVideoMap[ch.id]||[]).map(id=>videoStatsMap[id]).filter(Boolean);
-        erData = calcER(vids, subs);
+        const vids=(chVideoMap[ch.id]||[]).map(id=>vMap[id]).filter(Boolean);
+        erData=calcER(vids,subs);
 
-        // Get last upload date from the most recent video snippet
         if(vids.length){
-          const dates = vids.map(v=>new Date(v.snippet?.publishedAt||0)).sort((a,b)=>b-a);
-          lastDate = dates[0];
-          daysSince = Math.round((Date.now()-lastDate)/(86400*1000));
+          const dates=vids.map(v=>new Date(v.snippet?.publishedAt||0)).sort((a,b)=>b-a);
+          lastDate=dates[0];
+          daysSince=Math.round((Date.now()-lastDate)/86400000);
         }
-        // Cache this channel's data
-        newCache[ch.id] = {
-          ts: Date.now(),
-          data: { er: erData.er, rawEr: erData.rawEr, scaleFactor: erData.scaleFactor, avgViews: erData.avgViews, avgLikes: erData.avgLikes, avgComments: erData.avgComments, daysSince, lastDate: lastDate?.toISOString() }
-        };
+        newCache[ch.id]={ ts:Date.now(), data:{...erData, daysSince, lastDate:lastDate?.toISOString()} };
       }
 
-      const score = computeScore(subs, erData.er, daysSince);
+      const sc=score(subs,erData.er,daysSince);
       allResults.push({
-        channelId: ch.id,
-        title: snippet.title,
-        customUrl: snippet.customUrl||'',
-        thumbnail: snippet.thumbnails?.default?.url||'',
-        subscriberCount: subs,
-        totalViews,
-        videoCount,
-        er: erData.er,
-        rawEr: erData.rawEr||0,
-        scaleFactor: erData.scaleFactor||0,
-        avgViews: erData.avgViews,
-        avgLikes: erData.avgLikes,
-        avgComments: erData.avgComments,
-        daysSince,
-        lastDate,
-        score,
-        tier: getTier(score, subs, erData.er),
-        fromCache: item.fromCache
+        channelId:ch.id, title:sn.title, customUrl:sn.customUrl||'',
+        thumbnail:sn.thumbnails?.default?.url||'',
+        subscriberCount:subs,
+        er:erData.er, rawEr:erData.rawEr||0, sf:erData.sf||0,
+        avgViews:erData.avgViews, avgLikes:erData.avgLikes, avgCmt:erData.avgCmt||erData.avgComments||0,
+        daysSince, lastDate, score:sc,
+        tier:tier(sc,subs,erData.er),
+        fromCache:item.fromCache
       });
     }
 
     saveCache(newCache);
     renderResults();
-    setSearching(false);
+    setRunning(false);
 
   } catch(err){
     console.error(err);
     showStatus('❌ 錯誤：'+err.message,'error');
-    setSearching(false);
+    setRunning(false);
   }
 }
 
@@ -695,152 +967,143 @@ async function searchChannels(){
 //  RENDER
 // ═══════════════════════════════════════════════════
 function renderResults(){
-  const filterDays = parseInt(document.getElementById('activeFilter').value)||0;
-  const minSubs    = parseInt(document.getElementById('minSubs').value)||0;
-  let results = [...allResults];
-  let filteredInactive = 0, filteredSmall = 0;
+  const filterDays=parseInt(document.getElementById('activeFilter').value)||0;
+  const minSubs=parseInt(document.getElementById('minSubs').value)||0;
+  let res=[...allResults];
+  let filtInactive=0, filtSmall=0;
 
-  if(filterDays > 0){
-    const before = results.length;
-    results = results.filter(r=>r.daysSince<=filterDays);
-    filteredInactive = before - results.length;
-  }
-  if(minSubs > 0){
-    const before = results.length;
-    results = results.filter(r=>r.subscriberCount>=minSubs);
-    filteredSmall = before - results.length;
-  }
+  if(filterDays>0){ const b=res.length; res=res.filter(r=>r.daysSince<=filterDays); filtInactive=b-res.length; }
+  if(minSubs>0){ const b=res.length; res=res.filter(r=>r.subscriberCount>=minSubs); filtSmall=b-res.length; }
 
-  const cachedCount = results.filter(r=>r.fromCache).length;
-  const avgER = results.length ? results.reduce((s,r)=>s+r.er,0)/results.length : 0;
-  const topER  = results.length ? Math.max(...results.map(r=>r.er)) : 0;
-
-  document.getElementById('summaryBar').innerHTML = `
-    <div class="stat-card"><div class="slabel">有效頻道</div><div class="sval">${results.length}</div></div>
-    <div class="stat-card swarn"><div class="slabel">篩除（停更）</div><div class="sval">${filteredInactive}</div></div>
-    <div class="stat-card swarn"><div class="slabel">篩除（訂閱數不足）</div><div class="sval">${filteredSmall}</div></div>
-    <div class="stat-card"><div class="slabel">平均互動率 ER</div><div class="sval">${avgER.toFixed(2)}%</div></div>
-    <div class="stat-card"><div class="slabel">最高 ER</div><div class="sval">${topER.toFixed(2)}%</div></div>
-    <div class="stat-card"><div class="slabel">今日 API 用量</div><div class="sval">${getUnits()}</div></div>
-  `;
-
-  const sorted = results.sort((a,b)=>{
-    const av=a[sortColumn], bv=b[sortColumn];
+  // Sort
+  res.sort((a,b)=>{
+    const av=a[sortCol],bv=b[sortCol];
     if(typeof av==='string') return sortAsc?av.localeCompare(bv):bv.localeCompare(av);
     return sortAsc?av-bv:bv-av;
   });
-  sorted.forEach((r,i)=>r.rank=i+1);
+  res.forEach((r,i)=>r.rank=i+1);
 
-  document.getElementById('resultsBody').innerHTML = sorted.map(ch=>{
-    const daysText = ch.daysSince===9999?'未知':
-      ch.daysSince<30?`${ch.daysSince}天前`:
-      ch.daysSince<365?`${Math.round(ch.daysSince/30)}個月前`:
-      `${(ch.daysSince/365).toFixed(1)}年前`;
-    const freshCls = ch.daysSince<=90?'fresh':ch.daysSince<=365?'stale':'dead';
+  // Stats
+  const avgER=res.length?res.reduce((s,r)=>s+r.er,0)/res.length:0;
+  const topER=res.length?Math.max(...res.map(r=>r.er)):0;
+  const maxSubs=res.length?Math.max(...res.map(r=>r.subscriberCount)):1;
 
-    const erColor = ch.er>=10?'#00e5a0':ch.er>=3?'#7c6af7':ch.er>=1?'#f7a56a':'#f87171';
-    const erPct = Math.min(ch.er,25)/25*100;
+  document.getElementById('resultsCount').textContent=res.length;
+  document.getElementById('statsGrid').innerHTML=`
+    <div class="stat"><div class="stat-l">有效頻道</div><div class="stat-v accent">${res.length}</div></div>
+    <div class="stat"><div class="stat-l">篩除停更</div><div class="stat-v warn">${filtInactive}</div></div>
+    <div class="stat"><div class="stat-l">篩除訂閱不足</div><div class="stat-v warn">${filtSmall}</div></div>
+    <div class="stat"><div class="stat-l">平均 ER</div><div class="stat-v purple">${avgER.toFixed(2)}%</div></div>
+    <div class="stat"><div class="stat-l">最高 ER</div><div class="stat-v accent">${topER.toFixed(2)}%</div></div>
+    <div class="stat"><div class="stat-l">API 今日用量</div><div class="stat-v">${getUnits()}</div></div>
+  `;
 
-    const isInactive = filterDays>0 && ch.daysSince>filterDays;
-    const cacheBadge = ch.fromCache?'<span class="cbadge">快取</span>':'';
-    const inactiveBadge = isInactive?'<span class="ibadge">停更</span>':'';
+  document.getElementById('resultsBody').innerHTML = res.map(ch=>{
+    const freshCls=ch.daysSince<=90?'fresh':ch.daysSince<=365?'stale':'dead';
+    const daysText=ch.daysSince===9999?'未知':ch.daysSince<30?`${ch.daysSince}天前`:ch.daysSince<365?`${Math.round(ch.daysSince/30)}個月前`:`${(ch.daysSince/365).toFixed(1)}年前`;
+    const erColor=ch.er>=10?'var(--g1)':ch.er>=3?'#a5b4fc':ch.er>=1?'var(--warn)':'var(--danger)';
+    const erPct=Math.min(ch.er/Math.max(topER,1)*100,100);
+    const subPct=Math.min(ch.subscriberCount/maxSubs*100,100);
+    const isInactive=filterDays>0&&ch.daysSince>filterDays;
 
     return `<tr class="${isInactive?'inactive-row':''}">
-      <td class="muted mono" style="font-size:.82em">${ch.rank}</td>
+      <td style="color:var(--text3);font-family:var(--mono);font-size:12px">${ch.rank}</td>
       <td>
         <div class="ch-cell">
-          <img src="${ch.thumbnail}" class="ch-thumb" alt="" onerror="this.src='';this.style.display='none'" />
-          <div>
+          <div class="ch-avatar">
+            <img class="ch-img" src="${ch.thumbnail}" alt="" onerror="this.src='';this.style.display='none'"/>
+            <span class="ch-online ${freshCls}"></span>
+          </div>
+          <div class="ch-info">
             <div class="ch-name">
               <a href="https://www.youtube.com/channel/${ch.channelId}" target="_blank">${esc(ch.title)}</a>
-              ${inactiveBadge}${cacheBadge}
+              ${isInactive?`<span class="badge-sm badge-inactive">停更</span>`:''}
+              ${ch.fromCache?`<span class="badge-sm badge-cache">快取</span>`:''}
             </div>
-            <div class="ch-sub">${esc(ch.customUrl||ch.channelId)}</div>
-            <div class="ch-date ${freshCls}">⏱ ${daysText}更新</div>
+            <div class="ch-handle">${esc(ch.customUrl||ch.channelId)}</div>
+            <div class="ch-date ${freshCls}">⏱ ${daysText}</div>
           </div>
         </div>
       </td>
       <td><span class="tier tier-${ch.tier}">${ch.tier}</span></td>
-      <td class="mono">${fmt(ch.subscriberCount)}</td>
       <td>
-        <div class="er-wrap">
-          <div class="er-main">
-            <div class="er-track"><div class="er-fill" style="width:${erPct.toFixed(1)}%;background:${erColor}"></div></div>
-            <span class="er-val" style="color:${erColor}">${ch.er.toFixed(2)}%</span>
-          </div>
-          <div class="er-breakdown">
-            原始:${ch.rawEr?ch.rawEr.toFixed(1):'?'}% × 規模${ch.scaleFactor?(ch.scaleFactor*100).toFixed(0):'?'}%
-          </div>
-          <div class="er-breakdown">V:${fmt(ch.avgViews)} L:${fmt(ch.avgLikes)} C:${fmt(ch.avgComments)}</div>
+        <div class="sub-cell">
+          <div class="sub-num">${fmt(ch.subscriberCount)}</div>
+          <div class="sub-bar"><div class="sub-fill" style="width:${subPct.toFixed(1)}%"></div></div>
         </div>
       </td>
-      <td class="mono">${fmt(ch.avgViews)}</td>
-      <td class="mono">${fmt(ch.avgLikes)}</td>
-      <td class="mono" style="color:${ch.avgComments>0?'#7c6af7':'var(--muted)'}">${fmt(ch.avgComments)}</td>
-      <td class="mono ${freshCls}" style="font-size:.82em">${daysText}</td>
+      <td>
+        <div class="er-cell">
+          <div class="er-top">
+            <span class="er-num" style="color:${erColor}">${ch.er.toFixed(2)}%</span>
+            <span class="er-raw">原始 ${ch.rawEr?ch.rawEr.toFixed(1):0}% × ${ch.sf?(ch.sf*100).toFixed(0):0}%</span>
+          </div>
+          <div class="er-bar"><div class="er-fill" style="width:${erPct.toFixed(1)}%;background:${erColor}"></div></div>
+          <div class="er-meta">
+            <span>V:${fmt(ch.avgViews)}</span>
+            <span>L:${fmt(ch.avgLikes)}</span>
+            <span class="cmt">C:${ch.avgCmt>0?fmt(ch.avgCmt):'—'}</span>
+          </div>
+        </div>
+      </td>
+      <td class="mono" style="font-size:13px;color:var(--text2)">${fmt(ch.avgViews)}</td>
+      <td class="mono" style="font-size:13px;color:${ch.avgCmt>0?'#a5b4fc':'var(--text3)'}">${ch.avgCmt>0?fmt(ch.avgCmt):'—'}</td>
+      <td class="ch-date ${freshCls}" style="font-family:var(--mono);font-size:11px;white-space:nowrap">${daysText}</td>
     </tr>`;
   }).join('');
 
+  document.getElementById('resultsEmpty').style.display='none';
   document.getElementById('resultsPanel').style.display='block';
-  showStatus(
-    `✅ 顯示 ${results.length} 個頻道（依 ER×規模修正排序），篩除 ${filteredInactive} 個停更、${filteredSmall} 個訂閱不足 · API: ${getUnits()} units`,
-    'success'
-  );
+  showStatus(`✅ ${res.length} 個頻道（ER×規模修正排序），篩除停更 ${filtInactive}・訂閱不足 ${filtSmall}・API ${getUnits()} units`,'success');
 }
 
 // ═══════════════════════════════════════════════════
-//  UI HELPERS
+//  SORT
 // ═══════════════════════════════════════════════════
 function st(col){
-  sortAsc = sortColumn===col ? !sortAsc : false;
-  sortColumn = col;
-  document.querySelectorAll('thead th').forEach(th=>th.classList.remove('sorted'));
-  const th = document.getElementById('th-'+col);
-  if(th) th.classList.add('sorted');
+  sortAsc = sortCol===col ? !sortAsc : false;
+  sortCol = col;
+  document.querySelectorAll('thead th').forEach(t=>{ t.classList.remove('sorted'); const i=t.querySelector('.si'); if(i) i.textContent='↕'; });
+  const th=document.getElementById('th-'+col);
+  if(th){ th.classList.add('sorted'); const i=th.querySelector('.si'); if(i) i.textContent=sortAsc?'↑':'↓'; }
   renderResults();
 }
 
-function fmt(n){
-  if(n===0) return '-';
-  if(n>=1000000) return (n/1000000).toFixed(1)+'M';
-  if(n>=1000) return (n/1000).toFixed(1)+'K';
-  return n.toString();
+// ═══════════════════════════════════════════════════
+//  UTILS
+// ═══════════════════════════════════════════════════
+function fmt(n){ if(!n) return '-'; if(n>=1000000)return (n/1e6).toFixed(1)+'M'; if(n>=1000)return (n/1000).toFixed(1)+'K'; return n.toString() }
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;') }
+function showStatus(msg,type='loading'){
+  const d=document.getElementById('statusBar');
+  d.className='status-bar '+type;
+  d.innerHTML=(type==='loading'?'<span class="spinner"></span>':'')+`<span class="progress-text">${msg}</span>`;
 }
-
-function esc(s){
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+function setRunning(on){
+  const btn=document.getElementById('runBtn');
+  const sp=document.getElementById('runSpinner');
+  btn.disabled=on;
+  sp.style.display=on?'inline-block':'none';
 }
-
-function showStatus(msg, type='loading'){
-  const d = document.getElementById('status');
-  d.className = 'status '+type;
-  d.innerHTML = (type==='loading'?'<span class="spinner"></span>':'')+msg;
-}
-
-function setSearching(on){
-  document.getElementById('searchSpinner').style.display = on?'inline-block':'none';
-}
-
 function saveApiKey(){
-  const k = document.getElementById('apiKey').value.trim();
+  const k=document.getElementById('apiKey').value.trim();
   if(!k){ showStatus('請輸入 API Key','error'); return; }
-  localStorage.setItem(API_KEY_STORAGE,k);
+  localStorage.setItem(APIKEY_STOR,k);
   showStatus('✅ API Key 已儲存','success');
 }
-
 function clearResults(){
   allResults=[];
   document.getElementById('resultsPanel').style.display='none';
-  document.getElementById('status').style.display='none';
+  document.getElementById('resultsEmpty').style.display='block';
+  document.getElementById('statusBar').style.display='none';
 }
-
 function exportCSV(){
-  if(!allResults.length){ showStatus('❌ 沒有資料','error'); return; }
-  const h=['排名','評級','頻道名稱','頻道ID','訂閱數','互動率ER%','均觀看','均按讚','均留言','最後更新(天前)','總影片數','快取'];
-  const rows = allResults.map((ch,i)=>[
+  if(!allResults.length){ showStatus('❌ 沒有資料可匯出','error'); return; }
+  const h=['排名','評級','頻道名稱','頻道ID','訂閱數','修正ER%','原始ER%','規模係數%','均觀看','均按讚','均留言','最後更新(天前)'];
+  const rows=allResults.map((ch,i)=>[
     i+1,ch.tier,`"${ch.title.replace(/"/g,'""')}"`,ch.channelId,
-    ch.subscriberCount,ch.er.toFixed(4),ch.avgViews,ch.avgLikes,ch.avgComments,
-    ch.daysSince===9999?'未知':ch.daysSince,ch.videoCount,ch.fromCache?'是':'否'
+    ch.subscriberCount,ch.er.toFixed(4),ch.rawEr.toFixed(4),(ch.sf*100).toFixed(1),
+    ch.avgViews,ch.avgLikes,ch.avgCmt,ch.daysSince===9999?'未知':ch.daysSince
   ]);
   const csv=[h,...rows].map(r=>r.join(',')).join('\n');
   const a=document.createElement('a');
@@ -849,13 +1112,6 @@ function exportCSV(){
   a.click();
   showStatus('✅ CSV 匯出完成','success');
 }
-
-// Init
-window.onload=()=>{
-  const saved=localStorage.getItem(API_KEY_STORAGE);
-  if(saved) document.getElementById('apiKey').value=saved;
-  updateUnitsUI();
-};
 </script>
 </body>
 </html>
