@@ -101,11 +101,32 @@ body::after{width:500px;height:500px;background:radial-gradient(circle,var(--g3)
 .btn-danger:hover{background:rgba(239,68,68,.2)}
 
 /* ── MAIN LAYOUT ────────────────────────── */
-.layout{display:grid;grid-template-columns:320px 1fr;gap:20px;align-items:start}
+.layout{display:grid;grid-template-columns:280px 1fr;gap:20px;align-items:start}
 @media(max-width:960px){.layout{grid-template-columns:1fr}}
 
 /* ── SIDEBAR (Search Panel) ─────────────── */
-.sidebar{position:sticky;top:80px}
+.sidebar{
+  position:sticky;top:74px;
+  height:calc(100vh - 100px);
+  display:flex;flex-direction:column;
+  gap:0;
+  overflow:hidden;
+}
+.sidebar-inner{
+  flex:1;overflow-y:auto;overflow-x:hidden;
+  padding-right:2px;
+  scrollbar-width:thin;
+  scrollbar-color:var(--border2) transparent;
+}
+.sidebar-inner::-webkit-scrollbar{width:4px}
+.sidebar-inner::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+.sidebar-footer{
+  flex-shrink:0;
+  padding-top:10px;
+  border-top:1px solid var(--border);
+  background:var(--bg);
+  margin-top:6px;
+}
 .card{background:var(--s1);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
 .card-head{
   padding:14px 18px;border-bottom:1px solid var(--border);
@@ -115,96 +136,102 @@ body::after{width:500px;height:500px;background:radial-gradient(circle,var(--g3)
 .card-body{padding:16px 18px}
 
 /* Region selector with flags */
-.region-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
+.region-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:10px}
 .region-btn{
-  display:flex;align-items:center;gap:8px;padding:10px 12px;
-  background:var(--s2);border:1px solid var(--border);border-radius:10px;
-  cursor:pointer;transition:all .15s;font-size:13px;color:var(--text2);font-weight:500;
+  display:flex;align-items:center;gap:6px;padding:7px 9px;
+  background:var(--s2);border:1px solid var(--border);border-radius:8px;
+  cursor:pointer;transition:all .15s;font-size:12px;color:var(--text2);font-weight:500;
 }
 .region-btn:hover{border-color:var(--border2);color:var(--text)}
 .region-btn.active{
   background:rgba(0,212,160,.08);border-color:var(--g1);color:var(--g1);
 }
-.region-flag{font-size:18px;line-height:1}
-.region-name{font-size:12px}
-.region-hint{font-size:10px;color:var(--text3);margin-top:1px;font-family:var(--mono)}
+.region-flag{font-size:15px;line-height:1;flex-shrink:0}
+.region-name{font-size:11px;font-weight:600;line-height:1.2}
+.region-hint{font-size:9px;color:var(--text3);margin-top:1px;font-family:var(--mono)}
 
 /* Category selector */
-.cat-section{margin-bottom:14px}
-.cat-section-label{
-  font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;
-  color:var(--text3);margin-bottom:8px;
+.cat-scroll{
+  max-height:200px;overflow-y:auto;overflow-x:hidden;
+  padding-right:4px;
+  scrollbar-width:thin;
+  scrollbar-color:var(--border2) transparent;
 }
-.cat-tags{display:flex;flex-wrap:wrap;gap:6px}
+.cat-scroll::-webkit-scrollbar{width:3px}
+.cat-scroll::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+.cat-section{margin-bottom:10px}
+.cat-section-label{
+  font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:2px;
+  color:var(--text3);margin-bottom:6px;
+}
+.cat-tags{display:flex;flex-wrap:wrap;gap:4px}
 .cat-tag{
-  padding:5px 12px;border-radius:999px;font-size:12px;font-weight:500;
+  padding:3px 9px;border-radius:999px;font-size:11px;font-weight:500;
   background:var(--s2);border:1px solid var(--border);color:var(--text2);
   cursor:pointer;transition:all .15s;user-select:none;
 }
 .cat-tag:hover{border-color:var(--border2);color:var(--text)}
-.cat-tag.active{
-  background:rgba(99,102,241,.15);border-color:var(--g3);color:#a5b4fc;
-}
 .cat-tag.active-primary{
   background:rgba(0,212,160,.12);border-color:var(--g1);color:var(--g1);
 }
 
 /* selected display */
 .selected-cats{
-  margin-top:10px;padding:10px 12px;background:var(--s2);border-radius:8px;
-  border:1px solid var(--border);min-height:40px;
-  font-size:12px;color:var(--text2);
+  margin-top:8px;padding:7px 10px;background:var(--s2);border-radius:8px;
+  border:1px solid var(--border);min-height:32px;
+  font-size:11px;color:var(--text2);
 }
-.selected-cats.empty{color:var(--text3);font-style:italic}
+.selected-cats.empty{color:var(--text3);font-style:italic;font-size:11px}
 .sel-chip{
-  display:inline-flex;align-items:center;gap:4px;
+  display:inline-flex;align-items:center;gap:3px;
   background:rgba(0,212,160,.1);border:1px solid rgba(0,212,160,.25);
-  border-radius:999px;padding:3px 10px 3px 10px;margin:2px;
-  font-size:11px;color:var(--g1);font-weight:500;
+  border-radius:999px;padding:2px 8px 2px 8px;margin:2px;
+  font-size:10px;color:var(--g1);font-weight:500;
 }
-.sel-chip button{background:none;border:0;color:var(--g1);cursor:pointer;padding:0 0 0 2px;font-size:13px;line-height:1;opacity:.7}
+.sel-chip button{background:none;border:0;color:var(--g1);cursor:pointer;padding:0 0 0 2px;font-size:12px;line-height:1;opacity:.7}
 .sel-chip button:hover{opacity:1}
 
 /* Custom keyword input */
-.kw-row{display:flex;gap:8px;margin-top:8px}
+.kw-row{display:flex;gap:6px;margin-top:7px}
 .kw-row input{
   flex:1;background:var(--s2);border:1px solid var(--border);color:var(--text);
-  border-radius:8px;padding:8px 12px;font-size:13px;transition:.2s;font-family:var(--sans);
+  border-radius:7px;padding:6px 10px;font-size:12px;transition:.2s;font-family:var(--sans);
 }
 .kw-row input:focus{outline:0;border-color:var(--g3);box-shadow:0 0 0 3px rgba(99,102,241,.1)}
 .kw-row input::placeholder{color:var(--text3)}
 
 /* Form fields */
-.field{margin-bottom:14px}
-.field-label{font-size:11px;font-weight:600;color:var(--text2);margin-bottom:6px;display:block;text-transform:uppercase;letter-spacing:1px}
+.field{margin-bottom:10px}
+.field-label{font-size:10px;font-weight:600;color:var(--text2);margin-bottom:4px;display:block;text-transform:uppercase;letter-spacing:1px}
 .field select,.field input{
   width:100%;background:var(--s2);border:1px solid var(--border);color:var(--text);
-  border-radius:8px;padding:9px 12px;font-size:13px;transition:.2s;font-family:var(--sans);
+  border-radius:8px;padding:7px 10px;font-size:12px;transition:.2s;font-family:var(--sans);
   appearance:none;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2394a3b8' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
-  background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;
+  background-repeat:no-repeat;background-position:right 10px center;padding-right:28px;
 }
 .field select:focus,.field input:focus{outline:0;border-color:var(--g1)}
-.field-hint{font-size:10px;color:var(--text3);margin-top:4px;line-height:1.5}
+/* 2-col settings grid */
+.fields-2col{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.fields-2col .field{margin-bottom:0}
 
-.divider{height:1px;background:var(--border);margin:16px 0}
+.divider{height:1px;background:var(--border);margin:10px 0}
 
 /* ER formula display */
 .er-formula{
-  background:var(--s2);border-radius:8px;padding:12px;border:1px solid var(--border);
-  font-family:var(--mono);font-size:11px;line-height:1.8;
+  background:var(--s2);border-radius:8px;padding:9px 11px;border:1px solid var(--border);
+  font-family:var(--mono);font-size:10px;line-height:1.7;
 }
 .er-formula .formula-line{color:var(--text2)}
 .er-formula .hl{color:var(--g1)}
 .er-formula .hl2{color:#a5b4fc}
-.er-formula .hl3{color:var(--warn)}
 
 /* Run button */
 .run-btn{
-  width:100%;padding:14px;border:0;border-radius:10px;
+  width:100%;padding:11px;border:0;border-radius:10px;
   background:linear-gradient(135deg,var(--g1),var(--g2));
-  color:#000;font-size:14px;font-weight:700;cursor:pointer;
-  transition:all .2s;font-family:var(--sans);margin-top:4px;
+  color:#000;font-size:13px;font-weight:700;cursor:pointer;
+  transition:all .2s;font-family:var(--sans);
   display:flex;align-items:center;justify-content:center;gap:8px;
   position:relative;overflow:hidden;
 }
@@ -385,98 +412,111 @@ tbody tr:hover td{background:rgba(255,255,255,.018)}
 
   <!-- ─ SIDEBAR ─ -->
   <div class="sidebar">
+    <div class="sidebar-inner">
 
     <!-- Region -->
-    <div class="card" style="margin-bottom:14px">
-      <div class="card-head">
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-head" style="padding:10px 14px">
         <span class="card-title">目標地區</span>
-        <span style="font-size:10px;color:var(--text3)">影響搜尋排序與語言</span>
+        <span style="font-size:9px;color:var(--text3)">影響搜尋排序</span>
       </div>
-      <div class="card-body" style="padding-bottom:12px">
-        <div class="region-grid" id="regionGrid">
-          <!-- populated by JS -->
-        </div>
-        <div style="font-size:10px;color:var(--text3);line-height:1.6;padding:8px 10px;background:var(--s2);border-radius:8px;border:1px solid var(--border)">
-          ⚠️ YouTube API 地區參數影響搜尋排序，非嚴格過濾。本工具額外注入地區關鍵字強化精準度。
+      <div class="card-body" style="padding:10px 14px 12px">
+        <div class="region-grid" id="regionGrid"></div>
+        <div style="font-size:9px;color:var(--text3);line-height:1.5;padding:6px 8px;background:var(--s2);border-radius:6px;border:1px solid var(--border)">
+          ⚠️ 地區影響排序，非嚴格鎖定。工具會注入地區關鍵字強化精準度。
         </div>
       </div>
     </div>
 
     <!-- Category -->
-    <div class="card" style="margin-bottom:14px">
-      <div class="card-head">
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-head" style="padding:10px 14px">
         <span class="card-title">頻道品類</span>
-        <button class="btn btn-ghost btn-sm" onclick="clearCats()" style="padding:3px 8px;font-size:10px">清除</button>
+        <button class="btn btn-ghost btn-sm" onclick="clearCats()" style="padding:2px 8px;font-size:10px">清除</button>
       </div>
-      <div class="card-body" id="catBody">
-        <!-- populated by JS -->
+      <div class="card-body" style="padding:10px 14px 12px">
+        <div class="cat-scroll" id="catBody"></div>
+        <div id="selectedDisplay" class="selected-cats empty">尚未選擇品類</div>
+        <div class="cat-section-label" style="margin-top:8px;margin-bottom:4px">自訂關鍵字</div>
+        <div class="kw-row">
+          <input type="text" id="customKw" placeholder="輸入關鍵字..." />
+          <button class="btn btn-ghost btn-sm" onclick="addCustomKw()">+ 加入</button>
+        </div>
       </div>
     </div>
 
     <!-- Settings -->
-    <div class="card" style="margin-bottom:14px">
-      <div class="card-head"><span class="card-title">篩選與設定</span></div>
-      <div class="card-body">
-        <div class="field">
-          <label class="field-label">搜尋頻道數</label>
-          <select id="maxResults">
-            <option value="20">20 個（快速）</option>
-            <option value="50" selected>50 個（建議）</option>
-          </select>
-        </div>
-        <div class="field">
-          <label class="field-label">活躍篩選（最後發片）</label>
-          <select id="activeFilter">
-            <option value="90">3 個月內</option>
-            <option value="180" selected>6 個月內</option>
-            <option value="365">1 年內</option>
-            <option value="0">不限制</option>
-          </select>
-        </div>
-        <div class="field">
-          <label class="field-label">最低訂閱門檻</label>
-          <select id="minSubs">
-            <option value="0">不限制</option>
-            <option value="1000" selected>1,000+</option>
-            <option value="5000">5,000+</option>
-            <option value="10000">10,000+</option>
-            <option value="50000">50,000+</option>
-            <option value="100000">100,000+</option>
-          </select>
-        </div>
-        <div class="field">
-          <label class="field-label">近期影片取樣數（ER 計算）</label>
-          <select id="recentCount">
-            <option value="5">最近 5 支</option>
-            <option value="10" selected>最近 10 支</option>
-            <option value="20">最近 20 支</option>
-          </select>
-        </div>
-        <div class="field">
-          <label class="field-label">快取時效</label>
-          <select id="cacheHours">
-            <option value="24" selected>24 小時</option>
-            <option value="6">6 小時</option>
-            <option value="0">不快取</option>
-          </select>
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-head" style="padding:10px 14px">
+        <span class="card-title">篩選與設定</span>
+      </div>
+      <div class="card-body" style="padding:10px 14px 12px">
+        <div class="fields-2col">
+          <div class="field">
+            <label class="field-label">搜尋數量</label>
+            <select id="maxResults">
+              <option value="20">20（快速）</option>
+              <option value="50" selected>50（建議）</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="field-label">活躍篩選</label>
+            <select id="activeFilter">
+              <option value="90">3個月內</option>
+              <option value="180" selected>6個月內</option>
+              <option value="365">1年內</option>
+              <option value="0">不限</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="field-label">最低訂閱</label>
+            <select id="minSubs">
+              <option value="0">不限</option>
+              <option value="1000" selected>1K+</option>
+              <option value="5000">5K+</option>
+              <option value="10000">1萬+</option>
+              <option value="50000">5萬+</option>
+              <option value="100000">10萬+</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="field-label">影片取樣</label>
+            <select id="recentCount">
+              <option value="5">最近5支</option>
+              <option value="10" selected>最近10支</option>
+              <option value="20">最近20支</option>
+            </select>
+          </div>
+          <div class="field" style="grid-column:1/-1">
+            <label class="field-label">快取時效</label>
+            <select id="cacheHours">
+              <option value="24" selected>24小時（省API）</option>
+              <option value="6">6小時</option>
+              <option value="0">不快取</option>
+            </select>
+          </div>
         </div>
         <div class="divider"></div>
         <div class="er-formula">
-          <div class="formula-line">ER = <span class="hl">原始互動率</span> × <span class="hl2">規模係數</span></div>
-          <div class="formula-line" style="font-size:10px;margin-top:4px">原始 = (觀看 + 留言×<span class="hl">5</span> + 按讚×<span class="hl2">2</span>) / 訂閱</div>
-          <div class="formula-line" style="font-size:10px">規模 = log₁₀(訂閱) / 6 <span style="color:var(--text3)">（小頻道降權）</span></div>
+          <div class="formula-line">ER = <span class="hl">原始率</span> × <span class="hl2">規模係數</span></div>
+          <div class="formula-line">(觀看 + 留言×<span class="hl">5</span> + 按讚×<span class="hl2">2</span>) / 訂閱</div>
+          <div class="formula-line" style="color:var(--text3)">規模=log₁₀(訂閱)/6 · 小頻道自動降權</div>
         </div>
       </div>
     </div>
 
-    <!-- Run -->
-    <button class="run-btn" id="runBtn" onclick="searchChannels()">
-      <span id="runSpinner" style="display:none" class="spinner"></span>
-      <span>🔍 開始分析</span>
-    </button>
-    <div style="display:flex;gap:8px;margin-top:10px">
-      <button class="btn btn-ghost" style="flex:1;justify-content:center" onclick="exportCSV()">📥 匯出 CSV</button>
-      <button class="btn btn-danger" style="flex:1;justify-content:center" onclick="clearResults()">🗑️ 清除</button>
+    </div><!-- /sidebar-inner -->
+
+    <!-- Footer: always visible run button -->
+    <div class="sidebar-footer">
+      <button class="run-btn" id="runBtn" onclick="searchChannels()">
+        <span id="runSpinner" style="display:none" class="spinner"></span>
+        <span>🔍 開始分析</span>
+      </button>
+      <div style="display:flex;gap:6px;margin-top:8px">
+        <button class="btn btn-ghost" style="flex:1;justify-content:center;font-size:12px" onclick="exportCSV()">📥 CSV</button>
+        <button class="btn btn-danger" style="flex:1;justify-content:center;font-size:12px" onclick="clearResults()">🗑️ 清除</button>
+      </div>
     </div>
 
   </div><!-- /sidebar -->
@@ -652,37 +692,29 @@ function selectRegion(id){
 }
 
 function buildCatBody(){
-  const body = document.getElementById('catBody');
-  body.innerHTML = CATEGORIES.map(grp => `
-    <div class="cat-section">
-      <div class="cat-section-label">${grp.group}</div>
-      <div class="cat-tags">
-        ${grp.tags.map(t=>`
-          <div class="cat-tag ${selectedCats.has(t.id)?'active-primary':''}"
-               onclick="toggleCat('${t.id}','${t.label.replace(/'/g,"\\'")}',${JSON.stringify(t.kw).replace(/"/g,"'")})">
-            ${t.label}
-          </div>
-        `).join('')}
+  const scroll = document.getElementById('catBody');
+  if(scroll){
+    scroll.innerHTML = CATEGORIES.map(grp => `
+      <div class="cat-section">
+        <div class="cat-section-label">${grp.group}</div>
+        <div class="cat-tags">
+          ${grp.tags.map(t=>`
+            <div class="cat-tag ${selectedCats.has(t.id)?'active-primary':''}"
+                 onclick="toggleCat('${t.id}')">
+              ${t.label}
+            </div>
+          `).join('')}
+        </div>
       </div>
-    </div>
-  `).join('') + `
-    <div class="divider"></div>
-    <div class="cat-section-label">自訂關鍵字</div>
-    <div class="kw-row">
-      <input type="text" id="customKw" placeholder="輸入自訂關鍵字..." />
-      <button class="btn btn-ghost btn-sm" onclick="addCustomKw()">+ 加入</button>
-    </div>
-    <div id="selectedDisplay" class="selected-cats ${selectedCats.size===0?'empty':''}">
-      ${selectedCats.size===0?'尚未選擇品類':''}
-    </div>
-  `;
+    `).join('');
+  }
   updateSelectedDisplay();
 }
 
 const catMeta = {}; // id -> {label, kw}
 CATEGORIES.forEach(g=>g.tags.forEach(t=>{ catMeta[t.id]={label:t.label,kw:t.kw}; }));
 
-function toggleCat(id, label, kw){
+function toggleCat(id){
   if(selectedCats.has(id)) selectedCats.delete(id);
   else selectedCats.add(id);
   buildCatBody();
@@ -701,11 +733,7 @@ function addCustomKw(){
 
 function clearCats(){
   selectedCats.clear();
-  // Also clear custom metas
-  Object.keys(catMeta).filter(k=>k.startsWith('custom_')).forEach(k=>{
-    delete catMeta[k];
-    selectedCats.delete(k);
-  });
+  Object.keys(catMeta).filter(k=>k.startsWith('custom_')).forEach(k=>delete catMeta[k]);
   buildCatBody();
 }
 
