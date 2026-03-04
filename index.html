@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>VGV KOL Analyzer</title>
+<title>VGV KOL Analyzer — VGV 圈粉行銷科技</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <style>
 :root{
@@ -29,8 +29,6 @@
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
-
-/* animated gradient orbs */
 body::before,body::after{
   content:'';position:fixed;border-radius:50%;pointer-events:none;z-index:0;
   filter:blur(80px);opacity:.12;
@@ -42,7 +40,34 @@ body::after{width:500px;height:500px;background:radial-gradient(circle,var(--g3)
 
 .wrap{max-width:1440px;margin:0 auto;padding:0 24px 60px;position:relative;z-index:1}
 
-/* ── HEADER ─────────────────────────────── */
+/* ── LANG TOGGLE ── */
+.lang-bar{
+  display:flex;justify-content:flex-end;padding:8px 0 4px;gap:6px;
+}
+.lang-btn{
+  padding:4px 12px;border-radius:999px;font-size:11px;font-weight:600;cursor:pointer;
+  background:var(--s2);border:1px solid var(--border);color:var(--text2);transition:.15s;font-family:var(--sans);
+}
+.lang-btn.active{background:rgba(0,212,160,.12);border-color:var(--g1);color:var(--g1)}
+
+/* hide/show lang layers */
+.zh,.en{ display:none }
+body.lang-zh .zh{ display:revert }
+body.lang-en .en{ display:revert }
+/* For inline spans */
+span.zh, span.en{ display:none }
+body.lang-zh span.zh{ display:inline }
+body.lang-en span.en{ display:inline }
+/* For block elements needing block display */
+div.zh, div.en{ display:none }
+body.lang-zh div.zh{ display:block }
+body.lang-en div.en{ display:block }
+/* For table headers/cells */
+th.zh, th.en, td.zh, td.en{ display:none }
+body.lang-zh th.zh, body.lang-zh td.zh{ display:table-cell }
+body.lang-en th.en, body.lang-en td.en{ display:table-cell }
+
+/* ── HEADER ── */
 .topbar{
   display:flex;align-items:center;justify-content:space-between;
   padding:20px 0 16px;border-bottom:1px solid var(--border);margin-bottom:28px;
@@ -57,7 +82,7 @@ body::after{width:500px;height:500px;background:radial-gradient(circle,var(--g3)
 }
 .logo-text{font-family:var(--mono);font-size:15px;color:var(--text);letter-spacing:-.3px}
 .logo-sub{font-size:11px;color:var(--text2);margin-top:1px}
-.topbar-right{display:flex;align-items:center;gap:10px}
+.topbar-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .units-pill{
   display:flex;align-items:center;gap:8px;
   background:var(--s2);border:1px solid var(--border);border-radius:999px;
@@ -71,12 +96,13 @@ body::after{width:500px;height:500px;background:radial-gradient(circle,var(--g3)
 .units-val.warn{color:var(--warn)}
 .units-val.danger{color:var(--danger)}
 
-/* ── API KEY PANEL ──────────────────────── */
+/* ── API KEY PANEL ── */
 .apibar{
   background:linear-gradient(135deg,rgba(0,212,160,.06),rgba(99,102,241,.06));
   border:1px solid rgba(0,212,160,.2);border-radius:var(--radius);
-  padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+  padding:16px 20px;margin-bottom:20px;
 }
+.apibar-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 .apibar-icon{color:var(--g1);font-size:18px;flex-shrink:0}
 .apibar-label{font-size:12px;color:var(--text2);flex-shrink:0;font-weight:500}
 .apibar input{
@@ -86,6 +112,14 @@ body::after{width:500px;height:500px;background:radial-gradient(circle,var(--g3)
 }
 .apibar input:focus{outline:0;border-color:var(--g1);box-shadow:0 0 0 3px rgba(0,212,160,.1)}
 .apibar-btns{display:flex;gap:8px}
+/* Privacy notice */
+.privacy-note{
+  margin-top:10px;padding:10px 14px;background:rgba(0,212,160,.04);
+  border-radius:8px;border:1px solid rgba(0,212,160,.1);
+  font-size:11px;line-height:1.6;color:var(--text2);
+}
+.privacy-note strong{color:var(--g1)}
+
 .btn{
   padding:9px 18px;border:0;border-radius:8px;font-size:13px;font-weight:600;
   cursor:pointer;transition:all .18s;font-family:var(--sans);display:inline-flex;align-items:center;gap:6px;
@@ -93,23 +127,21 @@ body::after{width:500px;height:500px;background:radial-gradient(circle,var(--g3)
 }
 .btn-primary{background:linear-gradient(135deg,var(--g1),var(--g2));color:#000}
 .btn-primary:hover{transform:translateY(-1px);box-shadow:0 4px 20px rgba(0,212,160,.3)}
-.btn-primary:active{transform:none}
 .btn-ghost{background:var(--s3);color:var(--text2);border:1px solid var(--border2)}
 .btn-ghost:hover{border-color:var(--g1);color:var(--g1)}
 .btn-sm{padding:7px 14px;font-size:12px}
 .btn-danger{background:rgba(239,68,68,.1);color:var(--danger);border:1px solid rgba(239,68,68,.2)}
 .btn-danger:hover{background:rgba(239,68,68,.2)}
 
-/* ── MAIN LAYOUT ────────────────────────── */
+/* ── MAIN LAYOUT ── */
 .layout{display:grid;grid-template-columns:280px 1fr;gap:20px;align-items:start}
 @media(max-width:960px){.layout{grid-template-columns:1fr}}
 
-/* ── SIDEBAR (Search Panel) ─────────────── */
+/* ── SIDEBAR ── */
 .sidebar{
   position:sticky;top:74px;
   height:calc(100vh - 100px);
   display:flex;flex-direction:column;
-  gap:0;
   overflow:hidden;
 }
 .sidebar-inner{
@@ -121,11 +153,8 @@ body::after{width:500px;height:500px;background:radial-gradient(circle,var(--g3)
 .sidebar-inner::-webkit-scrollbar{width:4px}
 .sidebar-inner::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
 .sidebar-footer{
-  flex-shrink:0;
-  padding-top:10px;
-  border-top:1px solid var(--border);
-  background:var(--bg);
-  margin-top:6px;
+  flex-shrink:0;padding-top:10px;
+  border-top:1px solid var(--border);background:var(--bg);margin-top:6px;
 }
 .card{background:var(--s1);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
 .card-head{
@@ -135,7 +164,7 @@ body::after{width:500px;height:500px;background:radial-gradient(circle,var(--g3)
 .card-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--text2)}
 .card-body{padding:16px 18px}
 
-/* Region selector with flags */
+/* Region */
 .region-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:10px}
 .region-btn{
   display:flex;align-items:center;gap:6px;padding:7px 9px;
@@ -143,14 +172,12 @@ body::after{width:500px;height:500px;background:radial-gradient(circle,var(--g3)
   cursor:pointer;transition:all .15s;font-size:12px;color:var(--text2);font-weight:500;
 }
 .region-btn:hover{border-color:var(--border2);color:var(--text)}
-.region-btn.active{
-  background:rgba(0,212,160,.08);border-color:var(--g1);color:var(--g1);
-}
+.region-btn.active{background:rgba(0,212,160,.08);border-color:var(--g1);color:var(--g1)}
 .region-flag{font-size:15px;line-height:1;flex-shrink:0}
 .region-name{font-size:11px;font-weight:600;line-height:1.2}
 .region-hint{font-size:9px;color:var(--text3);margin-top:1px;font-family:var(--mono)}
 
-/* Category selector */
+/* Category */
 .cat-scroll{
   max-height:200px;overflow-y:auto;overflow-x:hidden;
   padding-right:4px;
@@ -160,10 +187,7 @@ body::after{width:500px;height:500px;background:radial-gradient(circle,var(--g3)
 .cat-scroll::-webkit-scrollbar{width:3px}
 .cat-scroll::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
 .cat-section{margin-bottom:10px}
-.cat-section-label{
-  font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:2px;
-  color:var(--text3);margin-bottom:6px;
-}
+.cat-section-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--text3);margin-bottom:6px}
 .cat-tags{display:flex;flex-wrap:wrap;gap:4px}
 .cat-tag{
   padding:3px 9px;border-radius:999px;font-size:11px;font-weight:500;
@@ -171,27 +195,22 @@ body::after{width:500px;height:500px;background:radial-gradient(circle,var(--g3)
   cursor:pointer;transition:all .15s;user-select:none;
 }
 .cat-tag:hover{border-color:var(--border2);color:var(--text)}
-.cat-tag.active-primary{
-  background:rgba(0,212,160,.12);border-color:var(--g1);color:var(--g1);
-}
+.cat-tag.active-primary{background:rgba(0,212,160,.12);border-color:var(--g1);color:var(--g1)}
 
-/* selected display */
 .selected-cats{
   margin-top:8px;padding:7px 10px;background:var(--s2);border-radius:8px;
-  border:1px solid var(--border);min-height:32px;
-  font-size:11px;color:var(--text2);
+  border:1px solid var(--border);min-height:32px;font-size:11px;color:var(--text2);
 }
 .selected-cats.empty{color:var(--text3);font-style:italic;font-size:11px}
 .sel-chip{
   display:inline-flex;align-items:center;gap:3px;
   background:rgba(0,212,160,.1);border:1px solid rgba(0,212,160,.25);
-  border-radius:999px;padding:2px 8px 2px 8px;margin:2px;
+  border-radius:999px;padding:2px 8px;margin:2px;
   font-size:10px;color:var(--g1);font-weight:500;
 }
 .sel-chip button{background:none;border:0;color:var(--g1);cursor:pointer;padding:0 0 0 2px;font-size:12px;line-height:1;opacity:.7}
 .sel-chip button:hover{opacity:1}
 
-/* Custom keyword input */
 .kw-row{display:flex;gap:6px;margin-top:7px}
 .kw-row input{
   flex:1;background:var(--s2);border:1px solid var(--border);color:var(--text);
@@ -200,7 +219,6 @@ body::after{width:500px;height:500px;background:radial-gradient(circle,var(--g3)
 .kw-row input:focus{outline:0;border-color:var(--g3);box-shadow:0 0 0 3px rgba(99,102,241,.1)}
 .kw-row input::placeholder{color:var(--text3)}
 
-/* Form fields */
 .field{margin-bottom:10px}
 .field-label{font-size:10px;font-weight:600;color:var(--text2);margin-bottom:4px;display:block;text-transform:uppercase;letter-spacing:1px}
 .field select,.field input{
@@ -211,13 +229,10 @@ body::after{width:500px;height:500px;background:radial-gradient(circle,var(--g3)
   background-repeat:no-repeat;background-position:right 10px center;padding-right:28px;
 }
 .field select:focus,.field input:focus{outline:0;border-color:var(--g1)}
-/* 2-col settings grid */
 .fields-2col{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .fields-2col .field{margin-bottom:0}
-
 .divider{height:1px;background:var(--border);margin:10px 0}
 
-/* ER formula display */
 .er-formula{
   background:var(--s2);border-radius:8px;padding:9px 11px;border:1px solid var(--border);
   font-family:var(--mono);font-size:10px;line-height:1.7;
@@ -246,24 +261,19 @@ body::after{width:500px;height:500px;background:radial-gradient(circle,var(--g3)
 .run-btn span{position:relative}
 .run-btn:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
 
-/* ── RESULTS AREA ───────────────────────── */
+/* ── RESULTS ── */
 .results-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px}
 .results-title{font-size:13px;font-weight:600;color:var(--text2);display:flex;align-items:center;gap:8px}
 .results-count{font-family:var(--mono);color:var(--g1);font-size:16px;font-weight:500}
 
-/* Stats row */
 .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-bottom:16px}
-.stat{
-  background:var(--s1);border:1px solid var(--border);border-radius:10px;
-  padding:12px 14px;
-}
+.stat{background:var(--s1);border:1px solid var(--border);border-radius:10px;padding:12px 14px}
 .stat-l{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;font-weight:600}
 .stat-v{font-family:var(--mono);font-size:18px;font-weight:500;color:var(--text)}
 .stat-v.accent{color:var(--g1)}
 .stat-v.warn{color:var(--warn)}
 .stat-v.purple{color:#a5b4fc}
 
-/* Status bar */
 .status-bar{
   padding:12px 16px;border-radius:10px;font-size:12px;font-weight:500;
   margin-bottom:16px;display:none;align-items:center;gap:8px;line-height:1.5;
@@ -286,10 +296,7 @@ thead th{
 thead th:hover,thead th.sorted{color:var(--g1)}
 thead th .si{display:inline-block;margin-left:4px;opacity:.5;font-style:normal}
 thead th.sorted .si{opacity:1;color:var(--g1)}
-tbody td{
-  padding:12px 14px;border-bottom:1px solid rgba(31,45,61,.6);
-  vertical-align:middle;
-}
+tbody td{padding:12px 14px;border-bottom:1px solid rgba(31,45,61,.6);vertical-align:middle}
 tbody tr:last-child td{border-bottom:0}
 tbody tr:hover td{background:rgba(255,255,255,.018)}
 .inactive-row td{opacity:.35}
@@ -340,28 +347,21 @@ tbody tr:hover td{background:rgba(255,255,255,.018)}
 .sub-bar{height:3px;background:var(--s3);border-radius:2px;margin-top:5px;overflow:hidden}
 .sub-fill{height:100%;background:linear-gradient(90deg,var(--g3),var(--g2));border-radius:2px}
 
-/* Badges */
 .badge-sm{
   display:inline-flex;align-items:center;padding:2px 7px;border-radius:4px;
   font-size:10px;font-weight:600;margin-left:5px;vertical-align:middle;
 }
 .badge-inactive{background:rgba(239,68,68,.08);color:var(--danger);border:1px solid rgba(239,68,68,.15)}
 .badge-cache{background:rgba(0,212,160,.08);color:var(--g1);border:1px solid rgba(0,212,160,.15)}
-.badge-scale{background:rgba(99,102,241,.1);color:#a5b4fc;border:1px solid rgba(99,102,241,.2)}
 
-/* Empty state */
-.empty-state{
-  padding:60px 20px;text-align:center;
-}
+.empty-state{padding:60px 20px;text-align:center}
 .empty-icon{font-size:48px;margin-bottom:16px;opacity:.4}
 .empty-title{font-size:15px;font-weight:600;color:var(--text2);margin-bottom:6px}
 .empty-sub{font-size:13px;color:var(--text3)}
 
-/* Spinner */
 @keyframes spin{to{transform:rotate(360deg)}}
 .spinner{display:inline-block;width:14px;height:14px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:spin .55s linear infinite}
 
-/* Scrollbar */
 ::-webkit-scrollbar{width:6px;height:6px}
 ::-webkit-scrollbar-track{background:var(--bg)}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
@@ -374,8 +374,14 @@ tbody tr:hover td{background:rgba(255,255,255,.018)}
 }
 </style>
 </head>
-<body>
+<body class="lang-zh">
 <div class="wrap">
+
+<!-- Language Toggle -->
+<div class="lang-bar">
+  <button class="lang-btn active" id="btnZh" onclick="setLang('zh')">繁體中文</button>
+  <button class="lang-btn" id="btnEn" onclick="setLang('en')">English</button>
+</div>
 
 <!-- ── TOPBAR ── -->
 <div class="topbar">
@@ -383,7 +389,10 @@ tbody tr:hover td{background:rgba(255,255,255,.018)}
     <div class="logo-mark">VGV</div>
     <div>
       <div class="logo-text">KOL Analyzer</div>
-      <div class="logo-sub">VGV 圈粉行銷科技 · YouTube 影響力分析</div>
+      <div class="logo-sub">
+        <span class="zh">VGV 圈粉行銷科技 · YouTube 影響力分析</span>
+        <span class="en">VGV Influencer Marketing Tech · YouTube KOL Analytics</span>
+      </div>
     </div>
   </div>
   <div class="topbar-right">
@@ -391,19 +400,37 @@ tbody tr:hover td{background:rgba(255,255,255,.018)}
       <div class="units-dot" id="unitsDot"></div>
       <span class="units-val" id="unitsVal">0 / 10,000 units</span>
     </div>
-    <button class="btn btn-ghost btn-sm" onclick="clearCache()">清除快取</button>
-    <button class="btn btn-ghost btn-sm" onclick="resetUnits()">重置用量</button>
+    <button class="btn btn-ghost btn-sm" onclick="clearCache()">
+      <span class="zh">清除快取</span><span class="en">Clear Cache</span>
+    </button>
+    <button class="btn btn-ghost btn-sm" onclick="resetUnits()">
+      <span class="zh">重置用量</span><span class="en">Reset Quota</span>
+    </button>
   </div>
 </div>
 
-<!-- ── API KEY BAR ── -->
+<!-- ── API KEY PANEL ── -->
 <div class="apibar">
-  <span class="apibar-icon">🔑</span>
-  <span class="apibar-label">YouTube API Key</span>
-  <input type="password" id="apiKey" placeholder="AIza..." />
-  <div class="apibar-btns">
-    <button class="btn btn-primary btn-sm" onclick="saveApiKey()">儲存</button>
-    <a href="https://console.cloud.google.com/" target="_blank" class="btn btn-ghost btn-sm">取得 Key ↗</a>
+  <div class="apibar-row">
+    <span class="apibar-icon">🔑</span>
+    <span class="apibar-label">YouTube Data API v3 Key</span>
+    <input type="password" id="apiKey" placeholder="AIza..." />
+    <div class="apibar-btns">
+      <button class="btn btn-primary btn-sm" onclick="saveApiKey()">
+        <span class="zh">儲存</span><span class="en">Save</span>
+      </button>
+      <a href="https://console.cloud.google.com/" target="_blank" class="btn btn-ghost btn-sm">
+        <span class="zh">取得 Key ↗</span><span class="en">Get Key ↗</span>
+      </a>
+    </div>
+  </div>
+  <div class="privacy-note">
+    <span class="zh">
+      🔒 <strong>隱私說明</strong>：本工具使用您的 YouTube Data API v3 金鑰，僅用於讀取公開頻道與影片資料（<code>channels.list</code>、<code>videos.list</code>、<code>search.list</code>、<code>playlistItems.list</code>）。API 金鑰僅儲存於瀏覽器本機（localStorage），不會傳送至任何第三方伺服器。所有 API 請求均直接由您的瀏覽器發送至 Google YouTube Data API。
+    </span>
+    <span class="en">
+      🔒 <strong>Privacy Notice</strong>: This tool uses your YouTube Data API v3 key solely to read publicly available channel and video data (<code>channels.list</code>, <code>videos.list</code>, <code>search.list</code>, <code>playlistItems.list</code>). Your API key is stored only in your browser's local storage and is never transmitted to any third-party server. All API requests are sent directly from your browser to the Google YouTube Data API.
+    </span>
   </div>
 </div>
 
@@ -417,13 +444,18 @@ tbody tr:hover td{background:rgba(255,255,255,.018)}
     <!-- Region -->
     <div class="card" style="margin-bottom:10px">
       <div class="card-head" style="padding:10px 14px">
-        <span class="card-title">目標地區</span>
-        <span style="font-size:9px;color:var(--text3)">影響搜尋排序</span>
+        <span class="card-title">
+          <span class="zh">目標地區</span><span class="en">Target Region</span>
+        </span>
+        <span style="font-size:9px;color:var(--text3)">
+          <span class="zh">影響搜尋排序</span><span class="en">Affects ranking</span>
+        </span>
       </div>
       <div class="card-body" style="padding:10px 14px 12px">
         <div class="region-grid" id="regionGrid"></div>
         <div style="font-size:9px;color:var(--text3);line-height:1.5;padding:6px 8px;background:var(--s2);border-radius:6px;border:1px solid var(--border)">
-          ⚠️ 地區影響排序，非嚴格鎖定。工具會注入地區關鍵字強化精準度。
+          <span class="zh">⚠️ 地區影響排序，非嚴格鎖定。工具會注入地區關鍵字強化精準度。</span>
+          <span class="en">⚠️ Region affects ranking bias only, not strict geo-lock. Region keywords are injected into queries for better accuracy.</span>
         </div>
       </div>
     </div>
@@ -431,16 +463,24 @@ tbody tr:hover td{background:rgba(255,255,255,.018)}
     <!-- Category -->
     <div class="card" style="margin-bottom:10px">
       <div class="card-head" style="padding:10px 14px">
-        <span class="card-title">頻道品類</span>
-        <button class="btn btn-ghost btn-sm" onclick="clearCats()" style="padding:2px 8px;font-size:10px">清除</button>
+        <span class="card-title">
+          <span class="zh">頻道品類</span><span class="en">Channel Category</span>
+        </span>
+        <button class="btn btn-ghost btn-sm" onclick="clearCats()" style="padding:2px 8px;font-size:10px">
+          <span class="zh">清除</span><span class="en">Clear</span>
+        </button>
       </div>
       <div class="card-body" style="padding:10px 14px 12px">
         <div class="cat-scroll" id="catBody"></div>
-        <div id="selectedDisplay" class="selected-cats empty">尚未選擇品類</div>
-        <div class="cat-section-label" style="margin-top:8px;margin-bottom:4px">自訂關鍵字</div>
+        <div id="selectedDisplay" class="selected-cats empty">
+          <span class="zh">尚未選擇品類</span><span class="en">No category selected</span>
+        </div>
+        <div class="cat-section-label" style="margin-top:8px;margin-bottom:4px">
+          <span class="zh">自訂關鍵字</span><span class="en">Custom Keyword</span>
+        </div>
         <div class="kw-row">
-          <input type="text" id="customKw" placeholder="輸入關鍵字..." />
-          <button class="btn btn-ghost btn-sm" onclick="addCustomKw()">+ 加入</button>
+          <input type="text" id="customKw">
+          <button class="btn btn-ghost btn-sm" onclick="addCustomKw()">+</button>
         </div>
       </div>
     </div>
@@ -448,99 +488,124 @@ tbody tr:hover td{background:rgba(255,255,255,.018)}
     <!-- Settings -->
     <div class="card" style="margin-bottom:10px">
       <div class="card-head" style="padding:10px 14px">
-        <span class="card-title">篩選與設定</span>
+        <span class="card-title">
+          <span class="zh">篩選與設定</span><span class="en">Filters & Settings</span>
+        </span>
       </div>
       <div class="card-body" style="padding:10px 14px 12px">
         <div class="fields-2col">
           <div class="field">
-            <label class="field-label">搜尋數量</label>
+            <label class="field-label">
+              <span class="zh">搜尋數量</span><span class="en">Max Results</span>
+            </label>
             <select id="maxResults">
-              <option value="20">20（快速）</option>
-              <option value="50" selected>50（建議）</option>
+              <option value="20"><span class="zh">20（快速）</span><span class="en">20 (Fast)</span></option>
+              <option value="50" selected><span class="zh">50（建議）</span><span class="en">50 (Recommended)</span></option>
             </select>
           </div>
           <div class="field">
-            <label class="field-label">活躍篩選</label>
+            <label class="field-label">
+              <span class="zh">活躍篩選</span><span class="en">Active Filter</span>
+            </label>
             <select id="activeFilter">
-              <option value="90">3個月內</option>
-              <option value="180" selected>6個月內</option>
-              <option value="365">1年內</option>
-              <option value="0">不限</option>
+              <option value="90"><span class="zh">3個月內</span><span class="en">Within 3 months</span></option>
+              <option value="180" selected><span class="zh">6個月內</span><span class="en">Within 6 months</span></option>
+              <option value="365"><span class="zh">1年內</span><span class="en">Within 1 year</span></option>
+              <option value="0"><span class="zh">不限</span><span class="en">No limit</span></option>
             </select>
           </div>
           <div class="field">
-            <label class="field-label">最低訂閱</label>
+            <label class="field-label">
+              <span class="zh">最低訂閱</span><span class="en">Min Subscribers</span>
+            </label>
             <select id="minSubs">
-              <option value="0">不限</option>
+              <option value="0"><span class="zh">不限</span><span class="en">No limit</span></option>
               <option value="1000" selected>1K+</option>
               <option value="5000">5K+</option>
-              <option value="10000">1萬+</option>
-              <option value="50000">5萬+</option>
-              <option value="100000">10萬+</option>
+              <option value="10000">10K+</option>
+              <option value="50000">50K+</option>
+              <option value="100000">100K+</option>
             </select>
           </div>
           <div class="field">
-            <label class="field-label">影片取樣</label>
+            <label class="field-label">
+              <span class="zh">影片取樣</span><span class="en">Video Sample</span>
+            </label>
             <select id="recentCount">
-              <option value="5">最近5支</option>
-              <option value="10" selected>最近10支</option>
-              <option value="20">最近20支</option>
+              <option value="5"><span class="zh">最近5支</span><span class="en">Recent 5</span></option>
+              <option value="10" selected><span class="zh">最近10支</span><span class="en">Recent 10</span></option>
+              <option value="20"><span class="zh">最近20支</span><span class="en">Recent 20</span></option>
             </select>
           </div>
           <div class="field" style="grid-column:1/-1">
-            <label class="field-label">快取時效</label>
+            <label class="field-label">
+              <span class="zh">快取時效</span><span class="en">Cache Duration</span>
+            </label>
             <select id="cacheHours">
-              <option value="24" selected>24小時（省API）</option>
-              <option value="6">6小時</option>
-              <option value="0">不快取</option>
+              <option value="24" selected><span class="zh">24小時（省API）</span><span class="en">24h (Save quota)</span></option>
+              <option value="6"><span class="zh">6小時</span><span class="en">6 hours</span></option>
+              <option value="0"><span class="zh">不快取</span><span class="en">No cache</span></option>
             </select>
           </div>
         </div>
         <div class="divider"></div>
         <div class="er-formula">
-          <div class="formula-line">ER = <span class="hl">原始率</span> × <span class="hl2">規模係數</span></div>
-          <div class="formula-line">(觀看 + 留言×<span class="hl">5</span> + 按讚×<span class="hl2">2</span>) / 訂閱</div>
-          <div class="formula-line" style="color:var(--text3)">規模=log₁₀(訂閱)/6 · 小頻道自動降權</div>
+          <div class="formula-line">ER = <span class="hl"><span class="zh">原始率</span><span class="en">Raw Rate</span></span> × <span class="hl2"><span class="zh">規模係數</span><span class="en">Scale Factor</span></span></div>
+          <div class="formula-line">(Views×<span class="hl">1</span> + Comments×<span class="hl">5</span> + Likes×<span class="hl2">2</span>) / Subs</div>
+          <div class="formula-line" style="color:var(--text3)">
+            <span class="zh">Scale=log₁₀(訂閱)/6 · 小頻道自動降權</span>
+            <span class="en">Scale=log₁₀(Subs)/6 · Smaller channels auto-adjusted</span>
+          </div>
         </div>
       </div>
     </div>
 
     </div><!-- /sidebar-inner -->
 
-    <!-- Footer: always visible run button -->
     <div class="sidebar-footer">
       <button class="run-btn" id="runBtn" onclick="searchChannels()">
         <span id="runSpinner" style="display:none" class="spinner"></span>
-        <span>🔍 開始分析</span>
+        <span>🔍 <span class="zh">開始分析</span><span class="en">Run Analysis</span></span>
       </button>
       <div style="display:flex;gap:6px;margin-top:8px">
-        <button class="btn btn-ghost" style="flex:1;justify-content:center;font-size:12px" onclick="exportCSV()">📥 CSV</button>
-        <button class="btn btn-danger" style="flex:1;justify-content:center;font-size:12px" onclick="clearResults()">🗑️ 清除</button>
+        <button class="btn btn-ghost" style="flex:1;justify-content:center;font-size:12px" onclick="exportCSV()">
+          📥 CSV
+        </button>
+        <button class="btn btn-danger" style="flex:1;justify-content:center;font-size:12px" onclick="clearResults()">
+          🗑️ <span class="zh">清除</span><span class="en">Clear</span>
+        </button>
       </div>
     </div>
-
   </div><!-- /sidebar -->
 
   <!-- ─ RESULTS ─ -->
   <div class="results-area">
-
     <div class="status-bar" id="statusBar"></div>
 
     <div id="resultsEmpty" class="table-card">
       <div class="empty-state">
         <div class="empty-icon">📡</div>
-        <div class="empty-title">尚未執行分析</div>
-        <div class="empty-sub">選擇地區與品類，點擊「開始分析」</div>
+        <div class="empty-title">
+          <span class="zh">尚未執行分析</span>
+          <span class="en">No Analysis Yet</span>
+        </div>
+        <div class="empty-sub">
+          <span class="zh">選擇地區與品類，點擊「開始分析」</span>
+          <span class="en">Select a region and category, then click "Run Analysis"</span>
+        </div>
       </div>
     </div>
 
     <div id="resultsPanel" style="display:none">
       <div class="results-top">
         <div class="results-title">
-          <span class="results-count" id="resultsCount">0</span> 個頻道
+          <span class="results-count" id="resultsCount">0</span>
+          <span class="zh">個頻道</span><span class="en">Channels</span>
         </div>
         <div style="display:flex;gap:8px">
-          <button class="btn btn-ghost btn-sm" onclick="exportCSV()">📥 匯出 CSV</button>
+          <button class="btn btn-ghost btn-sm" onclick="exportCSV()">
+            📥 <span class="zh">匯出 CSV</span><span class="en">Export CSV</span>
+          </button>
         </div>
       </div>
 
@@ -552,13 +617,27 @@ tbody tr:hover td{background:rgba(255,255,255,.018)}
             <thead>
               <tr>
                 <th style="width:36px" onclick="st('rank')" id="th-rank"># <i class="si">↕</i></th>
-                <th onclick="st('title')" id="th-title">頻道 <i class="si">↕</i></th>
-                <th onclick="st('tier')" id="th-tier">評級 <i class="si">↕</i></th>
-                <th onclick="st('subscriberCount')" id="th-subscriberCount">訂閱數 <i class="si">↕</i></th>
-                <th onclick="st('er')" id="th-er" class="sorted">互動率 ER ↓ <i class="si sorted">↓</i></th>
-                <th onclick="st('avgViews')" id="th-avgViews">均觀看 <i class="si">↕</i></th>
-                <th onclick="st('avgComments')" id="th-avgComments">均留言 <i class="si">↕</i></th>
-                <th onclick="st('daysSince')" id="th-daysSince">更新 <i class="si">↕</i></th>
+                <th onclick="st('title')" id="th-title">
+                  <span class="zh">頻道</span><span class="en">Channel</span> <i class="si">↕</i>
+                </th>
+                <th onclick="st('tier')" id="th-tier">
+                  <span class="zh">評級</span><span class="en">Tier</span> <i class="si">↕</i>
+                </th>
+                <th onclick="st('subscriberCount')" id="th-subscriberCount">
+                  <span class="zh">訂閱數</span><span class="en">Subscribers</span> <i class="si">↕</i>
+                </th>
+                <th onclick="st('er')" id="th-er" class="sorted">
+                  <span class="zh">互動率 ER</span><span class="en">Eng. Rate ER</span> <i class="si sorted">↓</i>
+                </th>
+                <th onclick="st('avgViews')" id="th-avgViews">
+                  <span class="zh">均觀看</span><span class="en">Avg Views</span> <i class="si">↕</i>
+                </th>
+                <th onclick="st('avgComments')" id="th-avgComments">
+                  <span class="zh">均留言</span><span class="en">Avg Comments</span> <i class="si">↕</i>
+                </th>
+                <th onclick="st('daysSince')" id="th-daysSince">
+                  <span class="zh">更新</span><span class="en">Last Upload</span> <i class="si">↕</i>
+                </th>
               </tr>
             </thead>
             <tbody id="resultsBody"></tbody>
@@ -566,82 +645,94 @@ tbody tr:hover td{background:rgba(255,255,255,.018)}
         </div>
       </div>
     </div>
-
-  </div><!-- /results -->
+  </div>
 
 </div><!-- /layout -->
 </div><!-- /wrap -->
 
 <script>
 // ═══════════════════════════════════════════════════
-//  DATA: Regions & Categories
+//  LANGUAGE
 // ═══════════════════════════════════════════════════
+let currentLang = 'zh';
 
+function setLang(lang) {
+  currentLang = lang;
+  document.body.className = 'lang-' + lang;
+  document.getElementById('btnZh').className = 'lang-btn' + (lang==='zh'?' active':'');
+  document.getElementById('btnEn').className = 'lang-btn' + (lang==='en'?' active':'');
+  buildRegionGrid();
+  buildCatBody();
+  if(allResults.length) renderResults();
+}
+
+// ═══════════════════════════════════════════════════
+//  DATA: Regions & Categories (bilingual)
+// ═══════════════════════════════════════════════════
 const REGIONS = [
-  { id:'TW', flag:'🇹🇼', name:'台灣', hint:'zh-Hant', kw:'台灣' },
-  { id:'HK', flag:'🇭🇰', name:'香港', hint:'zh-Hant', kw:'香港' },
-  { id:'SG', flag:'🇸🇬', name:'新加坡', hint:'zh-Hans', kw:'新加坡' },
-  { id:'MY', flag:'🇲🇾', name:'馬來西亞', hint:'zh-Hans', kw:'馬來西亞' },
-  { id:'JP', flag:'🇯🇵', name:'日本', hint:'ja', kw:'日本' },
-  { id:'KR', flag:'🇰🇷', name:'韓國', hint:'ko', kw:'한국' },
-  { id:'US', flag:'🇺🇸', name:'美國', hint:'en', kw:'' },
-  { id:'GB', flag:'🇬🇧', name:'英國', hint:'en', kw:'UK' },
+  { id:'TW', flag:'🇹🇼', nameZh:'台灣',    nameEn:'Taiwan',       hint:'zh-Hant', kw:'台灣' },
+  { id:'HK', flag:'🇭🇰', nameZh:'香港',    nameEn:'Hong Kong',    hint:'zh-Hant', kw:'香港' },
+  { id:'SG', flag:'🇸🇬', nameZh:'新加坡',  nameEn:'Singapore',    hint:'zh-Hans', kw:'新加坡' },
+  { id:'MY', flag:'🇲🇾', nameZh:'馬來西亞',nameEn:'Malaysia',     hint:'zh-Hans', kw:'馬來西亞' },
+  { id:'JP', flag:'🇯🇵', nameZh:'日本',    nameEn:'Japan',        hint:'ja', kw:'日本' },
+  { id:'KR', flag:'🇰🇷', nameZh:'韓國',    nameEn:'Korea',        hint:'ko', kw:'한국' },
+  { id:'US', flag:'🇺🇸', nameZh:'美國',    nameEn:'USA',          hint:'en', kw:'' },
+  { id:'GB', flag:'🇬🇧', nameZh:'英國',    nameEn:'UK',           hint:'en', kw:'UK' },
 ];
 
-// Category taxonomy: group → tags (each tag has id, label, keywords[])
 const CATEGORIES = [
   {
-    group:'美食 & 生活',
+    groupZh:'美食 & 生活', groupEn:'Food & Lifestyle',
     tags:[
-      { id:'cooking',   label:'料理食譜', kw:['料理','食譜','烹飪','cooking'] },
-      { id:'food_vlog', label:'美食探店', kw:['美食','吃播','foodvlog','restaurant'] },
-      { id:'baking',    label:'烘焙甜點', kw:['烘焙','甜點','蛋糕','baking'] },
-      { id:'lifestyle', label:'生活日常', kw:['生活','vlog','日常','lifestyle'] },
-      { id:'travel',    label:'旅遊', kw:['旅遊','旅行','travel','景點'] },
+      { id:'cooking',   labelZh:'料理食譜', labelEn:'Cooking',     kw:['料理','食譜','烹飪','cooking'] },
+      { id:'food_vlog', labelZh:'美食探店', labelEn:'Food Vlog',   kw:['美食','吃播','foodvlog','restaurant'] },
+      { id:'baking',    labelZh:'烘焙甜點', labelEn:'Baking',      kw:['烘焙','甜點','蛋糕','baking'] },
+      { id:'lifestyle', labelZh:'生活日常', labelEn:'Lifestyle',   kw:['生活','vlog','日常','lifestyle'] },
+      { id:'travel',    labelZh:'旅遊',     labelEn:'Travel',      kw:['旅遊','旅行','travel','景點'] },
     ]
   },
   {
-    group:'科技 & 商業',
+    groupZh:'科技 & 商業', groupEn:'Tech & Business',
     tags:[
-      { id:'tech',      label:'科技評測', kw:['科技','3C','開箱','tech review'] },
-      { id:'ai',        label:'AI & 軟體', kw:['AI','人工智慧','軟體','ChatGPT'] },
-      { id:'finance',   label:'投資理財', kw:['投資','理財','股票','finance'] },
-      { id:'startup',   label:'創業商業', kw:['創業','商業','entrepreneur','brand'] },
-      { id:'gadget',    label:'3C 開箱', kw:['開箱','unboxing','gadget','評測'] },
+      { id:'tech',    labelZh:'科技評測', labelEn:'Tech Review', kw:['科技','3C','開箱','tech review'] },
+      { id:'ai',      labelZh:'AI & 軟體', labelEn:'AI & Software', kw:['AI','人工智慧','軟體','ChatGPT'] },
+      { id:'finance', labelZh:'投資理財', labelEn:'Finance',      kw:['投資','理財','股票','finance'] },
+      { id:'startup', labelZh:'創業商業', labelEn:'Business',     kw:['創業','商業','entrepreneur','brand'] },
+      { id:'gadget',  labelZh:'3C 開箱',  labelEn:'Gadgets',     kw:['開箱','unboxing','gadget','評測'] },
     ]
   },
   {
-    group:'美妝 & 時尚',
+    groupZh:'美妝 & 時尚', groupEn:'Beauty & Fashion',
     tags:[
-      { id:'beauty',    label:'美妝保養', kw:['美妝','彩妝','保養','makeup','skincare'] },
-      { id:'fashion',   label:'穿搭時尚', kw:['穿搭','時尚','ootd','fashion'] },
-      { id:'haircare',  label:'髮型美髮', kw:['髮型','美髮','hair','hairstyle'] },
+      { id:'beauty',   labelZh:'美妝保養', labelEn:'Beauty',    kw:['美妝','彩妝','保養','makeup','skincare'] },
+      { id:'fashion',  labelZh:'穿搭時尚', labelEn:'Fashion',   kw:['穿搭','時尚','ootd','fashion'] },
+      { id:'haircare', labelZh:'髮型美髮', labelEn:'Hair',      kw:['髮型','美髮','hair','hairstyle'] },
     ]
   },
   {
-    group:'健康 & 運動',
+    groupZh:'健康 & 運動', groupEn:'Health & Sports',
     tags:[
-      { id:'fitness',   label:'健身運動', kw:['健身','運動','workout','fitness'] },
-      { id:'yoga',      label:'瑜珈舒壓', kw:['瑜珈','冥想','yoga','meditation'] },
-      { id:'sport',     label:'球類競技', kw:['籃球','足球','棒球','sport','NBA'] },
-      { id:'outdoor',   label:'戶外活動', kw:['登山','露營','outdoor','hiking'] },
+      { id:'fitness', labelZh:'健身運動', labelEn:'Fitness',   kw:['健身','運動','workout','fitness'] },
+      { id:'yoga',    labelZh:'瑜珈舒壓', labelEn:'Yoga',      kw:['瑜珈','冥想','yoga','meditation'] },
+      { id:'sport',   labelZh:'球類競技', labelEn:'Sports',    kw:['籃球','足球','棒球','sport','NBA'] },
+      { id:'outdoor', labelZh:'戶外活動', labelEn:'Outdoor',   kw:['登山','露營','outdoor','hiking'] },
     ]
   },
   {
-    group:'娛樂 & 遊戲',
+    groupZh:'娛樂 & 遊戲', groupEn:'Entertainment & Gaming',
     tags:[
-      { id:'gaming',    label:'電玩遊戲', kw:['遊戲','gaming','直播','game'] },
-      { id:'anime',     label:'動漫', kw:['動漫','anime','漫畫','二次元'] },
-      { id:'music',     label:'音樂', kw:['音樂','歌曲','music','cover'] },
-      { id:'comedy',    label:'搞笑娛樂', kw:['搞笑','娛樂','comedy','funny'] },
+      { id:'gaming', labelZh:'電玩遊戲', labelEn:'Gaming',    kw:['遊戲','gaming','直播','game'] },
+      { id:'anime',  labelZh:'動漫',     labelEn:'Anime',     kw:['動漫','anime','漫畫','二次元'] },
+      { id:'music',  labelZh:'音樂',     labelEn:'Music',     kw:['音樂','歌曲','music','cover'] },
+      { id:'comedy', labelZh:'搞笑娛樂', labelEn:'Comedy',    kw:['搞笑','娛樂','comedy','funny'] },
     ]
   },
   {
-    group:'教育 & 親子',
+    groupZh:'教育 & 親子', groupEn:'Education & Family',
     tags:[
-      { id:'edu',       label:'學習教育', kw:['教育','學習','education','語言'] },
-      { id:'kids',      label:'親子育兒', kw:['親子','育兒','寶寶','kids','family'] },
-      { id:'language',  label:'語言學習', kw:['英文','日文','語言學習','language'] },
+      { id:'edu',      labelZh:'學習教育', labelEn:'Education', kw:['教育','學習','education','語言'] },
+      { id:'kids',     labelZh:'親子育兒', labelEn:'Kids',      kw:['親子','育兒','寶寶','kids','family'] },
+      { id:'language', labelZh:'語言學習', labelEn:'Language',  kw:['英文','日文','語言學習','language'] },
     ]
   },
 ];
@@ -679,53 +770,44 @@ function buildRegionGrid(){
     <div class="region-btn ${r.id===selectedRegion?'active':''}" onclick="selectRegion('${r.id}')">
       <span class="region-flag">${r.flag}</span>
       <div>
-        <div class="region-name">${r.name}</div>
+        <div class="region-name">${currentLang==='zh'?r.nameZh:r.nameEn}</div>
         <div class="region-hint">${r.hint}</div>
       </div>
     </div>
   `).join('');
 }
 
-function selectRegion(id){
-  selectedRegion = id;
-  buildRegionGrid();
-}
+function selectRegion(id){ selectedRegion=id; buildRegionGrid(); }
 
 function buildCatBody(){
   const scroll = document.getElementById('catBody');
-  if(scroll){
-    scroll.innerHTML = CATEGORIES.map(grp => `
-      <div class="cat-section">
-        <div class="cat-section-label">${grp.group}</div>
-        <div class="cat-tags">
-          ${grp.tags.map(t=>`
-            <div class="cat-tag ${selectedCats.has(t.id)?'active-primary':''}"
-                 onclick="toggleCat('${t.id}')">
-              ${t.label}
-            </div>
-          `).join('')}
-        </div>
+  if(!scroll) return;
+  scroll.innerHTML = CATEGORIES.map(grp => `
+    <div class="cat-section">
+      <div class="cat-section-label">${currentLang==='zh'?grp.groupZh:grp.groupEn}</div>
+      <div class="cat-tags">
+        ${grp.tags.map(t=>`
+          <div class="cat-tag ${selectedCats.has(t.id)?'active-primary':''}" onclick="toggleCat('${t.id}')">
+            ${currentLang==='zh'?t.labelZh:t.labelEn}
+          </div>
+        `).join('')}
       </div>
-    `).join('');
-  }
+    </div>
+  `).join('');
   updateSelectedDisplay();
 }
 
-const catMeta = {}; // id -> {label, kw}
-CATEGORIES.forEach(g=>g.tags.forEach(t=>{ catMeta[t.id]={label:t.label,kw:t.kw}; }));
+const catMeta = {};
+CATEGORIES.forEach(g=>g.tags.forEach(t=>{ catMeta[t.id]={labelZh:t.labelZh,labelEn:t.labelEn,kw:t.kw}; }));
 
-function toggleCat(id){
-  if(selectedCats.has(id)) selectedCats.delete(id);
-  else selectedCats.add(id);
-  buildCatBody();
-}
+function toggleCat(id){ if(selectedCats.has(id)) selectedCats.delete(id); else selectedCats.add(id); buildCatBody(); }
 
 function addCustomKw(){
   const inp = document.getElementById('customKw');
   const val = inp.value.trim();
   if(!val) return;
   const id = 'custom_'+Date.now();
-  catMeta[id] = { label: val, kw: [val] };
+  catMeta[id] = { labelZh: val, labelEn: val, kw: [val] };
   selectedCats.add(id);
   inp.value = '';
   buildCatBody();
@@ -742,14 +824,15 @@ function updateSelectedDisplay(){
   if(!disp) return;
   if(selectedCats.size===0){
     disp.className='selected-cats empty';
-    disp.innerHTML='尚未選擇品類';
+    disp.innerHTML=`<span class="zh">尚未選擇品類</span><span class="en">No category selected</span>`;
     return;
   }
   disp.className='selected-cats';
   disp.innerHTML = [...selectedCats].map(id => {
     const m = catMeta[id];
     if(!m) return '';
-    return `<span class="sel-chip">${m.label}<button onclick="event.stopPropagation();removeCat('${id}')">×</button></span>`;
+    const lbl = currentLang==='zh'?m.labelZh:m.labelEn;
+    return `<span class="sel-chip">${lbl}<button onclick="event.stopPropagation();removeCat('${id}')">×</button></span>`;
   }).join('');
 }
 
@@ -785,7 +868,10 @@ function updateUnitsUI(u){
 // ═══════════════════════════════════════════════════
 function getCache(){ try{return JSON.parse(localStorage.getItem(CACHE_KEY)||'{}')}catch{return{}} }
 function saveCache(o){ localStorage.setItem(CACHE_KEY,JSON.stringify(o)) }
-function clearCache(){ localStorage.removeItem(CACHE_KEY); showStatus('✅ 快取已清除','success') }
+function clearCache(){
+  localStorage.removeItem(CACHE_KEY);
+  showStatus(currentLang==='zh'?'✅ 快取已清除':'✅ Cache cleared','success');
+}
 function cacheValid(e,h){ return e&&h>0&&(Date.now()-e.ts)<h*3600*1000 }
 
 // ═══════════════════════════════════════════════════
@@ -799,7 +885,7 @@ async function apiGet(url, units=1){
 }
 
 // ═══════════════════════════════════════════════════
-//  ER CALCULATION with subscriber scale correction
+//  ER CALCULATION
 // ═══════════════════════════════════════════════════
 function scaleFactor(subs){
   if(subs<=0) return 0;
@@ -808,11 +894,7 @@ function scaleFactor(subs){
 function calcER(videos, subs){
   if(!videos.length||subs===0) return {er:0,rawEr:0,sf:0,avgViews:0,avgLikes:0,avgCmt:0};
   let tv=0,tl=0,tc=0;
-  videos.forEach(v=>{
-    tv+=parseInt(v.statistics?.viewCount||0);
-    tl+=parseInt(v.statistics?.likeCount||0);
-    tc+=parseInt(v.statistics?.commentCount||0);
-  });
+  videos.forEach(v=>{ tv+=parseInt(v.statistics?.viewCount||0); tl+=parseInt(v.statistics?.likeCount||0); tc+=parseInt(v.statistics?.commentCount||0); });
   const n=videos.length;
   const avgViews=Math.round(tv/n), avgLikes=Math.round(tl/n), avgCmt=Math.round(tc/n);
   const rawEr=((avgViews*W_VIEW+avgLikes*W_LIKE+avgCmt*W_CMT)/subs)*100;
@@ -820,9 +902,6 @@ function calcER(videos, subs){
   return {er:rawEr*sf, rawEr, sf, avgViews, avgLikes, avgCmt};
 }
 
-// ═══════════════════════════════════════════════════
-//  SCORING
-// ═══════════════════════════════════════════════════
 function score(subs,er,days){
   const ss=Math.min(Math.log10(Math.max(subs,100))/6*35,35);
   const es=Math.min(er*5,45);
@@ -837,38 +916,15 @@ function tier(sc,subs,er){
   return 'D';
 }
 
-// ═══════════════════════════════════════════════════
-//  BUILD SEARCH QUERY
-//  Region accuracy improvement:
-//  1. Inject region keyword into query string
-//  2. Use region's native language as relevanceLanguage
-//  3. Combine multiple category keywords into OR query
-// ═══════════════════════════════════════════════════
 function buildQuery(){
   const reg = REGIONS.find(r=>r.id===selectedRegion) || REGIONS[0];
-
-  // Collect all keywords from selected categories
   let kwList = [];
-  selectedCats.forEach(id => {
-    const m = catMeta[id];
-    if(m) kwList.push(...m.kw);
-  });
-
-  // Deduplicate and take top 3 most specific keywords
+  selectedCats.forEach(id => { const m=catMeta[id]; if(m) kwList.push(...m.kw); });
   kwList = [...new Set(kwList)].slice(0,3);
-
-  // Build query: region keyword + category keywords
   const parts = [];
   if(reg.kw) parts.push(reg.kw);
-  if(kwList.length) parts.push(kwList[0]); // primary keyword
-  else parts.push('');  // no category = broad search
-
-  return {
-    q: parts.filter(Boolean).join(' '),
-    lang: reg.hint,
-    regionCode: reg.id,
-    extraKws: kwList,
-  };
+  if(kwList.length) parts.push(kwList[0]);
+  return { q: parts.filter(Boolean).join(' '), lang: reg.hint, regionCode: reg.id, extraKws: kwList };
 }
 
 // ═══════════════════════════════════════════════════
@@ -876,93 +932,82 @@ function buildQuery(){
 // ═══════════════════════════════════════════════════
 async function searchChannels(){
   const apiKey=localStorage.getItem(APIKEY_STOR);
-  if(!apiKey){ showStatus('❌ 請先儲存 API Key','error'); return; }
-  if(selectedCats.size===0){ showStatus('⚠️ 請至少選擇一個品類','error'); return; }
+  const L = currentLang;
+  if(!apiKey){ showStatus(L==='zh'?'❌ 請先儲存 API Key':'❌ Please save your API Key first','error'); return; }
+  if(selectedCats.size===0){ showStatus(L==='zh'?'⚠️ 請至少選擇一個品類':'⚠️ Please select at least one category','error'); return; }
 
-  const maxRes = parseInt(document.getElementById('maxResults').value);
-  const recent = parseInt(document.getElementById('recentCount').value);
-  const cacheH = parseInt(document.getElementById('cacheHours').value);
+  const maxRes=parseInt(document.getElementById('maxResults').value);
+  const recent=parseInt(document.getElementById('recentCount').value);
+  const cacheH=parseInt(document.getElementById('cacheHours').value);
 
   setRunning(true);
   allResults=[];
-  showStatus(`🔍 搜尋中... (search.list: 100 units)`,'loading');
+  showStatus(L==='zh'?'🔍 搜尋中... (search.list: 100 units)':'🔍 Searching... (search.list: 100 units)','loading');
 
   try {
-    const {q,lang,regionCode} = buildQuery();
+    const {q,lang,regionCode}=buildQuery();
 
-    // Step 1: search channel IDs
-    const searchData = await apiGet(
+    const searchData=await apiGet(
       `https://www.googleapis.com/youtube/v3/search?part=snippet&type=channel`+
       `&regionCode=${regionCode}&relevanceLanguage=${lang}`+
-      `&q=${encodeURIComponent(q)}&maxResults=${maxRes}&key=${apiKey}`, 100);
+      `&q=${encodeURIComponent(q)}&maxResults=${maxRes}&key=${apiKey}`,100);
 
-    if(!searchData.items?.length){ showStatus('❌ 找不到相關頻道，請換個關鍵字試試','error'); setRunning(false); return; }
+    if(!searchData.items?.length){
+      showStatus(L==='zh'?'❌ 找不到相關頻道，請換個關鍵字試試':'❌ No channels found. Try different keywords.','error');
+      setRunning(false); return;
+    }
 
     const ids=[...new Set(searchData.items.map(i=>i.snippet.channelId))];
-    showStatus(`📊 取得 ${ids.length} 個頻道統計資料...`,'loading');
+    showStatus(L==='zh'?`📊 取得 ${ids.length} 個頻道統計資料...`:`📊 Fetching stats for ${ids.length} channels...`,'loading');
 
-    // Step 2: channel stats (1 unit)
-    const chData = await apiGet(
-      `https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&id=${ids.join(',')}&key=${apiKey}`, 1);
-
-    // Step 3: uploads playlist IDs (1 unit)
-    const plData = await apiGet(
-      `https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=${ids.join(',')}&key=${apiKey}`, 1);
+    const chData=await apiGet(`https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&id=${ids.join(',')}&key=${apiKey}`,1);
+    const plData=await apiGet(`https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=${ids.join(',')}&key=${apiKey}`,1);
     const plMap={};
     (plData.items||[]).forEach(c=>{ plMap[c.id]=c.contentDetails?.relatedPlaylists?.uploads||null });
 
-    // Step 4: process each channel
     const cache=getCache(), newCache={...cache};
     const channels=chData.items||[];
-    const toProcess=channels.map(ch=>({
-      ch,
-      fromCache: cacheValid(cache[ch.id],cacheH),
-      cached: cache[ch.id]?.data,
-      playlistId: plMap[ch.id]
-    }));
-
+    const toProcess=channels.map(ch=>({ ch, fromCache:cacheValid(cache[ch.id],cacheH), cached:cache[ch.id]?.data, playlistId:plMap[ch.id] }));
     const fresh=toProcess.filter(t=>!t.fromCache);
-    showStatus(`🎬 分析互動率：${toProcess.filter(t=>t.fromCache).length} 快取 + ${fresh.length} 新抓取...`,'loading');
 
-    // Collect video IDs for fresh channels
+    showStatus(
+      L==='zh'
+        ?`🎬 分析互動率：${toProcess.filter(t=>t.fromCache).length} 快取 + ${fresh.length} 新抓取...`
+        :`🎬 Analyzing ER: ${toProcess.filter(t=>t.fromCache).length} cached + ${fresh.length} fresh...`,
+      'loading'
+    );
+
     const chVideoMap={};
     for(const item of fresh){
       if(!item.playlistId){ chVideoMap[item.ch.id]=[]; continue; }
       try{
-        const pld = await apiGet(
-          `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${item.playlistId}&maxResults=${recent}&key=${apiKey}`, 1);
+        const pld=await apiGet(`https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${item.playlistId}&maxResults=${recent}&key=${apiKey}`,1);
         chVideoMap[item.ch.id]=(pld.items||[]).map(i=>i.snippet?.resourceId?.videoId).filter(Boolean);
       }catch{ chVideoMap[item.ch.id]=[] }
     }
 
-    // Batch fetch video stats
     const allVids=[...new Set(Object.values(chVideoMap).flat())];
     const vMap={};
     for(let i=0;i<allVids.length;i+=50){
       const chunk=allVids.slice(i,i+50);
-      const vd=await apiGet(
-        `https://www.googleapis.com/youtube/v3/videos?part=statistics,snippet&id=${chunk.join(',')}&key=${apiKey}`,1);
+      const vd=await apiGet(`https://www.googleapis.com/youtube/v3/videos?part=statistics,snippet&id=${chunk.join(',')}&key=${apiKey}`,1);
       (vd.items||[]).forEach(v=>{ vMap[v.id]=v });
     }
 
-    // Build results
     for(const item of toProcess){
       const ch=item.ch, sn=ch.snippet, st=ch.statistics;
       const subs=parseInt(st.subscriberCount||0);
       let erData, daysSince=9999, lastDate=null;
 
       if(item.fromCache){
-        erData=item.cached;
-        daysSince=item.cached.daysSince;
+        erData=item.cached; daysSince=item.cached.daysSince;
         lastDate=item.cached.lastDate?new Date(item.cached.lastDate):null;
       } else {
         const vids=(chVideoMap[ch.id]||[]).map(id=>vMap[id]).filter(Boolean);
         erData=calcER(vids,subs);
-
         if(vids.length){
           const dates=vids.map(v=>new Date(v.snippet?.publishedAt||0)).sort((a,b)=>b-a);
-          lastDate=dates[0];
-          daysSince=Math.round((Date.now()-lastDate)/86400000);
+          lastDate=dates[0]; daysSince=Math.round((Date.now()-lastDate)/86400000);
         }
         newCache[ch.id]={ ts:Date.now(), data:{...erData, daysSince, lastDate:lastDate?.toISOString()} };
       }
@@ -975,8 +1020,7 @@ async function searchChannels(){
         er:erData.er, rawEr:erData.rawEr||0, sf:erData.sf||0,
         avgViews:erData.avgViews, avgLikes:erData.avgLikes, avgCmt:erData.avgCmt||erData.avgComments||0,
         daysSince, lastDate, score:sc,
-        tier:tier(sc,subs,erData.er),
-        fromCache:item.fromCache
+        tier:tier(sc,subs,erData.er), fromCache:item.fromCache
       });
     }
 
@@ -986,7 +1030,7 @@ async function searchChannels(){
 
   } catch(err){
     console.error(err);
-    showStatus('❌ 錯誤：'+err.message,'error');
+    showStatus('❌ '+(currentLang==='zh'?'錯誤：':'Error: ')+err.message,'error');
     setRunning(false);
   }
 }
@@ -995,6 +1039,7 @@ async function searchChannels(){
 //  RENDER
 // ═══════════════════════════════════════════════════
 function renderResults(){
+  const L=currentLang;
   const filterDays=parseInt(document.getElementById('activeFilter').value)||0;
   const minSubs=parseInt(document.getElementById('minSubs').value)||0;
   let res=[...allResults];
@@ -1003,7 +1048,6 @@ function renderResults(){
   if(filterDays>0){ const b=res.length; res=res.filter(r=>r.daysSince<=filterDays); filtInactive=b-res.length; }
   if(minSubs>0){ const b=res.length; res=res.filter(r=>r.subscriberCount>=minSubs); filtSmall=b-res.length; }
 
-  // Sort
   res.sort((a,b)=>{
     const av=a[sortCol],bv=b[sortCol];
     if(typeof av==='string') return sortAsc?av.localeCompare(bv):bv.localeCompare(av);
@@ -1011,28 +1055,34 @@ function renderResults(){
   });
   res.forEach((r,i)=>r.rank=i+1);
 
-  // Stats
   const avgER=res.length?res.reduce((s,r)=>s+r.er,0)/res.length:0;
   const topER=res.length?Math.max(...res.map(r=>r.er)):0;
   const maxSubs=res.length?Math.max(...res.map(r=>r.subscriberCount)):1;
 
   document.getElementById('resultsCount').textContent=res.length;
   document.getElementById('statsGrid').innerHTML=`
-    <div class="stat"><div class="stat-l">有效頻道</div><div class="stat-v accent">${res.length}</div></div>
-    <div class="stat"><div class="stat-l">篩除停更</div><div class="stat-v warn">${filtInactive}</div></div>
-    <div class="stat"><div class="stat-l">篩除訂閱不足</div><div class="stat-v warn">${filtSmall}</div></div>
-    <div class="stat"><div class="stat-l">平均 ER</div><div class="stat-v purple">${avgER.toFixed(2)}%</div></div>
-    <div class="stat"><div class="stat-l">最高 ER</div><div class="stat-v accent">${topER.toFixed(2)}%</div></div>
-    <div class="stat"><div class="stat-l">API 今日用量</div><div class="stat-v">${getUnits()}</div></div>
+    <div class="stat"><div class="stat-l">${L==='zh'?'有效頻道':'Active Ch.'}</div><div class="stat-v accent">${res.length}</div></div>
+    <div class="stat"><div class="stat-l">${L==='zh'?'篩除停更':'Inactive'}</div><div class="stat-v warn">${filtInactive}</div></div>
+    <div class="stat"><div class="stat-l">${L==='zh'?'訂閱不足':'Low Subs'}</div><div class="stat-v warn">${filtSmall}</div></div>
+    <div class="stat"><div class="stat-l">${L==='zh'?'平均 ER':'Avg ER'}</div><div class="stat-v purple">${avgER.toFixed(2)}%</div></div>
+    <div class="stat"><div class="stat-l">${L==='zh'?'最高 ER':'Top ER'}</div><div class="stat-v accent">${topER.toFixed(2)}%</div></div>
+    <div class="stat"><div class="stat-l">${L==='zh'?'今日用量':'Today Quota'}</div><div class="stat-v">${getUnits()}</div></div>
   `;
 
   document.getElementById('resultsBody').innerHTML = res.map(ch=>{
     const freshCls=ch.daysSince<=90?'fresh':ch.daysSince<=365?'stale':'dead';
-    const daysText=ch.daysSince===9999?'未知':ch.daysSince<30?`${ch.daysSince}天前`:ch.daysSince<365?`${Math.round(ch.daysSince/30)}個月前`:`${(ch.daysSince/365).toFixed(1)}年前`;
+    let daysText;
+    if(ch.daysSince===9999) daysText=L==='zh'?'未知':'Unknown';
+    else if(ch.daysSince<30) daysText=L==='zh'?`${ch.daysSince}天前`:`${ch.daysSince}d ago`;
+    else if(ch.daysSince<365) daysText=L==='zh'?`${Math.round(ch.daysSince/30)}個月前`:`${Math.round(ch.daysSince/30)}mo ago`;
+    else daysText=L==='zh'?`${(ch.daysSince/365).toFixed(1)}年前`:`${(ch.daysSince/365).toFixed(1)}yr ago`;
+
     const erColor=ch.er>=10?'var(--g1)':ch.er>=3?'#a5b4fc':ch.er>=1?'var(--warn)':'var(--danger)';
     const erPct=Math.min(ch.er/Math.max(topER,1)*100,100);
     const subPct=Math.min(ch.subscriberCount/maxSubs*100,100);
     const isInactive=filterDays>0&&ch.daysSince>filterDays;
+    const inactiveLbl=L==='zh'?'停更':'Inactive';
+    const cacheLbl=L==='zh'?'快取':'Cached';
 
     return `<tr class="${isInactive?'inactive-row':''}">
       <td style="color:var(--text3);font-family:var(--mono);font-size:12px">${ch.rank}</td>
@@ -1045,8 +1095,8 @@ function renderResults(){
           <div class="ch-info">
             <div class="ch-name">
               <a href="https://www.youtube.com/channel/${ch.channelId}" target="_blank">${esc(ch.title)}</a>
-              ${isInactive?`<span class="badge-sm badge-inactive">停更</span>`:''}
-              ${ch.fromCache?`<span class="badge-sm badge-cache">快取</span>`:''}
+              ${isInactive?`<span class="badge-sm badge-inactive">${inactiveLbl}</span>`:''}
+              ${ch.fromCache?`<span class="badge-sm badge-cache">${cacheLbl}</span>`:''}
             </div>
             <div class="ch-handle">${esc(ch.customUrl||ch.channelId)}</div>
             <div class="ch-date ${freshCls}">⏱ ${daysText}</div>
@@ -1064,7 +1114,7 @@ function renderResults(){
         <div class="er-cell">
           <div class="er-top">
             <span class="er-num" style="color:${erColor}">${ch.er.toFixed(2)}%</span>
-            <span class="er-raw">原始 ${ch.rawEr?ch.rawEr.toFixed(1):0}% × ${ch.sf?(ch.sf*100).toFixed(0):0}%</span>
+            <span class="er-raw">${L==='zh'?'原始':'Raw'} ${ch.rawEr?ch.rawEr.toFixed(1):0}% × ${ch.sf?(ch.sf*100).toFixed(0):0}%</span>
           </div>
           <div class="er-bar"><div class="er-fill" style="width:${erPct.toFixed(1)}%;background:${erColor}"></div></div>
           <div class="er-meta">
@@ -1074,15 +1124,21 @@ function renderResults(){
           </div>
         </div>
       </td>
-      <td class="mono" style="font-size:13px;color:var(--text2)">${fmt(ch.avgViews)}</td>
-      <td class="mono" style="font-size:13px;color:${ch.avgCmt>0?'#a5b4fc':'var(--text3)'}">${ch.avgCmt>0?fmt(ch.avgCmt):'—'}</td>
+      <td style="font-family:var(--mono);font-size:13px;color:var(--text2)">${fmt(ch.avgViews)}</td>
+      <td style="font-family:var(--mono);font-size:13px;color:${ch.avgCmt>0?'#a5b4fc':'var(--text3)'}">${ch.avgCmt>0?fmt(ch.avgCmt):'—'}</td>
       <td class="ch-date ${freshCls}" style="font-family:var(--mono);font-size:11px;white-space:nowrap">${daysText}</td>
     </tr>`;
   }).join('');
 
   document.getElementById('resultsEmpty').style.display='none';
   document.getElementById('resultsPanel').style.display='block';
-  showStatus(`✅ ${res.length} 個頻道（ER×規模修正排序），篩除停更 ${filtInactive}・訂閱不足 ${filtSmall}・API ${getUnits()} units`,'success');
+
+  showStatus(
+    L==='zh'
+      ?`✅ ${res.length} 個頻道（ER×規模修正排序），篩除停更 ${filtInactive}・訂閱不足 ${filtSmall}・API ${getUnits()} units`
+      :`✅ ${res.length} channels (sorted by ER×Scale), filtered: ${filtInactive} inactive · ${filtSmall} low-subs · API ${getUnits()} units`,
+    'success'
+  );
 }
 
 // ═══════════════════════════════════════════════════
@@ -1110,14 +1166,13 @@ function showStatus(msg,type='loading'){
 function setRunning(on){
   const btn=document.getElementById('runBtn');
   const sp=document.getElementById('runSpinner');
-  btn.disabled=on;
-  sp.style.display=on?'inline-block':'none';
+  btn.disabled=on; sp.style.display=on?'inline-block':'none';
 }
 function saveApiKey(){
   const k=document.getElementById('apiKey').value.trim();
-  if(!k){ showStatus('請輸入 API Key','error'); return; }
+  if(!k){ showStatus(currentLang==='zh'?'請輸入 API Key':'Please enter your API Key','error'); return; }
   localStorage.setItem(APIKEY_STOR,k);
-  showStatus('✅ API Key 已儲存','success');
+  showStatus(currentLang==='zh'?'✅ API Key 已儲存':'✅ API Key saved','success');
 }
 function clearResults(){
   allResults=[];
@@ -1126,19 +1181,19 @@ function clearResults(){
   document.getElementById('statusBar').style.display='none';
 }
 function exportCSV(){
-  if(!allResults.length){ showStatus('❌ 沒有資料可匯出','error'); return; }
-  const h=['排名','評級','頻道名稱','頻道ID','訂閱數','修正ER%','原始ER%','規模係數%','均觀看','均按讚','均留言','最後更新(天前)'];
+  if(!allResults.length){ showStatus(currentLang==='zh'?'❌ 沒有資料可匯出':'❌ No data to export','error'); return; }
+  const h=['Rank','Tier','Channel Name','Channel ID','Subscribers','Adjusted ER%','Raw ER%','Scale Factor%','Avg Views','Avg Likes','Avg Comments','Days Since Upload'];
   const rows=allResults.map((ch,i)=>[
     i+1,ch.tier,`"${ch.title.replace(/"/g,'""')}"`,ch.channelId,
     ch.subscriberCount,ch.er.toFixed(4),ch.rawEr.toFixed(4),(ch.sf*100).toFixed(1),
-    ch.avgViews,ch.avgLikes,ch.avgCmt,ch.daysSince===9999?'未知':ch.daysSince
+    ch.avgViews,ch.avgLikes,ch.avgCmt,ch.daysSince===9999?'N/A':ch.daysSince
   ]);
   const csv=[h,...rows].map(r=>r.join(',')).join('\n');
   const a=document.createElement('a');
   a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'}));
   a.download=`VGV_KOL_${new Date().toISOString().slice(0,10)}.csv`;
   a.click();
-  showStatus('✅ CSV 匯出完成','success');
+  showStatus(currentLang==='zh'?'✅ CSV 匯出完成':'✅ CSV exported successfully','success');
 }
 </script>
 </body>
