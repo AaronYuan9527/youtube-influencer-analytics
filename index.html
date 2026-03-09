@@ -3,128 +3,65 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>VGV KOL Analyzer — VGV 圈粉行銷科技</title>
+<title>VGV KOL Analyzer — VGV 圈粉行銷科技 / VGV Influencer Marketing Tech</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <style>
 :root{
-  --bg:#080b10;
-  --s1:#0e1318;
-  --s2:#141a22;
-  --s3:#1c2535;
-  --border:#1f2d3d;
-  --border2:#2a3a4f;
-  --g1:#00d4a0;
-  --g2:#00b8e6;
-  --g3:#6366f1;
-  --warn:#f59e0b;
-  --danger:#ef4444;
-  --text:#e2e8f0;
-  --text2:#94a3b8;
-  --text3:#4a5568;
-  --white:#fff;
-  --radius:12px;
-  --mono:'DM Mono',monospace;
-  --sans:'DM Sans',sans-serif;
+  --bg:#080b10;--s1:#0e1318;--s2:#141a22;--s3:#1c2535;
+  --border:#1f2d3d;--border2:#2a3a4f;
+  --g1:#00d4a0;--g2:#00b8e6;--g3:#6366f1;
+  --warn:#f59e0b;--danger:#ef4444;
+  --text:#e2e8f0;--text2:#94a3b8;--text3:#4a5568;
+  --radius:12px;--mono:'DM Mono',monospace;--sans:'DM Sans',sans-serif;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
-body::before,body::after{
-  content:'';position:fixed;border-radius:50%;pointer-events:none;z-index:0;
-  filter:blur(80px);opacity:.12;
-}
+body::before,body::after{content:'';position:fixed;border-radius:50%;pointer-events:none;z-index:0;filter:blur(80px);opacity:.12}
 body::before{width:600px;height:600px;background:radial-gradient(circle,var(--g1),transparent);top:-200px;left:-200px;animation:orb1 20s ease-in-out infinite alternate}
 body::after{width:500px;height:500px;background:radial-gradient(circle,var(--g3),transparent);bottom:-150px;right:-150px;animation:orb2 15s ease-in-out infinite alternate}
 @keyframes orb1{to{transform:translate(100px,100px)}}
 @keyframes orb2{to{transform:translate(-80px,-80px)}}
-
 .wrap{max-width:1440px;margin:0 auto;padding:0 24px 60px;position:relative;z-index:1}
 
-/* ── LANG TOGGLE ── */
-.lang-bar{
-  display:flex;justify-content:flex-end;padding:8px 0 4px;gap:6px;
-}
-.lang-btn{
-  padding:4px 12px;border-radius:999px;font-size:11px;font-weight:600;cursor:pointer;
-  background:var(--s2);border:1px solid var(--border);color:var(--text2);transition:.15s;font-family:var(--sans);
-}
+/* LANG BAR */
+.lang-bar{display:flex;justify-content:flex-end;align-items:center;padding:8px 0 4px;gap:6px}
+.lang-bar-label{font-size:10px;color:var(--text3);margin-right:4px;font-family:var(--mono)}
+.lang-btn{padding:5px 14px;border-radius:999px;font-size:11px;font-weight:600;cursor:pointer;background:var(--s2);border:1px solid var(--border);color:var(--text2);transition:.15s;font-family:var(--sans)}
 .lang-btn.active{background:rgba(0,212,160,.12);border-color:var(--g1);color:var(--g1)}
+.lang-btn:hover:not(.active){border-color:var(--border2);color:var(--text)}
 
-/* hide/show lang layers */
-.zh,.en{ display:none }
-body.lang-zh .zh{ display:revert }
-body.lang-en .en{ display:revert }
-/* For inline spans */
-span.zh, span.en{ display:none }
-body.lang-zh span.zh{ display:inline }
-body.lang-en span.en{ display:inline }
-/* For block elements needing block display */
-div.zh, div.en{ display:none }
-body.lang-zh div.zh{ display:block }
-body.lang-en div.en{ display:block }
-/* For table headers/cells */
-th.zh, th.en, td.zh, td.en{ display:none }
-body.lang-zh th.zh, body.lang-zh td.zh{ display:table-cell }
-body.lang-en th.en, body.lang-en td.en{ display:table-cell }
-
-/* ── HEADER ── */
-.topbar{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:20px 0 16px;border-bottom:1px solid var(--border);margin-bottom:28px;
-  position:sticky;top:0;background:rgba(8,11,16,.85);backdrop-filter:blur(16px);z-index:100;
-}
+/* TOPBAR */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:20px 0 16px;border-bottom:1px solid var(--border);margin-bottom:28px;position:sticky;top:0;background:rgba(8,11,16,.9);backdrop-filter:blur(16px);z-index:100}
 .logo{display:flex;align-items:center;gap:12px}
-.logo-mark{
-  width:36px;height:36px;border-radius:10px;
-  background:linear-gradient(135deg,var(--g1),var(--g2));
-  display:flex;align-items:center;justify-content:center;
-  font-family:var(--mono);font-weight:500;font-size:13px;color:#000;letter-spacing:-.5px;
-}
+.logo-mark{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--g1),var(--g2));display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-weight:500;font-size:13px;color:#000;letter-spacing:-.5px}
 .logo-text{font-family:var(--mono);font-size:15px;color:var(--text);letter-spacing:-.3px}
 .logo-sub{font-size:11px;color:var(--text2);margin-top:1px}
 .topbar-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.units-pill{
-  display:flex;align-items:center;gap:8px;
-  background:var(--s2);border:1px solid var(--border);border-radius:999px;
-  padding:6px 14px;font-family:var(--mono);font-size:11px;
-}
+.units-pill{display:flex;align-items:center;gap:8px;background:var(--s2);border:1px solid var(--border);border-radius:999px;padding:6px 14px;font-family:var(--mono);font-size:11px}
 .units-dot{width:7px;height:7px;border-radius:50%;background:var(--g1);flex-shrink:0}
 .units-dot.warn{background:var(--warn)}
-.units-dot.danger{background:var(--danger);animation:pulse .8s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-.units-val{color:var(--g1)}
-.units-val.warn{color:var(--warn)}
-.units-val.danger{color:var(--danger)}
+.units-dot.danger{background:var(--danger);animation:blink .8s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.units-val{color:var(--g1)}.units-val.warn{color:var(--warn)}.units-val.danger{color:var(--danger)}
+.units-label{color:var(--text3);font-size:10px;margin-right:2px}
 
-/* ── API KEY PANEL ── */
-.apibar{
-  background:linear-gradient(135deg,rgba(0,212,160,.06),rgba(99,102,241,.06));
-  border:1px solid rgba(0,212,160,.2);border-radius:var(--radius);
-  padding:16px 20px;margin-bottom:20px;
-}
+/* API BAR */
+.apibar{background:linear-gradient(135deg,rgba(0,212,160,.06),rgba(99,102,241,.06));border:1px solid rgba(0,212,160,.2);border-radius:var(--radius);padding:16px 20px;margin-bottom:20px}
 .apibar-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 .apibar-icon{color:var(--g1);font-size:18px;flex-shrink:0}
 .apibar-label{font-size:12px;color:var(--text2);flex-shrink:0;font-weight:500}
-.apibar input{
-  flex:1;min-width:260px;background:var(--s2);border:1px solid var(--border2);
-  color:var(--text);border-radius:8px;padding:9px 14px;font-size:13px;font-family:var(--mono);
-  transition:.2s;
-}
+.apibar-sublabel{font-size:10px;color:var(--text3);font-family:var(--mono);margin-top:2px}
+.apibar input{flex:1;min-width:260px;background:var(--s2);border:1px solid var(--border2);color:var(--text);border-radius:8px;padding:9px 14px;font-size:13px;font-family:var(--mono);transition:.2s}
+.apibar input::placeholder{color:var(--text3)}
 .apibar input:focus{outline:0;border-color:var(--g1);box-shadow:0 0 0 3px rgba(0,212,160,.1)}
 .apibar-btns{display:flex;gap:8px}
-/* Privacy notice */
-.privacy-note{
-  margin-top:10px;padding:10px 14px;background:rgba(0,212,160,.04);
-  border-radius:8px;border:1px solid rgba(0,212,160,.1);
-  font-size:11px;line-height:1.6;color:var(--text2);
-}
+.privacy-note{margin-top:10px;padding:10px 14px;background:rgba(0,212,160,.04);border-radius:8px;border:1px solid rgba(0,212,160,.1);font-size:11px;line-height:1.7;color:var(--text2)}
 .privacy-note strong{color:var(--g1)}
+.privacy-note code{font-family:var(--mono);font-size:10px;background:rgba(255,255,255,.05);padding:1px 5px;border-radius:3px}
 
-.btn{
-  padding:9px 18px;border:0;border-radius:8px;font-size:13px;font-weight:600;
-  cursor:pointer;transition:all .18s;font-family:var(--sans);display:inline-flex;align-items:center;gap:6px;
-  white-space:nowrap;
-}
+/* BUTTONS */
+.btn{padding:9px 18px;border:0;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;transition:all .18s;font-family:var(--sans);display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
 .btn-primary{background:linear-gradient(135deg,var(--g1),var(--g2));color:#000}
 .btn-primary:hover{transform:translateY(-1px);box-shadow:0 4px 20px rgba(0,212,160,.3)}
 .btn-ghost{background:var(--s3);color:var(--text2);border:1px solid var(--border2)}
@@ -132,481 +69,377 @@ body.lang-en th.en, body.lang-en td.en{ display:table-cell }
 .btn-sm{padding:7px 14px;font-size:12px}
 .btn-danger{background:rgba(239,68,68,.1);color:var(--danger);border:1px solid rgba(239,68,68,.2)}
 .btn-danger:hover{background:rgba(239,68,68,.2)}
+.btn-sublabel{font-size:9px;opacity:.65;font-weight:400;margin-left:2px}
 
-/* ── MAIN LAYOUT ── */
-.layout{display:grid;grid-template-columns:280px 1fr;gap:20px;align-items:start}
+/* LAYOUT */
+.layout{display:grid;grid-template-columns:290px 1fr;gap:20px;align-items:start}
 @media(max-width:960px){.layout{grid-template-columns:1fr}}
 
-/* ── SIDEBAR ── */
-.sidebar{
-  position:sticky;top:74px;
-  height:calc(100vh - 100px);
-  display:flex;flex-direction:column;
-  overflow:hidden;
-}
-.sidebar-inner{
-  flex:1;overflow-y:auto;overflow-x:hidden;
-  padding-right:2px;
-  scrollbar-width:thin;
-  scrollbar-color:var(--border2) transparent;
-}
+/* SIDEBAR */
+.sidebar{position:sticky;top:74px;height:calc(100vh - 100px);display:flex;flex-direction:column;overflow:hidden}
+.sidebar-inner{flex:1;overflow-y:auto;overflow-x:hidden;padding-right:2px;scrollbar-width:thin;scrollbar-color:var(--border2) transparent}
 .sidebar-inner::-webkit-scrollbar{width:4px}
 .sidebar-inner::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
-.sidebar-footer{
-  flex-shrink:0;padding-top:10px;
-  border-top:1px solid var(--border);background:var(--bg);margin-top:6px;
-}
-.card{background:var(--s1);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
-.card-head{
-  padding:14px 18px;border-bottom:1px solid var(--border);
-  display:flex;align-items:center;justify-content:space-between;
-}
-.card-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--text2)}
-.card-body{padding:16px 18px}
+.sidebar-footer{flex-shrink:0;padding-top:10px;border-top:1px solid var(--border);background:var(--bg);margin-top:6px}
 
-/* Region */
-.region-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:10px}
-.region-btn{
-  display:flex;align-items:center;gap:6px;padding:7px 9px;
-  background:var(--s2);border:1px solid var(--border);border-radius:8px;
-  cursor:pointer;transition:all .15s;font-size:12px;color:var(--text2);font-weight:500;
-}
+/* CARDS */
+.card{background:var(--s1);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:10px}
+.card-head{padding:11px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.card-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.8px;color:var(--text2)}
+.card-title-sub{font-size:9px;color:var(--text3);margin-top:2px;font-family:var(--mono)}
+.card-body{padding:12px 16px 14px}
+
+/* REGION */
+.region-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:8px}
+.region-btn{display:flex;align-items:center;gap:6px;padding:7px 9px;background:var(--s2);border:1px solid var(--border);border-radius:8px;cursor:pointer;transition:all .15s;color:var(--text2)}
 .region-btn:hover{border-color:var(--border2);color:var(--text)}
 .region-btn.active{background:rgba(0,212,160,.08);border-color:var(--g1);color:var(--g1)}
 .region-flag{font-size:15px;line-height:1;flex-shrink:0}
 .region-name{font-size:11px;font-weight:600;line-height:1.2}
-.region-hint{font-size:9px;color:var(--text3);margin-top:1px;font-family:var(--mono)}
+.region-name2{font-size:9px;color:var(--text3);line-height:1.2}
+.region-hint{font-size:8px;color:var(--text3);opacity:.6;font-family:var(--mono);margin-top:1px}
+.region-note{font-size:9px;color:var(--text3);line-height:1.6;padding:6px 8px;background:var(--s2);border-radius:6px;border:1px solid var(--border)}
 
-/* Category */
-.cat-scroll{
-  max-height:200px;overflow-y:auto;overflow-x:hidden;
-  padding-right:4px;
-  scrollbar-width:thin;
-  scrollbar-color:var(--border2) transparent;
-}
+/* CATEGORIES */
+.cat-scroll{max-height:196px;overflow-y:auto;padding-right:4px;scrollbar-width:thin;scrollbar-color:var(--border2) transparent}
 .cat-scroll::-webkit-scrollbar{width:3px}
 .cat-scroll::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
-.cat-section{margin-bottom:10px}
-.cat-section-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--text3);margin-bottom:6px}
+.cat-group{margin-bottom:9px}
+.cat-group-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text3);margin-bottom:5px}
 .cat-tags{display:flex;flex-wrap:wrap;gap:4px}
-.cat-tag{
-  padding:3px 9px;border-radius:999px;font-size:11px;font-weight:500;
-  background:var(--s2);border:1px solid var(--border);color:var(--text2);
-  cursor:pointer;transition:all .15s;user-select:none;
-}
+.cat-tag{padding:3px 9px;border-radius:999px;font-size:11px;font-weight:500;background:var(--s2);border:1px solid var(--border);color:var(--text2);cursor:pointer;transition:all .15s;user-select:none}
 .cat-tag:hover{border-color:var(--border2);color:var(--text)}
-.cat-tag.active-primary{background:rgba(0,212,160,.12);border-color:var(--g1);color:var(--g1)}
-
-.selected-cats{
-  margin-top:8px;padding:7px 10px;background:var(--s2);border-radius:8px;
-  border:1px solid var(--border);min-height:32px;font-size:11px;color:var(--text2);
-}
-.selected-cats.empty{color:var(--text3);font-style:italic;font-size:11px}
-.sel-chip{
-  display:inline-flex;align-items:center;gap:3px;
-  background:rgba(0,212,160,.1);border:1px solid rgba(0,212,160,.25);
-  border-radius:999px;padding:2px 8px;margin:2px;
-  font-size:10px;color:var(--g1);font-weight:500;
-}
+.cat-tag.active{background:rgba(0,212,160,.12);border-color:var(--g1);color:var(--g1)}
+.selected-wrap{margin-top:8px}
+.selected-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text3);margin-bottom:4px}
+.selected-box{padding:6px 9px;background:var(--s2);border-radius:8px;border:1px solid var(--border);min-height:30px;font-size:11px}
+.selected-box.empty{color:var(--text3);font-style:italic}
+.sel-chip{display:inline-flex;align-items:center;gap:3px;background:rgba(0,212,160,.1);border:1px solid rgba(0,212,160,.25);border-radius:999px;padding:2px 8px;margin:2px;font-size:10px;color:var(--g1);font-weight:500}
 .sel-chip button{background:none;border:0;color:var(--g1);cursor:pointer;padding:0 0 0 2px;font-size:12px;line-height:1;opacity:.7}
 .sel-chip button:hover{opacity:1}
-
-.kw-row{display:flex;gap:6px;margin-top:7px}
-.kw-row input{
-  flex:1;background:var(--s2);border:1px solid var(--border);color:var(--text);
-  border-radius:7px;padding:6px 10px;font-size:12px;transition:.2s;font-family:var(--sans);
-}
-.kw-row input:focus{outline:0;border-color:var(--g3);box-shadow:0 0 0 3px rgba(99,102,241,.1)}
+.kw-section{margin-top:10px}
+.kw-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text3);margin-bottom:4px}
+.kw-row{display:flex;gap:6px}
+.kw-row input{flex:1;background:var(--s2);border:1px solid var(--border);color:var(--text);border-radius:7px;padding:6px 10px;font-size:12px;transition:.2s;font-family:var(--sans)}
 .kw-row input::placeholder{color:var(--text3)}
+.kw-row input:focus{outline:0;border-color:var(--g3);box-shadow:0 0 0 3px rgba(99,102,241,.1)}
 
-.field{margin-bottom:10px}
-.field-label{font-size:10px;font-weight:600;color:var(--text2);margin-bottom:4px;display:block;text-transform:uppercase;letter-spacing:1px}
-.field select,.field input{
-  width:100%;background:var(--s2);border:1px solid var(--border);color:var(--text);
-  border-radius:8px;padding:7px 10px;font-size:12px;transition:.2s;font-family:var(--sans);
-  appearance:none;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2394a3b8' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
-  background-repeat:no-repeat;background-position:right 10px center;padding-right:28px;
-}
-.field select:focus,.field input:focus{outline:0;border-color:var(--g1)}
+/* FIELDS */
 .fields-2col{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.fields-2col .field{margin-bottom:0}
+.field{margin-bottom:8px}
+.field-label{font-size:9px;font-weight:700;color:var(--text3);margin-bottom:3px;display:block;text-transform:uppercase;letter-spacing:1.2px;line-height:1.5}
+.field-sublabel{font-size:8px;color:var(--text3);opacity:.7;font-family:var(--mono);display:block;font-weight:400;text-transform:none;letter-spacing:0}
+.field select{width:100%;background:var(--s2);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:7px 28px 7px 10px;font-size:12px;transition:.2s;font-family:var(--sans);appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2394a3b8' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 9px center}
+.field select:focus{outline:0;border-color:var(--g1)}
 .divider{height:1px;background:var(--border);margin:10px 0}
+.er-formula{background:var(--s2);border-radius:8px;padding:10px 12px;border:1px solid var(--border);font-family:var(--mono);font-size:10px;line-height:1.9}
+.er-formula .f-title{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text3);margin-bottom:5px}
+.er-formula .f-line{color:var(--text2)}
+.er-formula .hl{color:var(--g1)}.er-formula .hl2{color:#a5b4fc}
+.er-formula .f-note{font-size:9px;color:var(--text3);margin-top:3px;line-height:1.6}
 
-.er-formula{
-  background:var(--s2);border-radius:8px;padding:9px 11px;border:1px solid var(--border);
-  font-family:var(--mono);font-size:10px;line-height:1.7;
-}
-.er-formula .formula-line{color:var(--text2)}
-.er-formula .hl{color:var(--g1)}
-.er-formula .hl2{color:#a5b4fc}
-
-/* Run button */
-.run-btn{
-  width:100%;padding:11px;border:0;border-radius:10px;
-  background:linear-gradient(135deg,var(--g1),var(--g2));
-  color:#000;font-size:13px;font-weight:700;cursor:pointer;
-  transition:all .2s;font-family:var(--sans);
-  display:flex;align-items:center;justify-content:center;gap:8px;
-  position:relative;overflow:hidden;
-}
-.run-btn::before{
-  content:'';position:absolute;inset:0;
-  background:linear-gradient(135deg,var(--g2),var(--g1));
-  opacity:0;transition:.2s;
-}
+/* RUN BUTTON */
+.run-btn{width:100%;padding:12px;border:0;border-radius:10px;background:linear-gradient(135deg,var(--g1),var(--g2));color:#000;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;font-family:var(--sans);display:flex;align-items:center;justify-content:center;gap:8px;position:relative;overflow:hidden}
+.run-btn::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--g2),var(--g1));opacity:0;transition:.2s}
 .run-btn:hover::before{opacity:1}
 .run-btn:hover{box-shadow:0 6px 24px rgba(0,212,160,.35);transform:translateY(-1px)}
-.run-btn:active{transform:none}
 .run-btn span{position:relative}
+.run-btn .run-sub{font-size:10px;font-weight:400;opacity:.75;margin-left:4px}
 .run-btn:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
+.footer-actions{display:flex;gap:6px;margin-top:8px}
 
-/* ── RESULTS ── */
-.results-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px}
-.results-title{font-size:13px;font-weight:600;color:var(--text2);display:flex;align-items:center;gap:8px}
-.results-count{font-family:var(--mono);color:var(--g1);font-size:16px;font-weight:500}
-
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-bottom:16px}
-.stat{background:var(--s1);border:1px solid var(--border);border-radius:10px;padding:12px 14px}
-.stat-l{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;font-weight:600}
-.stat-v{font-family:var(--mono);font-size:18px;font-weight:500;color:var(--text)}
-.stat-v.accent{color:var(--g1)}
-.stat-v.warn{color:var(--warn)}
-.stat-v.purple{color:#a5b4fc}
-
-.status-bar{
-  padding:12px 16px;border-radius:10px;font-size:12px;font-weight:500;
-  margin-bottom:16px;display:none;align-items:center;gap:8px;line-height:1.5;
-}
+/* STATUS */
+.status-bar{padding:12px 16px;border-radius:10px;font-size:12px;font-weight:500;margin-bottom:16px;display:none;align-items:center;gap:8px;line-height:1.5}
 .status-bar.loading{background:rgba(99,102,241,.08);color:#a5b4fc;border:1px solid rgba(99,102,241,.15);display:flex}
 .status-bar.success{background:rgba(0,212,160,.06);color:var(--g1);border:1px solid rgba(0,212,160,.12);display:flex}
 .status-bar.error{background:rgba(239,68,68,.06);color:var(--danger);border:1px solid rgba(239,68,68,.12);display:flex}
 .progress-text{flex:1}
 
-/* Table */
+/* RESULTS */
+.results-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px}
+.results-title{font-size:13px;font-weight:600;color:var(--text2);display:flex;align-items:center;gap:8px}
+.results-count{font-family:var(--mono);color:var(--g1);font-size:18px;font-weight:500}
+.results-sub{font-size:10px;color:var(--text3);margin-top:1px}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-bottom:14px}
+.stat{background:var(--s1);border:1px solid var(--border);border-radius:10px;padding:12px 14px}
+.stat-l{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;font-weight:700;line-height:1.4}
+.stat-v{font-family:var(--mono);font-size:20px;font-weight:500;color:var(--text)}
+.stat-v.accent{color:var(--g1)}.stat-v.warn{color:var(--warn)}.stat-v.purple{color:#a5b4fc}
+
+/* TABLE */
 .table-card{background:var(--s1);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
 .table-scroll{overflow-x:auto}
-table{width:100%;border-collapse:collapse;min-width:860px}
-thead th{
-  background:var(--s2);padding:11px 14px;text-align:left;
-  font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1.5px;font-weight:700;
-  cursor:pointer;user-select:none;white-space:nowrap;border-bottom:1px solid var(--border);
-  transition:.15s;
-}
+table{width:100%;border-collapse:collapse;min-width:900px}
+thead th{background:var(--s2);padding:10px 14px;text-align:left;font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:1.5px;font-weight:700;cursor:pointer;user-select:none;white-space:nowrap;border-bottom:1px solid var(--border);transition:.15s;vertical-align:top}
 thead th:hover,thead th.sorted{color:var(--g1)}
 thead th .si{display:inline-block;margin-left:4px;opacity:.5;font-style:normal}
 thead th.sorted .si{opacity:1;color:var(--g1)}
+thead th .th-en{display:block;font-size:8px;font-family:var(--mono);color:var(--text3);text-transform:none;letter-spacing:0;font-weight:400;margin-top:2px;opacity:.6;white-space:nowrap}
 tbody td{padding:12px 14px;border-bottom:1px solid rgba(31,45,61,.6);vertical-align:middle}
 tbody tr:last-child td{border-bottom:0}
 tbody tr:hover td{background:rgba(255,255,255,.018)}
 .inactive-row td{opacity:.35}
 
-/* Channel cell */
+/* CHANNEL CELL */
 .ch-cell{display:flex;align-items:center;gap:12px;min-width:200px}
 .ch-avatar{position:relative;flex-shrink:0}
 .ch-img{width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid var(--border2);background:var(--s3)}
 .ch-online{position:absolute;bottom:1px;right:1px;width:10px;height:10px;border-radius:50%;border:2px solid var(--s1)}
-.ch-online.fresh{background:var(--g1)}
-.ch-online.stale{background:var(--warn)}
-.ch-online.dead{background:var(--danger)}
-.ch-info .ch-name{font-size:13px;font-weight:600;color:var(--text);line-height:1.3}
-.ch-info .ch-name a{color:inherit;text-decoration:none;transition:.15s}
-.ch-info .ch-name a:hover{color:var(--g1)}
-.ch-info .ch-handle{font-size:11px;color:var(--text3);font-family:var(--mono);margin-top:2px}
-.ch-info .ch-date{font-size:10px;margin-top:3px;display:flex;align-items:center;gap:4px}
-.ch-date.fresh{color:var(--g1)}
-.ch-date.stale{color:var(--warn)}
-.ch-date.dead{color:var(--danger)}
+.ch-online.fresh{background:var(--g1)}.ch-online.stale{background:var(--warn)}.ch-online.dead{background:var(--danger)}
+.ch-name{font-size:13px;font-weight:600;color:var(--text);line-height:1.3}
+.ch-name a{color:inherit;text-decoration:none;transition:.15s}
+.ch-name a:hover{color:var(--g1)}
+.ch-handle{font-size:11px;color:var(--text3);font-family:var(--mono);margin-top:1px}
+.ch-updated{font-size:10px;margin-top:3px}
+.ch-updated.fresh{color:var(--g1)}.ch-updated.stale{color:var(--warn)}.ch-updated.dead{color:var(--danger)}
 
-/* Tier badge */
-.tier{
-  width:28px;height:28px;border-radius:7px;display:inline-flex;
-  align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;font-weight:500;
-  flex-shrink:0;
-}
+/* TIER */
+.tier{width:28px;height:28px;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;font-weight:500;flex-shrink:0}
 .tier-S{background:rgba(0,212,160,.12);color:var(--g1);border:1px solid rgba(0,212,160,.25)}
 .tier-A{background:rgba(99,102,241,.12);color:#a5b4fc;border:1px solid rgba(99,102,241,.25)}
 .tier-B{background:rgba(245,158,11,.1);color:var(--warn);border:1px solid rgba(245,158,11,.2)}
 .tier-C{background:rgba(100,116,139,.1);color:#64748b;border:1px solid rgba(100,116,139,.2)}
 .tier-D{background:rgba(239,68,68,.08);color:var(--danger);border:1px solid rgba(239,68,68,.15)}
 
-/* ER cell */
+/* ER CELL */
 .er-cell{min-width:150px}
 .er-top{display:flex;align-items:baseline;gap:6px}
 .er-num{font-family:var(--mono);font-size:14px;font-weight:500}
-.er-raw{font-family:var(--mono);font-size:10px;color:var(--text3)}
+.er-breakdown{font-family:var(--mono);font-size:10px;color:var(--text3)}
 .er-bar{height:4px;background:var(--s3);border-radius:2px;margin:5px 0;overflow:hidden}
 .er-fill{height:100%;border-radius:2px;transition:width .5s ease}
-.er-meta{font-size:10px;color:var(--text3);font-family:var(--mono)}
-.er-meta span{margin-right:6px}
+.er-meta{font-size:10px;color:var(--text3);font-family:var(--mono);display:flex;gap:6px;flex-wrap:wrap}
 .er-meta .cmt{color:#a5b4fc}
-
-/* Sub cell */
 .sub-cell{text-align:right}
 .sub-num{font-family:var(--mono);font-size:13px;font-weight:500;color:var(--text)}
 .sub-bar{height:3px;background:var(--s3);border-radius:2px;margin-top:5px;overflow:hidden}
 .sub-fill{height:100%;background:linear-gradient(90deg,var(--g3),var(--g2));border-radius:2px}
 
-.badge-sm{
-  display:inline-flex;align-items:center;padding:2px 7px;border-radius:4px;
-  font-size:10px;font-weight:600;margin-left:5px;vertical-align:middle;
-}
+/* BADGES */
+.badge{display:inline-flex;align-items:center;padding:2px 7px;border-radius:4px;font-size:9px;font-weight:700;margin-left:5px;vertical-align:middle;text-transform:uppercase;letter-spacing:.5px}
 .badge-inactive{background:rgba(239,68,68,.08);color:var(--danger);border:1px solid rgba(239,68,68,.15)}
 .badge-cache{background:rgba(0,212,160,.08);color:var(--g1);border:1px solid rgba(0,212,160,.15)}
 
+/* EMPTY */
 .empty-state{padding:60px 20px;text-align:center}
 .empty-icon{font-size:48px;margin-bottom:16px;opacity:.4}
 .empty-title{font-size:15px;font-weight:600;color:var(--text2);margin-bottom:6px}
-.empty-sub{font-size:13px;color:var(--text3)}
+.empty-sub{font-size:13px;color:var(--text3);line-height:1.7}
 
 @keyframes spin{to{transform:rotate(360deg)}}
-.spinner{display:inline-block;width:14px;height:14px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:spin .55s linear infinite}
-
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:spin .55s linear infinite;flex-shrink:0}
 ::-webkit-scrollbar{width:6px;height:6px}
 ::-webkit-scrollbar-track{background:var(--bg)}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
 ::-webkit-scrollbar-thumb:hover{background:var(--text3)}
-
-@media(max-width:640px){
-  .topbar{flex-wrap:wrap;gap:10px}
-  .region-grid{grid-template-columns:1fr 1fr 1fr}
-  .stats-grid{grid-template-columns:1fr 1fr}
-}
+/* Icon bilingual label */
+.er-icon-lbl{font-size:9px;opacity:.6;font-style:normal;font-family:var(--mono);letter-spacing:0}
+@media(max-width:640px){.topbar{flex-wrap:wrap;gap:10px}.stats-grid{grid-template-columns:1fr 1fr}.fields-2col{grid-template-columns:1fr}}
 </style>
 </head>
 <body class="lang-zh">
 <div class="wrap">
 
-<!-- Language Toggle -->
+<!-- ══ LANGUAGE SWITCHER ══ -->
 <div class="lang-bar">
-  <button class="lang-btn active" id="btnZh" onclick="setLang('zh')">繁體中文</button>
-  <button class="lang-btn" id="btnEn" onclick="setLang('en')">English</button>
+  <span class="lang-bar-label">Language / 語言：</span>
+  <button class="lang-btn active" id="btnZh" onclick="setLang('zh')" title="切換為繁體中文">繁體中文</button>
+  <button class="lang-btn" id="btnEn" onclick="setLang('en')" title="Switch to English">English</button>
 </div>
 
-<!-- ── TOPBAR ── -->
+<!-- ══ TOPBAR ══ -->
 <div class="topbar">
   <div class="logo">
     <div class="logo-mark">VGV</div>
     <div>
       <div class="logo-text">KOL Analyzer</div>
-      <div class="logo-sub">
-        <span class="zh">VGV 圈粉行銷科技 · YouTube 影響力分析</span>
-        <span class="en">VGV Influencer Marketing Tech · YouTube KOL Analytics</span>
-      </div>
+      <div class="logo-sub" id="logoSub"></div>
     </div>
   </div>
   <div class="topbar-right">
-    <div class="units-pill">
+    <div class="units-pill" title="YouTube Data API v3 daily quota / 今日 API 用量">
       <div class="units-dot" id="unitsDot"></div>
+      <span class="units-label" id="unitsLabel"></span>
       <span class="units-val" id="unitsVal">0 / 10,000 units</span>
     </div>
-    <button class="btn btn-ghost btn-sm" onclick="clearCache()">
-      <span class="zh">清除快取</span><span class="en">Clear Cache</span>
+    <button class="btn btn-ghost btn-sm" onclick="clearCache()" id="btnClearCache">
+      <span id="iconClearCache"></span> <span id="lblClearCache"></span>
     </button>
-    <button class="btn btn-ghost btn-sm" onclick="resetUnits()">
-      <span class="zh">重置用量</span><span class="en">Reset Quota</span>
+    <button class="btn btn-ghost btn-sm" onclick="resetUnits()" id="btnResetQuota">
+      <span id="iconResetQuota"></span> <span id="lblResetQuota"></span>
     </button>
   </div>
 </div>
 
-<!-- ── API KEY PANEL ── -->
+<!-- ══ API KEY PANEL ══ -->
 <div class="apibar">
   <div class="apibar-row">
-    <span class="apibar-icon">🔑</span>
-    <span class="apibar-label">YouTube Data API v3 Key</span>
-    <input type="password" id="apiKey" placeholder="AIza..." />
+    <span class="apibar-icon" id="iconApiKey"></span>
+    <div>
+      <div class="apibar-label">YouTube Data API v3 Key</div>
+      <div class="apibar-sublabel" id="apibarSub"></div>
+    </div>
+    <input type="password" id="apiKey" placeholder="AIzaSy…" autocomplete="off"/>
     <div class="apibar-btns">
       <button class="btn btn-primary btn-sm" onclick="saveApiKey()">
-        <span class="zh">儲存</span><span class="en">Save</span>
+        <span id="iconSaveKey"></span> <span id="lblSaveKey"></span><span class="btn-sublabel" id="lblSaveKeySub"></span>
       </button>
-      <a href="https://console.cloud.google.com/" target="_blank" class="btn btn-ghost btn-sm">
-        <span class="zh">取得 Key ↗</span><span class="en">Get Key ↗</span>
+      <a href="https://console.cloud.google.com/" target="_blank" rel="noopener" class="btn btn-ghost btn-sm">
+        <span id="iconGetKey"></span> <span id="lblGetKey"></span><span class="btn-sublabel" id="lblGetKeySub"></span>
       </a>
     </div>
   </div>
   <div class="privacy-note">
-    <span class="zh">
-      🔒 <strong>隱私說明</strong>：本工具使用您的 YouTube Data API v3 金鑰，僅用於讀取公開頻道與影片資料（<code>channels.list</code>、<code>videos.list</code>、<code>search.list</code>、<code>playlistItems.list</code>）。API 金鑰僅儲存於瀏覽器本機（localStorage），不會傳送至任何第三方伺服器。所有 API 請求均直接由您的瀏覽器發送至 Google YouTube Data API。
-    </span>
-    <span class="en">
-      🔒 <strong>Privacy Notice</strong>: This tool uses your YouTube Data API v3 key solely to read publicly available channel and video data (<code>channels.list</code>, <code>videos.list</code>, <code>search.list</code>, <code>playlistItems.list</code>). Your API key is stored only in your browser's local storage and is never transmitted to any third-party server. All API requests are sent directly from your browser to the Google YouTube Data API.
-    </span>
+    <span id="iconPrivacy"></span> <strong id="privTitle"></strong><br>
+    <span id="privBody"></span>
   </div>
 </div>
 
-<!-- ── MAIN LAYOUT ── -->
+<!-- ══ MAIN LAYOUT ══ -->
 <div class="layout">
 
-  <!-- ─ SIDEBAR ─ -->
+  <!-- SIDEBAR -->
   <div class="sidebar">
     <div class="sidebar-inner">
 
-    <!-- Region -->
-    <div class="card" style="margin-bottom:10px">
-      <div class="card-head" style="padding:10px 14px">
-        <span class="card-title">
-          <span class="zh">目標地區</span><span class="en">Target Region</span>
-        </span>
-        <span style="font-size:9px;color:var(--text3)">
-          <span class="zh">影響搜尋排序</span><span class="en">Affects ranking</span>
-        </span>
-      </div>
-      <div class="card-body" style="padding:10px 14px 12px">
-        <div class="region-grid" id="regionGrid"></div>
-        <div style="font-size:9px;color:var(--text3);line-height:1.5;padding:6px 8px;background:var(--s2);border-radius:6px;border:1px solid var(--border)">
-          <span class="zh">⚠️ 地區影響排序，非嚴格鎖定。工具會注入地區關鍵字強化精準度。</span>
-          <span class="en">⚠️ Region affects ranking bias only, not strict geo-lock. Region keywords are injected into queries for better accuracy.</span>
+      <!-- ① REGION -->
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="card-title" id="cardTitleRegion"></div>
+            <div class="card-title-sub" id="cardSubRegion"></div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="region-grid" id="regionGrid"></div>
+          <div class="region-note" id="regionNote"></div>
         </div>
       </div>
-    </div>
 
-    <!-- Category -->
-    <div class="card" style="margin-bottom:10px">
-      <div class="card-head" style="padding:10px 14px">
-        <span class="card-title">
-          <span class="zh">頻道品類</span><span class="en">Channel Category</span>
-        </span>
-        <button class="btn btn-ghost btn-sm" onclick="clearCats()" style="padding:2px 8px;font-size:10px">
-          <span class="zh">清除</span><span class="en">Clear</span>
-        </button>
+      <!-- ② CATEGORY -->
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="card-title" id="cardTitleCat"></div>
+            <div class="card-title-sub" id="cardSubCat"></div>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="clearCats()" style="padding:3px 9px;font-size:10px" id="btnClearCats"></button>
+        </div>
+        <div class="card-body">
+          <div class="cat-scroll" id="catBody"></div>
+          <div class="selected-wrap">
+            <div class="selected-label" id="selectedLabel"></div>
+            <div id="selectedDisplay" class="selected-box empty"></div>
+          </div>
+          <div class="kw-section">
+            <div class="kw-label" id="kwLabel"></div>
+            <div class="kw-row">
+              <input type="text" id="customKw" placeholder=""/>
+              <button class="btn btn-ghost btn-sm" onclick="addCustomKw()" id="btnAddKw"></button>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="card-body" style="padding:10px 14px 12px">
-        <div class="cat-scroll" id="catBody"></div>
-        <div id="selectedDisplay" class="selected-cats empty">
-          <span class="zh">尚未選擇品類</span><span class="en">No category selected</span>
-        </div>
-        <div class="cat-section-label" style="margin-top:8px;margin-bottom:4px">
-          <span class="zh">自訂關鍵字</span><span class="en">Custom Keyword</span>
-        </div>
-        <div class="kw-row">
-          <input type="text" id="customKw">
-          <button class="btn btn-ghost btn-sm" onclick="addCustomKw()">+</button>
-        </div>
-      </div>
-    </div>
 
-    <!-- Settings -->
-    <div class="card" style="margin-bottom:10px">
-      <div class="card-head" style="padding:10px 14px">
-        <span class="card-title">
-          <span class="zh">篩選與設定</span><span class="en">Filters & Settings</span>
-        </span>
-      </div>
-      <div class="card-body" style="padding:10px 14px 12px">
-        <div class="fields-2col">
-          <div class="field">
-            <label class="field-label">
-              <span class="zh">搜尋數量</span><span class="en">Max Results</span>
-            </label>
-            <select id="maxResults">
-              <option value="20"><span class="zh">20（快速）</span><span class="en">20 (Fast)</span></option>
-              <option value="50" selected><span class="zh">50（建議）</span><span class="en">50 (Recommended)</span></option>
-            </select>
-          </div>
-          <div class="field">
-            <label class="field-label">
-              <span class="zh">活躍篩選</span><span class="en">Active Filter</span>
-            </label>
-            <select id="activeFilter">
-              <option value="90"><span class="zh">3個月內</span><span class="en">Within 3 months</span></option>
-              <option value="180" selected><span class="zh">6個月內</span><span class="en">Within 6 months</span></option>
-              <option value="365"><span class="zh">1年內</span><span class="en">Within 1 year</span></option>
-              <option value="0"><span class="zh">不限</span><span class="en">No limit</span></option>
-            </select>
-          </div>
-          <div class="field">
-            <label class="field-label">
-              <span class="zh">最低訂閱</span><span class="en">Min Subscribers</span>
-            </label>
-            <select id="minSubs">
-              <option value="0"><span class="zh">不限</span><span class="en">No limit</span></option>
-              <option value="1000" selected>1K+</option>
-              <option value="5000">5K+</option>
-              <option value="10000">10K+</option>
-              <option value="50000">50K+</option>
-              <option value="100000">100K+</option>
-            </select>
-          </div>
-          <div class="field">
-            <label class="field-label">
-              <span class="zh">影片取樣</span><span class="en">Video Sample</span>
-            </label>
-            <select id="recentCount">
-              <option value="5"><span class="zh">最近5支</span><span class="en">Recent 5</span></option>
-              <option value="10" selected><span class="zh">最近10支</span><span class="en">Recent 10</span></option>
-              <option value="20"><span class="zh">最近20支</span><span class="en">Recent 20</span></option>
-            </select>
-          </div>
-          <div class="field" style="grid-column:1/-1">
-            <label class="field-label">
-              <span class="zh">快取時效</span><span class="en">Cache Duration</span>
-            </label>
-            <select id="cacheHours">
-              <option value="24" selected><span class="zh">24小時（省API）</span><span class="en">24h (Save quota)</span></option>
-              <option value="6"><span class="zh">6小時</span><span class="en">6 hours</span></option>
-              <option value="0"><span class="zh">不快取</span><span class="en">No cache</span></option>
-            </select>
+      <!-- ③ FILTERS -->
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="card-title" id="cardTitleFilter"></div>
+            <div class="card-title-sub" id="cardSubFilter"></div>
           </div>
         </div>
-        <div class="divider"></div>
-        <div class="er-formula">
-          <div class="formula-line">ER = <span class="hl"><span class="zh">原始率</span><span class="en">Raw Rate</span></span> × <span class="hl2"><span class="zh">規模係數</span><span class="en">Scale Factor</span></span></div>
-          <div class="formula-line">(Views×<span class="hl">1</span> + Comments×<span class="hl">5</span> + Likes×<span class="hl2">2</span>) / Subs</div>
-          <div class="formula-line" style="color:var(--text3)">
-            <span class="zh">Scale=log₁₀(訂閱)/6 · 小頻道自動降權</span>
-            <span class="en">Scale=log₁₀(Subs)/6 · Smaller channels auto-adjusted</span>
+        <div class="card-body">
+          <div class="fields-2col">
+
+            <div class="field">
+              <label class="field-label" id="lblMaxResults"></label>
+              <select id="maxResults"></select>
+            </div>
+
+            <div class="field">
+              <label class="field-label" id="lblActiveFilter"></label>
+              <select id="activeFilter"></select>
+            </div>
+
+            <div class="field">
+              <label class="field-label" id="lblMinSubs"></label>
+              <select id="minSubs">
+                <option value="0"></option>
+                <option value="1000" selected>1,000+</option>
+                <option value="5000">5,000+</option>
+                <option value="10000">10,000+</option>
+                <option value="50000">50,000+</option>
+                <option value="100000">100,000+</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label class="field-label" id="lblRecentCount"></label>
+              <select id="recentCount"></select>
+            </div>
+
+            <div class="field" style="grid-column:1/-1">
+              <label class="field-label" id="lblCache"></label>
+              <select id="cacheHours"></select>
+            </div>
+
+          </div>
+          <div class="divider"></div>
+          <div class="er-formula">
+            <div class="f-title" id="erFormulaTitle"></div>
+            <div class="f-line">ER = <span class="hl" id="erF1"></span> × <span class="hl2" id="erF2"></span></div>
+            <div class="f-line">(Views×<span class="hl">1</span> + Likes×<span class="hl2">2</span> + Comments×<span class="hl">5</span>) ÷ Subscribers × 100</div>
+            <div class="f-note" id="erNote"></div>
           </div>
         </div>
       </div>
-    </div>
 
     </div><!-- /sidebar-inner -->
 
+    <!-- SIDEBAR FOOTER -->
     <div class="sidebar-footer">
       <button class="run-btn" id="runBtn" onclick="searchChannels()">
-        <span id="runSpinner" style="display:none" class="spinner"></span>
-        <span>🔍 <span class="zh">開始分析</span><span class="en">Run Analysis</span></span>
+        <span id="runSpinner" class="spinner" style="display:none"></span>
+        <span id="iconRunBtn"></span>
+        <span id="lblRunBtn"></span>
+        <span class="run-sub" id="lblRunBtnSub"></span>
       </button>
-      <div style="display:flex;gap:6px;margin-top:8px">
+      <div class="footer-actions">
         <button class="btn btn-ghost" style="flex:1;justify-content:center;font-size:12px" onclick="exportCSV()">
-          📥 CSV
+          <span id="iconExport"></span> <span id="lblExport"></span>
         </button>
         <button class="btn btn-danger" style="flex:1;justify-content:center;font-size:12px" onclick="clearResults()">
-          🗑️ <span class="zh">清除</span><span class="en">Clear</span>
+          <span id="iconClearResults"></span> <span id="lblClearResults"></span>
         </button>
       </div>
     </div>
   </div><!-- /sidebar -->
 
-  <!-- ─ RESULTS ─ -->
-  <div class="results-area">
+  <!-- RESULTS -->
+  <div>
     <div class="status-bar" id="statusBar"></div>
 
     <div id="resultsEmpty" class="table-card">
       <div class="empty-state">
-        <div class="empty-icon">📡</div>
-        <div class="empty-title">
-          <span class="zh">尚未執行分析</span>
-          <span class="en">No Analysis Yet</span>
-        </div>
-        <div class="empty-sub">
-          <span class="zh">選擇地區與品類，點擊「開始分析」</span>
-          <span class="en">Select a region and category, then click "Run Analysis"</span>
-        </div>
+        <div class="empty-icon" id="iconEmpty"></div>
+        <div class="empty-title" id="emptyTitle"></div>
+        <div class="empty-sub" id="emptySub"></div>
       </div>
     </div>
 
     <div id="resultsPanel" style="display:none">
       <div class="results-top">
-        <div class="results-title">
-          <span class="results-count" id="resultsCount">0</span>
-          <span class="zh">個頻道</span><span class="en">Channels</span>
+        <div>
+          <div class="results-title">
+            <span class="results-count" id="resultsCount">0</span>
+            <span id="lblChannels"></span>
+          </div>
+          <div class="results-sub" id="resultsSub"></div>
         </div>
-        <div style="display:flex;gap:8px">
-          <button class="btn btn-ghost btn-sm" onclick="exportCSV()">
-            📥 <span class="zh">匯出 CSV</span><span class="en">Export CSV</span>
-          </button>
-        </div>
+        <button class="btn btn-ghost btn-sm" onclick="exportCSV()">
+          <span id="iconExport2"></span> <span id="lblExport2"></span>
+        </button>
       </div>
 
       <div class="stats-grid" id="statsGrid"></div>
@@ -616,27 +449,37 @@ tbody tr:hover td{background:rgba(255,255,255,.018)}
           <table>
             <thead>
               <tr>
-                <th style="width:36px" onclick="st('rank')" id="th-rank"># <i class="si">↕</i></th>
+                <th style="width:36px" onclick="st('rank')" id="th-rank">
+                  # <i class="si">↕</i>
+                  <span class="th-en" id="thRankSub"></span>
+                </th>
                 <th onclick="st('title')" id="th-title">
-                  <span class="zh">頻道</span><span class="en">Channel</span> <i class="si">↕</i>
+                  <span id="thChannel"></span> <i class="si">↕</i>
+                  <span class="th-en" id="thChannelSub"></span>
                 </th>
                 <th onclick="st('tier')" id="th-tier">
-                  <span class="zh">評級</span><span class="en">Tier</span> <i class="si">↕</i>
+                  <span id="thTier"></span> <i class="si">↕</i>
+                  <span class="th-en">S / A / B / C / D</span>
                 </th>
                 <th onclick="st('subscriberCount')" id="th-subscriberCount">
-                  <span class="zh">訂閱數</span><span class="en">Subscribers</span> <i class="si">↕</i>
+                  <span id="thSubs"></span> <i class="si">↕</i>
+                  <span class="th-en" id="thSubsSub"></span>
                 </th>
                 <th onclick="st('er')" id="th-er" class="sorted">
-                  <span class="zh">互動率 ER</span><span class="en">Eng. Rate ER</span> <i class="si sorted">↓</i>
+                  <span id="thER"></span> <i class="si sorted">↓</i>
+                  <span class="th-en">ER × Scale Factor</span>
                 </th>
                 <th onclick="st('avgViews')" id="th-avgViews">
-                  <span class="zh">均觀看</span><span class="en">Avg Views</span> <i class="si">↕</i>
+                  <span id="thViews"></span> <i class="si">↕</i>
+                  <span class="th-en" id="thViewsSub"></span>
                 </th>
                 <th onclick="st('avgComments')" id="th-avgComments">
-                  <span class="zh">均留言</span><span class="en">Avg Comments</span> <i class="si">↕</i>
+                  <span id="thComments"></span> <i class="si">↕</i>
+                  <span class="th-en" id="thCommentsSub"></span>
                 </th>
                 <th onclick="st('daysSince')" id="th-daysSince">
-                  <span class="zh">更新</span><span class="en">Last Upload</span> <i class="si">↕</i>
+                  <span id="thUpload"></span> <i class="si">↕</i>
+                  <span class="th-en" id="thUploadSub"></span>
                 </th>
               </tr>
             </thead>
@@ -651,549 +494,644 @@ tbody tr:hover td{background:rgba(255,255,255,.018)}
 </div><!-- /wrap -->
 
 <script>
-// ═══════════════════════════════════════════════════
-//  LANGUAGE
-// ═══════════════════════════════════════════════════
-let currentLang = 'zh';
+// ═══════════════════════════════════
+//  BILINGUAL STRINGS
+// ═══════════════════════════════════
+const STRINGS = {
+  zh:{
+    logoSub:        'VGV 圈粉行銷科技 · YouTube 影響力分析',
+    unitsLabel:     '今日用量',
+    clearCache:     '清除快取 Clear Cache',
+    resetQuota:     '重置用量 Reset Quota',
+    apibarSub:      '貼上您的 Google Cloud API 金鑰 / Paste your Google Cloud API key',
+    saveKey:        '儲存金鑰', saveKeySub:'Save Key',
+    getKey:         '取得金鑰', getKeySub:'Get Key ↗',
+    privTitle:      '隱私聲明 Privacy Notice',
+    privBody:       '本工具使用您的 YouTube Data API v3 金鑰，<strong>僅讀取公開頻道與影片資料</strong>（<code>channels.list</code>、<code>videos.list</code>、<code>search.list</code>、<code>playlistItems.list</code>）。金鑰<strong>僅儲存於瀏覽器本機（localStorage）</strong>，不傳送至任何第三方伺服器。All API requests go directly from your browser to Google\'s API. Your key is never shared with any third party.',
+    cardTitleRegion:'① 目標地區 / Target Region',
+    cardSubRegion:  '影響搜尋排序偏向 · Affects search ranking bias',
+    regionNote:     '⚠️ 地區影響排序偏向，非嚴格地理鎖定。工具注入地區關鍵字以強化精準度。<br><small style="color:var(--text3);font-size:8px">Region biases ranking only — not strict geo-lock. Region keywords are injected to improve accuracy.</small>',
+    cardTitleCat:   '② 頻道品類 / Channel Category',
+    cardSubCat:     '可複選 · Multi-select supported',
+    clearCats:      '✕ 清除 / Clear',
+    selectedLabel:  '已選品類 / Selected Categories',
+    emptySel:       '尚未選擇品類 · No category selected',
+    kwLabel:        '自訂關鍵字 / Custom Keyword',
+    addKw:          '+ 加入 Add',
+    cardTitleFilter:'③ 篩選與設定 / Filters & Settings',
+    cardSubFilter:  '分析參數 · Analysis parameters',
+    lblMaxResults:  '搜尋數量\nMax Results',
+    optMax20:       '20 — 快速 Fast',
+    optMax50:       '50 — 建議 Recommended ✓',
+    lblActiveFilter:'活躍篩選\nActive Filter',
+    opt90:          '90天 / 3 months',
+    opt180:         '180天 / 6 months ✓',
+    opt365:         '365天 / 1 year',
+    opt0:           '不限 / No limit',
+    lblMinSubs:     '最低訂閱\nMin Subscribers',
+    optNoLimit:     '不限 / No limit',
+    lblRecentCount: '影片取樣\nVideo Sample',
+    optV5:          '最近 5 支 / Recent 5',
+    optV10:         '最近 10 支 / Recent 10 ✓',
+    optV20:         '最近 20 支 / Recent 20',
+    lblCache:       '快取時效\nCache Duration',
+    optC24:         '24小時 / 24h — 省用量 Save quota ✓',
+    optC6:          '6小時 / 6h',
+    optC0:          '不快取 / No cache',
+    erFormulaTitle: '互動率公式 / Engagement Rate Formula',
+    erF1:           '原始率 Raw Rate',
+    erF2:           '規模係數 Scale Factor',
+    erNote:         'ScaleFactor = log₁₀(Subs) ÷ 6　小頻道自動降權以公平比較 / Smaller channels auto-adjusted',
+    runBtn:         '開始分析', runBtnSub:'Run Analysis',
+    exportCSV:      '匯出 Export CSV',
+    clearResults:   '清除 Clear',
+    emptyTitle:     '尚未執行分析 · No Analysis Yet',
+    emptySub:       '選擇地區與品類，點擊「開始分析」<br>Select a region & category, then click "Run Analysis"',
+    lblChannels:    '個頻道 Channels',
+    resultsSub:     '依互動率 × 規模係數排序 · Sorted by ER × Scale Factor',
+    statActive:     '有效頻道\nActive Channels',
+    statInactive:   '停更篩除\nInactive Removed',
+    statLowSubs:    '訂閱不足\nLow Subs Removed',
+    statAvgER:      '平均互動率\nAvg ER',
+    statTopER:      '最高互動率\nTop ER',
+    statQuota:      '今日用量\nAPI Quota',
+    badgeInactive:  '停更 Inactive',
+    badgeCache:     '快取 Cached',
+    daysUnknown:    '未知 Unknown',
+    thRankSub:      'Rank',
+    thChannel:      '頻道 Channel', thChannelSub:'Name · Link',
+    thTier:         '評級 Tier',
+    thSubs:         '訂閱數 Subscribers', thSubsSub:'Total subscribers',
+    thER:           '互動率 Eng. Rate',
+    thViews:        '均觀看 Avg Views', thViewsSub:'Recent videos avg',
+    thComments:     '均留言 Avg Comments', thCommentsSub:'Recent videos avg',
+    thUpload:       '最後更新 Last Upload', thUploadSub:'Days since last video',
+    erRaw:          '原始 Raw',
+    yt:             '在 YouTube 開啟 Open on YouTube',
+    statusSearch:   (n)=>`🔍 搜尋中… 最多 ${n} 個頻道 / Searching up to ${n} channels (search.list: 100 units)`,
+    statusFetch:    (n)=>`📊 取得 ${n} 個頻道資料… / Fetching ${n} channels stats…`,
+    statusAnalyse:  (c,f)=>`🎬 分析互動率：${c} 快取 + ${f} 新抓取 / Analysing ER: ${c} cached + ${f} fresh`,
+    statusDone:     (n,i,s,q)=>`✅ ${n} 個頻道 Channels（ER×規模排序），篩除 Filtered：${i} 停更 Inactive・${s} 訂閱不足 Low Subs・API ${q} units`,
+    errNoKey:       '❌ 請先儲存 API Key / Please save your API Key first',
+    errNoCat:       '⚠️ 請至少選擇一個品類 / Please select at least one category',
+    errNoChannel:   '❌ 找不到相關頻道，請換關鍵字 / No channels found. Try different keywords.',
+    errPrefix:      '❌ 錯誤 Error: ',
+    saveKeyOk:      '✅ API Key 已儲存 / API Key saved',
+    saveKeyErr:     '❌ 請輸入 API Key / Please enter your API Key',
+    cacheCleared:   '✅ 快取已清除 / Cache cleared',
+    noData:         '❌ 沒有資料可匯出 / No data to export',
+    csvDone:        '✅ CSV 匯出完成 / CSV exported successfully',
+    kwPh:           '輸入關鍵字 / Enter keyword…',
+    // Icons with bilingual tooltip labels
+    iconClearCache: '🗂️',
+    iconResetQuota: '🔄',
+    iconApiKey:     '🔑',
+    iconSaveKey:    '💾',
+    iconGetKey:     '☁️',
+    iconPrivacy:    '🔒',
+    iconRunBtn:     '🔍',
+    iconExport:     '📥',
+    iconClearResults:'🗑️',
+    iconEmpty:      '📡',
+    // ER meta icons with bilingual labels
+    iconViews:      (v)=>`<span title="平均觀看 Avg Views">👁 <span class="er-icon-lbl">觀看 Views</span> ${v}</span>`,
+    iconLikes:      (v)=>`<span title="平均按讚 Avg Likes">👍 <span class="er-icon-lbl">按讚 Likes</span> ${v}</span>`,
+    iconComments:   (v)=>`<span class="cmt" title="平均留言 Avg Comments">💬 <span class="er-icon-lbl">留言 Cmts</span> ${v}</span>`,
+    iconUpdated:    (d)=>`⏱ <span class="er-icon-lbl">更新 Updated</span> ${d}`,
+    daysSfx:        (d)=>d<30?`${d}天前 / ${d}d ago`:d<365?`${Math.round(d/30)}個月前 / ${Math.round(d/30)}mo ago`:`${(d/365).toFixed(1)}年前 / ${(d/365).toFixed(1)}yr ago`,
+  },
+  en:{
+    logoSub:        'VGV Influencer Marketing Tech · YouTube KOL Analytics',
+    unitsLabel:     'API Quota',
+    clearCache:     'Clear Cache / 清除快取',
+    resetQuota:     'Reset Quota / 重置用量',
+    apibarSub:      'Paste your Google Cloud API key / 貼上您的 Google Cloud API 金鑰',
+    saveKey:        'Save Key', saveKeySub:'儲存金鑰',
+    getKey:         'Get Key ↗', getKeySub:'取得金鑰',
+    privTitle:      'Privacy Notice / 隱私聲明',
+    privBody:       'This tool uses your YouTube Data API v3 key solely to <strong>read publicly available channel and video data</strong> (<code>channels.list</code>, <code>videos.list</code>, <code>search.list</code>, <code>playlistItems.list</code>). Your key is stored <strong>only in your browser\'s local storage</strong> and is never sent to any third-party server. All API requests go directly from your browser to Google\'s API. 金鑰僅儲存於瀏覽器本機，不傳送至任何第三方伺服器。',
+    cardTitleRegion:'① Target Region / 目標地區',
+    cardSubRegion:  'Affects search ranking bias · 影響搜尋排序偏向',
+    regionNote:     '⚠️ Region biases ranking only — not strict geo-lock. Region keywords are injected to improve accuracy.<br><small style="color:var(--text3);font-size:8px">地區影響排序偏向，非嚴格地理鎖定。工具注入地區關鍵字以強化精準度。</small>',
+    cardTitleCat:   '② Channel Category / 頻道品類',
+    cardSubCat:     'Multi-select supported · 可複選',
+    clearCats:      '✕ Clear / 清除',
+    selectedLabel:  'Selected Categories / 已選品類',
+    emptySel:       'No category selected · 尚未選擇品類',
+    kwLabel:        'Custom Keyword / 自訂關鍵字',
+    addKw:          '+ Add / 加入',
+    cardTitleFilter:'③ Filters & Settings / 篩選與設定',
+    cardSubFilter:  'Analysis parameters · 分析參數',
+    lblMaxResults:  'Max Results\n搜尋數量',
+    optMax20:       '20 — Fast 快速',
+    optMax50:       '50 — Recommended 建議 ✓',
+    lblActiveFilter:'Active Filter\n活躍篩選',
+    opt90:          '3 months / 90天',
+    opt180:         '6 months / 180天 ✓',
+    opt365:         '1 year / 365天',
+    opt0:           'No limit / 不限',
+    lblMinSubs:     'Min Subscribers\n最低訂閱',
+    optNoLimit:     'No limit / 不限',
+    lblRecentCount: 'Video Sample\n影片取樣',
+    optV5:          'Recent 5 / 最近 5 支',
+    optV10:         'Recent 10 / 最近 10 支 ✓',
+    optV20:         'Recent 20 / 最近 20 支',
+    lblCache:       'Cache Duration\n快取時效',
+    optC24:         '24h — Save quota / 24小時省用量 ✓',
+    optC6:          '6h / 6小時',
+    optC0:          'No cache / 不快取',
+    erFormulaTitle: 'Engagement Rate Formula / 互動率公式',
+    erF1:           'Raw Rate 原始率',
+    erF2:           'Scale Factor 規模係數',
+    erNote:         'ScaleFactor = log₁₀(Subs) ÷ 6　Smaller channels auto-adjusted for fair comparison / 小頻道自動降權',
+    runBtn:         'Run Analysis', runBtnSub:'開始分析',
+    exportCSV:      'Export CSV / 匯出',
+    clearResults:   'Clear / 清除',
+    emptyTitle:     'No Analysis Yet · 尚未執行分析',
+    emptySub:       'Select a region & category, then click "Run Analysis"<br>選擇地區與品類，點擊「開始分析」',
+    lblChannels:    'Channels 個頻道',
+    resultsSub:     'Sorted by ER × Scale Factor · 依互動率 × 規模係數排序',
+    statActive:     'Active Channels\n有效頻道',
+    statInactive:   'Inactive Removed\n停更篩除',
+    statLowSubs:    'Low Subs Removed\n訂閱不足',
+    statAvgER:      'Avg ER\n平均互動率',
+    statTopER:      'Top ER\n最高互動率',
+    statQuota:      'API Quota\n今日用量',
+    badgeInactive:  'Inactive 停更',
+    badgeCache:     'Cached 快取',
+    daysUnknown:    'Unknown 未知',
+    thRankSub:      '排名',
+    thChannel:      'Channel 頻道', thChannelSub:'名稱 · 連結',
+    thTier:         'Tier 評級',
+    thSubs:         'Subscribers 訂閱數', thSubsSub:'訂閱人數',
+    thER:           'Eng. Rate 互動率',
+    thViews:        'Avg Views 均觀看', thViewsSub:'近期影片平均',
+    thComments:     'Avg Comments 均留言', thCommentsSub:'近期影片平均',
+    thUpload:       'Last Upload 最後更新', thUploadSub:'距今天數',
+    erRaw:          'Raw 原始',
+    yt:             'Open on YouTube / 在 YouTube 開啟',
+    statusSearch:   (n)=>`🔍 Searching up to ${n} channels / 搜尋最多 ${n} 個頻道 (search.list: 100 units)`,
+    statusFetch:    (n)=>`📊 Fetching stats for ${n} channels / 取得 ${n} 個頻道資料…`,
+    statusAnalyse:  (c,f)=>`🎬 Analysing ER: ${c} cached + ${f} fresh / 分析互動率：${c} 快取 + ${f} 新抓取`,
+    statusDone:     (n,i,s,q)=>`✅ ${n} Channels 個頻道 (sorted by ER×Scale). Filtered: ${i} inactive 停更 · ${s} low-subs 訂閱不足 · API ${q} units`,
+    errNoKey:       '❌ Please save your API Key first / 請先儲存 API Key',
+    errNoCat:       '⚠️ Please select at least one category / 請至少選擇一個品類',
+    errNoChannel:   '❌ No channels found. Try different keywords. / 找不到相關頻道，請換關鍵字',
+    errPrefix:      '❌ Error: ',
+    saveKeyOk:      '✅ API Key saved / API Key 已儲存',
+    saveKeyErr:     '❌ Please enter your API Key / 請輸入 API Key',
+    cacheCleared:   '✅ Cache cleared / 快取已清除',
+    noData:         '❌ No data to export / 沒有資料可匯出',
+    csvDone:        '✅ CSV exported successfully / CSV 匯出完成',
+    kwPh:           'Enter keyword… / 輸入關鍵字',
+    // Icons with bilingual tooltip labels
+    iconClearCache: '🗂️',
+    iconResetQuota: '🔄',
+    iconApiKey:     '🔑',
+    iconSaveKey:    '💾',
+    iconGetKey:     '☁️',
+    iconPrivacy:    '🔒',
+    iconRunBtn:     '🔍',
+    iconExport:     '📥',
+    iconClearResults:'🗑️',
+    iconEmpty:      '📡',
+    // ER meta icons with bilingual labels
+    iconViews:      (v)=>`<span title="Avg Views 平均觀看">👁 <span class="er-icon-lbl">Views 觀看</span> ${v}</span>`,
+    iconLikes:      (v)=>`<span title="Avg Likes 平均按讚">👍 <span class="er-icon-lbl">Likes 按讚</span> ${v}</span>`,
+    iconComments:   (v)=>`<span class="cmt" title="Avg Comments 平均留言">💬 <span class="er-icon-lbl">Cmts 留言</span> ${v}</span>`,
+    iconUpdated:    (d)=>`⏱ <span class="er-icon-lbl">Updated 更新</span> ${d}`,
+    daysSfx:        (d)=>d<30?`${d}d ago / ${d}天前`:d<365?`${Math.round(d/30)}mo ago / ${Math.round(d/30)}個月前`:`${(d/365).toFixed(1)}yr ago / ${(d/365).toFixed(1)}年前`,
+  }
+};
 
-function setLang(lang) {
-  currentLang = lang;
-  document.body.className = 'lang-' + lang;
-  document.getElementById('btnZh').className = 'lang-btn' + (lang==='zh'?' active':'');
-  document.getElementById('btnEn').className = 'lang-btn' + (lang==='en'?' active':'');
-  buildRegionGrid();
-  buildCatBody();
-  if(allResults.length) renderResults();
-}
-
-// ═══════════════════════════════════════════════════
-//  DATA: Regions & Categories (bilingual)
-// ═══════════════════════════════════════════════════
-const REGIONS = [
-  { id:'TW', flag:'🇹🇼', nameZh:'台灣',    nameEn:'Taiwan',       hint:'zh-Hant', kw:'台灣' },
-  { id:'HK', flag:'🇭🇰', nameZh:'香港',    nameEn:'Hong Kong',    hint:'zh-Hant', kw:'香港' },
-  { id:'SG', flag:'🇸🇬', nameZh:'新加坡',  nameEn:'Singapore',    hint:'zh-Hans', kw:'新加坡' },
-  { id:'MY', flag:'🇲🇾', nameZh:'馬來西亞',nameEn:'Malaysia',     hint:'zh-Hans', kw:'馬來西亞' },
-  { id:'JP', flag:'🇯🇵', nameZh:'日本',    nameEn:'Japan',        hint:'ja', kw:'日本' },
-  { id:'KR', flag:'🇰🇷', nameZh:'韓國',    nameEn:'Korea',        hint:'ko', kw:'한국' },
-  { id:'US', flag:'🇺🇸', nameZh:'美國',    nameEn:'USA',          hint:'en', kw:'' },
-  { id:'GB', flag:'🇬🇧', nameZh:'英國',    nameEn:'UK',           hint:'en', kw:'UK' },
+// ═══════════════════════════════════
+//  REGIONS & CATEGORIES
+// ═══════════════════════════════════
+const REGIONS=[
+  {id:'TW',flag:'🇹🇼',zh:'台灣',en:'Taiwan',hint:'zh-Hant',kw:'台灣'},
+  {id:'HK',flag:'🇭🇰',zh:'香港',en:'Hong Kong',hint:'zh-Hant',kw:'香港'},
+  {id:'SG',flag:'🇸🇬',zh:'新加坡',en:'Singapore',hint:'zh-Hans',kw:'新加坡'},
+  {id:'MY',flag:'🇲🇾',zh:'馬來西亞',en:'Malaysia',hint:'zh-Hans',kw:'馬來西亞'},
+  {id:'JP',flag:'🇯🇵',zh:'日本',en:'Japan',hint:'ja',kw:'日本'},
+  {id:'KR',flag:'🇰🇷',zh:'韓國',en:'South Korea',hint:'ko',kw:'한국'},
+  {id:'US',flag:'🇺🇸',zh:'美國',en:'USA',hint:'en',kw:''},
+  {id:'GB',flag:'🇬🇧',zh:'英國',en:'UK',hint:'en',kw:'UK'},
+];
+const CATEGORIES=[
+  {zh:'美食 & 生活',en:'Food & Lifestyle',tags:[
+    {id:'cooking',zh:'料理食譜',en:'Cooking',kw:['料理','食譜','烹飪','cooking']},
+    {id:'food_vlog',zh:'美食探店',en:'Food Vlog',kw:['美食','吃播','foodvlog','restaurant']},
+    {id:'baking',zh:'烘焙甜點',en:'Baking',kw:['烘焙','甜點','蛋糕','baking']},
+    {id:'lifestyle',zh:'生活日常',en:'Lifestyle',kw:['生活','vlog','日常','lifestyle']},
+    {id:'travel',zh:'旅遊',en:'Travel',kw:['旅遊','旅行','travel','景點']},
+  ]},
+  {zh:'科技 & 商業',en:'Tech & Business',tags:[
+    {id:'tech',zh:'科技評測',en:'Tech Review',kw:['科技','3C','開箱','tech review']},
+    {id:'ai',zh:'AI & 軟體',en:'AI & Software',kw:['AI','人工智慧','軟體','ChatGPT']},
+    {id:'finance',zh:'投資理財',en:'Finance',kw:['投資','理財','股票','finance']},
+    {id:'startup',zh:'創業商業',en:'Business',kw:['創業','商業','entrepreneur','brand']},
+    {id:'gadget',zh:'3C 開箱',en:'Gadgets',kw:['開箱','unboxing','gadget','評測']},
+  ]},
+  {zh:'美妝 & 時尚',en:'Beauty & Fashion',tags:[
+    {id:'beauty',zh:'美妝保養',en:'Beauty',kw:['美妝','彩妝','保養','makeup','skincare']},
+    {id:'fashion',zh:'穿搭時尚',en:'Fashion',kw:['穿搭','時尚','ootd','fashion']},
+    {id:'haircare',zh:'髮型美髮',en:'Hair',kw:['髮型','美髮','hair','hairstyle']},
+  ]},
+  {zh:'健康 & 運動',en:'Health & Sports',tags:[
+    {id:'fitness',zh:'健身運動',en:'Fitness',kw:['健身','運動','workout','fitness']},
+    {id:'yoga',zh:'瑜珈舒壓',en:'Yoga',kw:['瑜珈','冥想','yoga','meditation']},
+    {id:'sport',zh:'球類競技',en:'Sports',kw:['籃球','足球','棒球','sport','NBA']},
+    {id:'outdoor',zh:'戶外活動',en:'Outdoor',kw:['登山','露營','outdoor','hiking']},
+  ]},
+  {zh:'娛樂 & 遊戲',en:'Entertainment & Gaming',tags:[
+    {id:'gaming',zh:'電玩遊戲',en:'Gaming',kw:['遊戲','gaming','直播','game']},
+    {id:'anime',zh:'動漫',en:'Anime',kw:['動漫','anime','漫畫','二次元']},
+    {id:'music',zh:'音樂',en:'Music',kw:['音樂','歌曲','music','cover']},
+    {id:'comedy',zh:'搞笑娛樂',en:'Comedy',kw:['搞笑','娛樂','comedy','funny']},
+  ]},
+  {zh:'教育 & 親子',en:'Education & Family',tags:[
+    {id:'edu',zh:'學習教育',en:'Education',kw:['教育','學習','education','語言']},
+    {id:'kids',zh:'親子育兒',en:'Kids',kw:['親子','育兒','寶寶','kids','family']},
+    {id:'language',zh:'語言學習',en:'Language',kw:['英文','日文','語言學習','language']},
+  ]},
 ];
 
-const CATEGORIES = [
-  {
-    groupZh:'美食 & 生活', groupEn:'Food & Lifestyle',
-    tags:[
-      { id:'cooking',   labelZh:'料理食譜', labelEn:'Cooking',     kw:['料理','食譜','烹飪','cooking'] },
-      { id:'food_vlog', labelZh:'美食探店', labelEn:'Food Vlog',   kw:['美食','吃播','foodvlog','restaurant'] },
-      { id:'baking',    labelZh:'烘焙甜點', labelEn:'Baking',      kw:['烘焙','甜點','蛋糕','baking'] },
-      { id:'lifestyle', labelZh:'生活日常', labelEn:'Lifestyle',   kw:['生活','vlog','日常','lifestyle'] },
-      { id:'travel',    labelZh:'旅遊',     labelEn:'Travel',      kw:['旅遊','旅行','travel','景點'] },
-    ]
-  },
-  {
-    groupZh:'科技 & 商業', groupEn:'Tech & Business',
-    tags:[
-      { id:'tech',    labelZh:'科技評測', labelEn:'Tech Review', kw:['科技','3C','開箱','tech review'] },
-      { id:'ai',      labelZh:'AI & 軟體', labelEn:'AI & Software', kw:['AI','人工智慧','軟體','ChatGPT'] },
-      { id:'finance', labelZh:'投資理財', labelEn:'Finance',      kw:['投資','理財','股票','finance'] },
-      { id:'startup', labelZh:'創業商業', labelEn:'Business',     kw:['創業','商業','entrepreneur','brand'] },
-      { id:'gadget',  labelZh:'3C 開箱',  labelEn:'Gadgets',     kw:['開箱','unboxing','gadget','評測'] },
-    ]
-  },
-  {
-    groupZh:'美妝 & 時尚', groupEn:'Beauty & Fashion',
-    tags:[
-      { id:'beauty',   labelZh:'美妝保養', labelEn:'Beauty',    kw:['美妝','彩妝','保養','makeup','skincare'] },
-      { id:'fashion',  labelZh:'穿搭時尚', labelEn:'Fashion',   kw:['穿搭','時尚','ootd','fashion'] },
-      { id:'haircare', labelZh:'髮型美髮', labelEn:'Hair',      kw:['髮型','美髮','hair','hairstyle'] },
-    ]
-  },
-  {
-    groupZh:'健康 & 運動', groupEn:'Health & Sports',
-    tags:[
-      { id:'fitness', labelZh:'健身運動', labelEn:'Fitness',   kw:['健身','運動','workout','fitness'] },
-      { id:'yoga',    labelZh:'瑜珈舒壓', labelEn:'Yoga',      kw:['瑜珈','冥想','yoga','meditation'] },
-      { id:'sport',   labelZh:'球類競技', labelEn:'Sports',    kw:['籃球','足球','棒球','sport','NBA'] },
-      { id:'outdoor', labelZh:'戶外活動', labelEn:'Outdoor',   kw:['登山','露營','outdoor','hiking'] },
-    ]
-  },
-  {
-    groupZh:'娛樂 & 遊戲', groupEn:'Entertainment & Gaming',
-    tags:[
-      { id:'gaming', labelZh:'電玩遊戲', labelEn:'Gaming',    kw:['遊戲','gaming','直播','game'] },
-      { id:'anime',  labelZh:'動漫',     labelEn:'Anime',     kw:['動漫','anime','漫畫','二次元'] },
-      { id:'music',  labelZh:'音樂',     labelEn:'Music',     kw:['音樂','歌曲','music','cover'] },
-      { id:'comedy', labelZh:'搞笑娛樂', labelEn:'Comedy',    kw:['搞笑','娛樂','comedy','funny'] },
-    ]
-  },
-  {
-    groupZh:'教育 & 親子', groupEn:'Education & Family',
-    tags:[
-      { id:'edu',      labelZh:'學習教育', labelEn:'Education', kw:['教育','學習','education','語言'] },
-      { id:'kids',     labelZh:'親子育兒', labelEn:'Kids',      kw:['親子','育兒','寶寶','kids','family'] },
-      { id:'language', labelZh:'語言學習', labelEn:'Language',  kw:['英文','日文','語言學習','language'] },
-    ]
-  },
-];
-
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════
 //  STATE
-// ═══════════════════════════════════════════════════
-const CACHE_KEY   = 'vgv_ch_cache_v4';
-const UNITS_KEY   = 'vgv_units_today';
-const UNITS_DATE  = 'vgv_units_date';
-const APIKEY_STOR = 'vgv_youtube_api_key';
-const DAILY_LIMIT = 10000;
-const W_VIEW=1, W_LIKE=2, W_CMT=5;
+// ═══════════════════════════════════
+const CACHE_KEY='vgv_ch_cache_v5',UNITS_KEY='vgv_units_today',UNITS_DATE='vgv_units_date',APIKEY_STOR='vgv_youtube_api_key',DAILY_LIMIT=10000;
+const W_VIEW=1,W_LIKE=2,W_CMT=5;
+let currentLang='zh',selectedRegion='TW',selectedCats=new Set(),allResults=[],sortCol='er',sortAsc=false;
+const catMeta={};
+CATEGORIES.forEach(g=>g.tags.forEach(t=>{catMeta[t.id]={zh:t.zh,en:t.en,kw:t.kw};}));
 
-let selectedRegion = 'TW';
-let selectedCats   = new Set();
-let allResults     = [];
-let sortCol        = 'er';
-let sortAsc        = false;
+// ═══════════════════════════════════
+//  HELPERS
+// ═══════════════════════════════════
+function s(id){return document.getElementById(id)}
+function set(id,val){const el=s(id);if(el)el.innerHTML=val;}
+function t(key){return(STRINGS[currentLang]||STRINGS.zh)[key]||key;}
 
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════
 //  INIT
-// ═══════════════════════════════════════════════════
-window.onload = () => {
-  const k = localStorage.getItem(APIKEY_STOR);
-  if(k) document.getElementById('apiKey').value = k;
+// ═══════════════════════════════════
+window.onload=()=>{
+  const k=localStorage.getItem(APIKEY_STOR);
+  if(k)s('apiKey').value=k;
+  applyLang();
   buildRegionGrid();
   buildCatBody();
   updateUnitsUI();
 };
 
+// ═══════════════════════════════════
+//  LANGUAGE
+// ═══════════════════════════════════
+function setLang(lang){
+  currentLang=lang;
+  s('btnZh').className='lang-btn'+(lang==='zh'?' active':'');
+  s('btnEn').className='lang-btn'+(lang==='en'?' active':'');
+  applyLang();
+  buildRegionGrid();
+  buildCatBody();
+  if(allResults.length)renderResults();
+}
+
+function applyLang(){
+  const S=STRINGS[currentLang];
+  set('logoSub',S.logoSub);
+  set('unitsLabel',S.unitsLabel);
+  // Icons + labels for topbar buttons
+  set('iconClearCache',S.iconClearCache);
+  set('lblClearCache',S.clearCache);
+  set('iconResetQuota',S.iconResetQuota);
+  set('lblResetQuota',S.resetQuota);
+  // API bar icons
+  set('iconApiKey',S.iconApiKey);
+  set('lblSaveKey',S.saveKey);
+  set('lblSaveKeySub',S.saveKeySub);
+  set('iconSaveKey',S.iconSaveKey);
+  set('iconGetKey',S.iconGetKey);
+  set('lblGetKey',S.getKey);
+  set('lblGetKeySub',S.getKeySub);
+  set('iconPrivacy',S.iconPrivacy);
+  set('privTitle',S.privTitle);
+  set('privBody',S.privBody);
+  set('apibarSub',S.apibarSub);
+  set('cardTitleRegion',S.cardTitleRegion);
+  set('cardSubRegion',S.cardSubRegion);
+  set('regionNote',S.regionNote);
+  set('cardTitleCat',S.cardTitleCat);
+  set('cardSubCat',S.cardSubCat);
+  set('btnClearCats',S.clearCats);
+  set('selectedLabel',S.selectedLabel);
+  set('kwLabel',S.kwLabel);
+  set('btnAddKw',S.addKw);
+  set('cardTitleFilter',S.cardTitleFilter);
+  set('cardSubFilter',S.cardSubFilter);
+  // Field labels (multi-line)
+  set('lblMaxResults',S.lblMaxResults.replace('\n','<br><span class="field-sublabel">').replace(/$/,'</span>'));
+  set('lblActiveFilter',S.lblActiveFilter.replace('\n','<br><span class="field-sublabel">').replace(/$/,'</span>'));
+  set('lblMinSubs',S.lblMinSubs.replace('\n','<br><span class="field-sublabel">').replace(/$/,'</span>'));
+  set('lblRecentCount',S.lblRecentCount.replace('\n','<br><span class="field-sublabel">').replace(/$/,'</span>'));
+  set('lblCache',S.lblCache.replace('\n','<br><span class="field-sublabel">').replace(/$/,'</span>'));
+  // Rebuild selects
+  s('maxResults').innerHTML=`<option value="20">${S.optMax20}</option><option value="50" selected>${S.optMax50}</option>`;
+  s('activeFilter').innerHTML=`<option value="90">${S.opt90}</option><option value="180" selected>${S.opt180}</option><option value="365">${S.opt365}</option><option value="0">${S.opt0}</option>`;
+  s('minSubs').options[0].text=S.optNoLimit;
+  s('recentCount').innerHTML=`<option value="5">${S.optV5}</option><option value="10" selected>${S.optV10}</option><option value="20">${S.optV20}</option>`;
+  s('cacheHours').innerHTML=`<option value="24" selected>${S.optC24}</option><option value="6">${S.optC6}</option><option value="0">${S.optC0}</option>`;
+  set('erFormulaTitle',S.erFormulaTitle);
+  set('erF1',S.erF1);
+  set('erF2',S.erF2);
+  set('erNote',S.erNote);
+  // Sidebar footer icons + labels
+  set('iconRunBtn',S.iconRunBtn);
+  set('lblRunBtn',S.runBtn);
+  set('lblRunBtnSub',S.runBtnSub);
+  set('iconExport',S.iconExport);
+  set('lblExport',S.exportCSV);
+  set('iconClearResults',S.iconClearResults);
+  set('lblClearResults',S.clearResults);
+  // Empty state icon
+  set('iconEmpty',S.iconEmpty);
+  set('emptyTitle',S.emptyTitle);
+  set('emptySub',S.emptySub);
+  set('lblChannels',S.lblChannels);
+  set('resultsSub',S.resultsSub);
+  // Top export button
+  set('iconExport2',S.iconExport);
+  set('lblExport2',S.exportCSV);
+  // Table headers
+  set('thRankSub',S.thRankSub);
+  set('thChannel',S.thChannel);set('thChannelSub',S.thChannelSub);
+  set('thTier',S.thTier);
+  set('thSubs',S.thSubs);set('thSubsSub',S.thSubsSub);
+  set('thER',S.thER);
+  set('thViews',S.thViews);set('thViewsSub',S.thViewsSub);
+  set('thComments',S.thComments);set('thCommentsSub',S.thCommentsSub);
+  set('thUpload',S.thUpload);set('thUploadSub',S.thUploadSub);
+  // Input placeholder
+  const kw=s('customKw');if(kw)kw.placeholder=S.kwPh;
+  // Selected display empty
+  if(selectedCats.size===0){const d=s('selectedDisplay');if(d){d.className='selected-box empty';d.innerHTML=S.emptySel;}}
+}
+
+// ═══════════════════════════════════
+//  REGION
+// ═══════════════════════════════════
 function buildRegionGrid(){
-  const grid = document.getElementById('regionGrid');
-  grid.innerHTML = REGIONS.map(r => `
-    <div class="region-btn ${r.id===selectedRegion?'active':''}" onclick="selectRegion('${r.id}')">
+  const L=currentLang;
+  s('regionGrid').innerHTML=REGIONS.map(r=>`
+    <div class="region-btn ${r.id===selectedRegion?'active':''}" onclick="selectRegion('${r.id}')" title="${r.en} / ${r.zh}">
       <span class="region-flag">${r.flag}</span>
       <div>
-        <div class="region-name">${currentLang==='zh'?r.nameZh:r.nameEn}</div>
+        <div class="region-name">${L==='zh'?r.zh:r.en}</div>
+        <div class="region-name2">${L==='zh'?r.en:r.zh}</div>
         <div class="region-hint">${r.hint}</div>
       </div>
     </div>
   `).join('');
 }
+function selectRegion(id){selectedRegion=id;buildRegionGrid();}
 
-function selectRegion(id){ selectedRegion=id; buildRegionGrid(); }
-
+// ═══════════════════════════════════
+//  CATEGORIES
+// ═══════════════════════════════════
 function buildCatBody(){
-  const scroll = document.getElementById('catBody');
-  if(!scroll) return;
-  scroll.innerHTML = CATEGORIES.map(grp => `
-    <div class="cat-section">
-      <div class="cat-section-label">${currentLang==='zh'?grp.groupZh:grp.groupEn}</div>
+  const L=currentLang;
+  s('catBody').innerHTML=CATEGORIES.map(g=>`
+    <div class="cat-group">
+      <div class="cat-group-label">${L==='zh'?g.zh+' / '+g.en:g.en+' / '+g.zh}</div>
       <div class="cat-tags">
-        ${grp.tags.map(t=>`
-          <div class="cat-tag ${selectedCats.has(t.id)?'active-primary':''}" onclick="toggleCat('${t.id}')">
-            ${currentLang==='zh'?t.labelZh:t.labelEn}
-          </div>
-        `).join('')}
+        ${g.tags.map(t=>`<div class="cat-tag ${selectedCats.has(t.id)?'active':''}" onclick="toggleCat('${t.id}')" title="${t.en} / ${t.zh}">${L==='zh'?t.zh:t.en}</div>`).join('')}
       </div>
     </div>
   `).join('');
-  updateSelectedDisplay();
+  updateSelDisplay();
 }
-
-const catMeta = {};
-CATEGORIES.forEach(g=>g.tags.forEach(t=>{ catMeta[t.id]={labelZh:t.labelZh,labelEn:t.labelEn,kw:t.kw}; }));
-
-function toggleCat(id){ if(selectedCats.has(id)) selectedCats.delete(id); else selectedCats.add(id); buildCatBody(); }
-
+function toggleCat(id){if(selectedCats.has(id))selectedCats.delete(id);else selectedCats.add(id);buildCatBody();}
 function addCustomKw(){
-  const inp = document.getElementById('customKw');
-  const val = inp.value.trim();
-  if(!val) return;
-  const id = 'custom_'+Date.now();
-  catMeta[id] = { labelZh: val, labelEn: val, kw: [val] };
-  selectedCats.add(id);
-  inp.value = '';
-  buildCatBody();
+  const inp=s('customKw'),val=inp.value.trim();if(!val)return;
+  const id='custom_'+Date.now();catMeta[id]={zh:val,en:val,kw:[val]};selectedCats.add(id);inp.value='';buildCatBody();
 }
-
-function clearCats(){
-  selectedCats.clear();
-  Object.keys(catMeta).filter(k=>k.startsWith('custom_')).forEach(k=>delete catMeta[k]);
-  buildCatBody();
-}
-
-function updateSelectedDisplay(){
-  const disp = document.getElementById('selectedDisplay');
-  if(!disp) return;
-  if(selectedCats.size===0){
-    disp.className='selected-cats empty';
-    disp.innerHTML=`<span class="zh">尚未選擇品類</span><span class="en">No category selected</span>`;
-    return;
-  }
-  disp.className='selected-cats';
-  disp.innerHTML = [...selectedCats].map(id => {
-    const m = catMeta[id];
-    if(!m) return '';
-    const lbl = currentLang==='zh'?m.labelZh:m.labelEn;
-    return `<span class="sel-chip">${lbl}<button onclick="event.stopPropagation();removeCat('${id}')">×</button></span>`;
+function clearCats(){selectedCats.clear();Object.keys(catMeta).filter(k=>k.startsWith('custom_')).forEach(k=>delete catMeta[k]);buildCatBody();}
+function updateSelDisplay(){
+  const d=s('selectedDisplay');if(!d)return;
+  if(selectedCats.size===0){d.className='selected-box empty';d.innerHTML=t('emptySel');return;}
+  const L=currentLang;
+  d.className='selected-box';
+  d.innerHTML=[...selectedCats].map(id=>{
+    const m=catMeta[id];if(!m)return'';
+    const lbl=L==='zh'?m.zh:m.en;
+    return`<span class="sel-chip">${lbl}<button onclick="event.stopPropagation();removeCat('${id}')" title="Remove / 移除">×</button></span>`;
   }).join('');
 }
+function removeCat(id){selectedCats.delete(id);buildCatBody();}
 
-function removeCat(id){ selectedCats.delete(id); buildCatBody(); }
-
-// ═══════════════════════════════════════════════════
-//  UNITS
-// ═══════════════════════════════════════════════════
-function today(){ return new Date().toISOString().slice(0,10) }
-function getUnits(){
-  if(localStorage.getItem(UNITS_DATE)!==today()){
-    localStorage.setItem(UNITS_DATE,today());
-    localStorage.setItem(UNITS_KEY,'0');
-  }
-  return parseInt(localStorage.getItem(UNITS_KEY)||'0');
-}
-function addUnits(n){ const u=getUnits()+n; localStorage.setItem(UNITS_KEY,String(u)); updateUnitsUI(u); return u; }
-function resetUnits(){ localStorage.setItem(UNITS_KEY,'0');localStorage.setItem(UNITS_DATE,today());updateUnitsUI(0); }
+// ═══════════════════════════════════
+//  API QUOTA
+// ═══════════════════════════════════
+function today(){return new Date().toISOString().slice(0,10);}
+function getUnits(){if(localStorage.getItem(UNITS_DATE)!==today()){localStorage.setItem(UNITS_DATE,today());localStorage.setItem(UNITS_KEY,'0');}return parseInt(localStorage.getItem(UNITS_KEY)||'0');}
+function addUnits(n){const u=getUnits()+n;localStorage.setItem(UNITS_KEY,String(u));updateUnitsUI(u);return u;}
+function resetUnits(){localStorage.setItem(UNITS_KEY,'0');localStorage.setItem(UNITS_DATE,today());updateUnitsUI(0);}
 function updateUnitsUI(u){
-  u=u??getUnits();
-  const pct=u/DAILY_LIMIT*100;
-  const dot=document.getElementById('unitsDot');
-  const val=document.getElementById('unitsVal');
-  if(!dot) return;
+  u=u??getUnits();const pct=u/DAILY_LIMIT*100;
+  const dot=s('unitsDot'),val=s('unitsVal');if(!dot)return;
   const cls=pct>=90?'danger':pct>=60?'warn':'';
-  dot.className='units-dot'+(cls?' '+cls:'');
-  val.className='units-val'+(cls?' '+cls:'');
+  dot.className='units-dot'+(cls?' '+cls:'');val.className='units-val'+(cls?' '+cls:'');
   val.textContent=`${u.toLocaleString()} / 10,000 units`;
 }
 
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════
 //  CACHE
-// ═══════════════════════════════════════════════════
-function getCache(){ try{return JSON.parse(localStorage.getItem(CACHE_KEY)||'{}')}catch{return{}} }
-function saveCache(o){ localStorage.setItem(CACHE_KEY,JSON.stringify(o)) }
-function clearCache(){
-  localStorage.removeItem(CACHE_KEY);
-  showStatus(currentLang==='zh'?'✅ 快取已清除':'✅ Cache cleared','success');
-}
-function cacheValid(e,h){ return e&&h>0&&(Date.now()-e.ts)<h*3600*1000 }
+// ═══════════════════════════════════
+function getCache(){try{return JSON.parse(localStorage.getItem(CACHE_KEY)||'{}')}catch{return{}}}
+function saveCache(o){localStorage.setItem(CACHE_KEY,JSON.stringify(o));}
+function clearCache(){localStorage.removeItem(CACHE_KEY);showStatus(t('cacheCleared'),'success');}
+function cacheValid(e,h){return e&&h>0&&(Date.now()-e.ts)<h*3600*1000;}
 
-// ═══════════════════════════════════════════════════
-//  API HELPERS
-// ═══════════════════════════════════════════════════
-async function apiGet(url, units=1){
+// ═══════════════════════════════════
+//  API
+// ═══════════════════════════════════
+async function apiGet(url,units=1){
   const r=await fetch(url);
-  if(!r.ok){ const e=await r.json().catch(()=>({error:{message:r.status}})); throw new Error(e.error?.message||r.status) }
-  addUnits(units);
-  return r.json();
+  if(!r.ok){const e=await r.json().catch(()=>({error:{message:r.status}}));throw new Error(e.error?.message||r.status);}
+  addUnits(units);return r.json();
 }
 
-// ═══════════════════════════════════════════════════
-//  ER CALCULATION
-// ═══════════════════════════════════════════════════
-function scaleFactor(subs){
-  if(subs<=0) return 0;
-  return Math.min(Math.max(Math.log10(Math.max(subs,100))/6, 0.1), 1.0);
-}
-function calcER(videos, subs){
-  if(!videos.length||subs===0) return {er:0,rawEr:0,sf:0,avgViews:0,avgLikes:0,avgCmt:0};
+// ═══════════════════════════════════
+//  ER CALC
+// ═══════════════════════════════════
+function scaleFactor(subs){if(subs<=0)return 0;return Math.min(Math.max(Math.log10(Math.max(subs,100))/6,0.1),1.0);}
+function calcER(videos,subs){
+  if(!videos.length||subs===0)return{er:0,rawEr:0,sf:0,avgViews:0,avgLikes:0,avgCmt:0};
   let tv=0,tl=0,tc=0;
-  videos.forEach(v=>{ tv+=parseInt(v.statistics?.viewCount||0); tl+=parseInt(v.statistics?.likeCount||0); tc+=parseInt(v.statistics?.commentCount||0); });
-  const n=videos.length;
-  const avgViews=Math.round(tv/n), avgLikes=Math.round(tl/n), avgCmt=Math.round(tc/n);
-  const rawEr=((avgViews*W_VIEW+avgLikes*W_LIKE+avgCmt*W_CMT)/subs)*100;
-  const sf=scaleFactor(subs);
-  return {er:rawEr*sf, rawEr, sf, avgViews, avgLikes, avgCmt};
+  videos.forEach(v=>{tv+=parseInt(v.statistics?.viewCount||0);tl+=parseInt(v.statistics?.likeCount||0);tc+=parseInt(v.statistics?.commentCount||0);});
+  const n=videos.length,avgViews=Math.round(tv/n),avgLikes=Math.round(tl/n),avgCmt=Math.round(tc/n);
+  const rawEr=((avgViews*W_VIEW+avgLikes*W_LIKE+avgCmt*W_CMT)/subs)*100,sf=scaleFactor(subs);
+  return{er:rawEr*sf,rawEr,sf,avgViews,avgLikes,avgCmt};
 }
-
-function score(subs,er,days){
-  const ss=Math.min(Math.log10(Math.max(subs,100))/6*35,35);
-  const es=Math.min(er*5,45);
-  const rs=days<=90?20:days<=180?12:days<=365?5:0;
-  return Math.round(ss+es+rs);
-}
-function tier(sc,subs,er){
-  if(sc>=65&&er>=3&&subs>=10000) return 'S';
-  if(sc>=50&&subs>=5000) return 'A';
-  if(sc>=35&&subs>=1000) return 'B';
-  if(sc>=20) return 'C';
-  return 'D';
-}
-
+function score(subs,er,days){return Math.round(Math.min(Math.log10(Math.max(subs,100))/6*35,35)+Math.min(er*5,45)+(days<=90?20:days<=180?12:days<=365?5:0));}
+function tier(sc,subs,er){if(sc>=65&&er>=3&&subs>=10000)return'S';if(sc>=50&&subs>=5000)return'A';if(sc>=35&&subs>=1000)return'B';if(sc>=20)return'C';return'D';}
 function buildQuery(){
-  const reg = REGIONS.find(r=>r.id===selectedRegion) || REGIONS[0];
-  let kwList = [];
-  selectedCats.forEach(id => { const m=catMeta[id]; if(m) kwList.push(...m.kw); });
-  kwList = [...new Set(kwList)].slice(0,3);
-  const parts = [];
-  if(reg.kw) parts.push(reg.kw);
-  if(kwList.length) parts.push(kwList[0]);
-  return { q: parts.filter(Boolean).join(' '), lang: reg.hint, regionCode: reg.id, extraKws: kwList };
+  const reg=REGIONS.find(r=>r.id===selectedRegion)||REGIONS[0];
+  let kw=[];selectedCats.forEach(id=>{const m=catMeta[id];if(m)kw.push(...m.kw);});
+  kw=[...new Set(kw)].slice(0,3);
+  const parts=[];if(reg.kw)parts.push(reg.kw);if(kw.length)parts.push(kw[0]);
+  return{q:parts.filter(Boolean).join(' '),lang:reg.hint,regionCode:reg.id};
 }
 
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════
 //  MAIN SEARCH
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════
 async function searchChannels(){
   const apiKey=localStorage.getItem(APIKEY_STOR);
-  const L = currentLang;
-  if(!apiKey){ showStatus(L==='zh'?'❌ 請先儲存 API Key':'❌ Please save your API Key first','error'); return; }
-  if(selectedCats.size===0){ showStatus(L==='zh'?'⚠️ 請至少選擇一個品類':'⚠️ Please select at least one category','error'); return; }
-
-  const maxRes=parseInt(document.getElementById('maxResults').value);
-  const recent=parseInt(document.getElementById('recentCount').value);
-  const cacheH=parseInt(document.getElementById('cacheHours').value);
-
-  setRunning(true);
-  allResults=[];
-  showStatus(L==='zh'?'🔍 搜尋中... (search.list: 100 units)':'🔍 Searching... (search.list: 100 units)','loading');
-
-  try {
-    const {q,lang,regionCode}=buildQuery();
-
-    const searchData=await apiGet(
-      `https://www.googleapis.com/youtube/v3/search?part=snippet&type=channel`+
-      `&regionCode=${regionCode}&relevanceLanguage=${lang}`+
-      `&q=${encodeURIComponent(q)}&maxResults=${maxRes}&key=${apiKey}`,100);
-
-    if(!searchData.items?.length){
-      showStatus(L==='zh'?'❌ 找不到相關頻道，請換個關鍵字試試':'❌ No channels found. Try different keywords.','error');
-      setRunning(false); return;
-    }
-
+  if(!apiKey){showStatus(t('errNoKey'),'error');return;}
+  if(selectedCats.size===0){showStatus(t('errNoCat'),'error');return;}
+  const maxRes=parseInt(s('maxResults').value),recent=parseInt(s('recentCount').value),cacheH=parseInt(s('cacheHours').value);
+  setRunning(true);allResults=[];
+  const S=STRINGS[currentLang];
+  showStatus(S.statusSearch(maxRes),'loading');
+  try{
+    const{q,lang,regionCode}=buildQuery();
+    const searchData=await apiGet(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=channel&regionCode=${regionCode}&relevanceLanguage=${lang}&q=${encodeURIComponent(q)}&maxResults=${maxRes}&key=${apiKey}`,100);
+    if(!searchData.items?.length){showStatus(t('errNoChannel'),'error');setRunning(false);return;}
     const ids=[...new Set(searchData.items.map(i=>i.snippet.channelId))];
-    showStatus(L==='zh'?`📊 取得 ${ids.length} 個頻道統計資料...`:`📊 Fetching stats for ${ids.length} channels...`,'loading');
-
+    showStatus(S.statusFetch(ids.length),'loading');
     const chData=await apiGet(`https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&id=${ids.join(',')}&key=${apiKey}`,1);
     const plData=await apiGet(`https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=${ids.join(',')}&key=${apiKey}`,1);
-    const plMap={};
-    (plData.items||[]).forEach(c=>{ plMap[c.id]=c.contentDetails?.relatedPlaylists?.uploads||null });
-
-    const cache=getCache(), newCache={...cache};
-    const channels=chData.items||[];
-    const toProcess=channels.map(ch=>({ ch, fromCache:cacheValid(cache[ch.id],cacheH), cached:cache[ch.id]?.data, playlistId:plMap[ch.id] }));
-    const fresh=toProcess.filter(t=>!t.fromCache);
-
-    showStatus(
-      L==='zh'
-        ?`🎬 分析互動率：${toProcess.filter(t=>t.fromCache).length} 快取 + ${fresh.length} 新抓取...`
-        :`🎬 Analyzing ER: ${toProcess.filter(t=>t.fromCache).length} cached + ${fresh.length} fresh...`,
-      'loading'
-    );
-
+    const plMap={};(plData.items||[]).forEach(c=>{plMap[c.id]=c.contentDetails?.relatedPlaylists?.uploads||null;});
+    const cache=getCache(),newCache={...cache};
+    const toProcess=(chData.items||[]).map(ch=>({ch,fromCache:cacheValid(cache[ch.id],cacheH),cached:cache[ch.id]?.data,playlistId:plMap[ch.id]}));
+    const fresh=toProcess.filter(x=>!x.fromCache);
+    showStatus(S.statusAnalyse(toProcess.filter(x=>x.fromCache).length,fresh.length),'loading');
     const chVideoMap={};
     for(const item of fresh){
-      if(!item.playlistId){ chVideoMap[item.ch.id]=[]; continue; }
-      try{
-        const pld=await apiGet(`https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${item.playlistId}&maxResults=${recent}&key=${apiKey}`,1);
-        chVideoMap[item.ch.id]=(pld.items||[]).map(i=>i.snippet?.resourceId?.videoId).filter(Boolean);
-      }catch{ chVideoMap[item.ch.id]=[] }
+      if(!item.playlistId){chVideoMap[item.ch.id]=[];continue;}
+      try{const pld=await apiGet(`https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${item.playlistId}&maxResults=${recent}&key=${apiKey}`,1);chVideoMap[item.ch.id]=(pld.items||[]).map(i=>i.snippet?.resourceId?.videoId).filter(Boolean);}
+      catch{chVideoMap[item.ch.id]=[];}
     }
-
-    const allVids=[...new Set(Object.values(chVideoMap).flat())];
-    const vMap={};
+    const allVids=[...new Set(Object.values(chVideoMap).flat())],vMap={};
     for(let i=0;i<allVids.length;i+=50){
       const chunk=allVids.slice(i,i+50);
       const vd=await apiGet(`https://www.googleapis.com/youtube/v3/videos?part=statistics,snippet&id=${chunk.join(',')}&key=${apiKey}`,1);
-      (vd.items||[]).forEach(v=>{ vMap[v.id]=v });
+      (vd.items||[]).forEach(v=>{vMap[v.id]=v;});
     }
-
     for(const item of toProcess){
-      const ch=item.ch, sn=ch.snippet, st=ch.statistics;
-      const subs=parseInt(st.subscriberCount||0);
-      let erData, daysSince=9999, lastDate=null;
-
-      if(item.fromCache){
-        erData=item.cached; daysSince=item.cached.daysSince;
-        lastDate=item.cached.lastDate?new Date(item.cached.lastDate):null;
-      } else {
-        const vids=(chVideoMap[ch.id]||[]).map(id=>vMap[id]).filter(Boolean);
-        erData=calcER(vids,subs);
-        if(vids.length){
-          const dates=vids.map(v=>new Date(v.snippet?.publishedAt||0)).sort((a,b)=>b-a);
-          lastDate=dates[0]; daysSince=Math.round((Date.now()-lastDate)/86400000);
-        }
-        newCache[ch.id]={ ts:Date.now(), data:{...erData, daysSince, lastDate:lastDate?.toISOString()} };
+      const ch=item.ch,sn=ch.snippet,st=ch.statistics,subs=parseInt(st.subscriberCount||0);
+      let erData,daysSince=9999,lastDate=null;
+      if(item.fromCache){erData=item.cached;daysSince=item.cached.daysSince;lastDate=item.cached.lastDate?new Date(item.cached.lastDate):null;}
+      else{
+        const vids=(chVideoMap[ch.id]||[]).map(id=>vMap[id]).filter(Boolean);erData=calcER(vids,subs);
+        if(vids.length){const dates=vids.map(v=>new Date(v.snippet?.publishedAt||0)).sort((a,b)=>b-a);lastDate=dates[0];daysSince=Math.round((Date.now()-lastDate)/86400000);}
+        newCache[ch.id]={ts:Date.now(),data:{...erData,daysSince,lastDate:lastDate?.toISOString()}};
       }
-
       const sc=score(subs,erData.er,daysSince);
-      allResults.push({
-        channelId:ch.id, title:sn.title, customUrl:sn.customUrl||'',
-        thumbnail:sn.thumbnails?.default?.url||'',
-        subscriberCount:subs,
-        er:erData.er, rawEr:erData.rawEr||0, sf:erData.sf||0,
-        avgViews:erData.avgViews, avgLikes:erData.avgLikes, avgCmt:erData.avgCmt||erData.avgComments||0,
-        daysSince, lastDate, score:sc,
-        tier:tier(sc,subs,erData.er), fromCache:item.fromCache
-      });
+      allResults.push({channelId:ch.id,title:sn.title,customUrl:sn.customUrl||'',thumbnail:sn.thumbnails?.default?.url||'',subscriberCount:subs,er:erData.er,rawEr:erData.rawEr||0,sf:erData.sf||0,avgViews:erData.avgViews,avgLikes:erData.avgLikes,avgCmt:erData.avgCmt||erData.avgComments||0,daysSince,lastDate,score:sc,tier:tier(sc,subs,erData.er),fromCache:item.fromCache});
     }
-
-    saveCache(newCache);
-    renderResults();
-    setRunning(false);
-
-  } catch(err){
-    console.error(err);
-    showStatus('❌ '+(currentLang==='zh'?'錯誤：':'Error: ')+err.message,'error');
-    setRunning(false);
-  }
+    saveCache(newCache);renderResults();setRunning(false);
+  }catch(err){console.error(err);showStatus(t('errPrefix')+err.message,'error');setRunning(false);}
 }
 
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════
 //  RENDER
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════
 function renderResults(){
-  const L=currentLang;
-  const filterDays=parseInt(document.getElementById('activeFilter').value)||0;
-  const minSubs=parseInt(document.getElementById('minSubs').value)||0;
-  let res=[...allResults];
-  let filtInactive=0, filtSmall=0;
-
-  if(filterDays>0){ const b=res.length; res=res.filter(r=>r.daysSince<=filterDays); filtInactive=b-res.length; }
-  if(minSubs>0){ const b=res.length; res=res.filter(r=>r.subscriberCount>=minSubs); filtSmall=b-res.length; }
-
-  res.sort((a,b)=>{
-    const av=a[sortCol],bv=b[sortCol];
-    if(typeof av==='string') return sortAsc?av.localeCompare(bv):bv.localeCompare(av);
-    return sortAsc?av-bv:bv-av;
-  });
+  const S=STRINGS[currentLang];
+  const filterDays=parseInt(s('activeFilter').value)||0,minSubs=parseInt(s('minSubs').value)||0;
+  let res=[...allResults],filtInactive=0,filtSmall=0;
+  if(filterDays>0){const b=res.length;res=res.filter(r=>r.daysSince<=filterDays);filtInactive=b-res.length;}
+  if(minSubs>0){const b=res.length;res=res.filter(r=>r.subscriberCount>=minSubs);filtSmall=b-res.length;}
+  res.sort((a,b)=>{const av=a[sortCol],bv=b[sortCol];if(typeof av==='string')return sortAsc?av.localeCompare(bv):bv.localeCompare(av);return sortAsc?av-bv:bv-av;});
   res.forEach((r,i)=>r.rank=i+1);
-
-  const avgER=res.length?res.reduce((s,r)=>s+r.er,0)/res.length:0;
-  const topER=res.length?Math.max(...res.map(r=>r.er)):0;
-  const maxSubs=res.length?Math.max(...res.map(r=>r.subscriberCount)):1;
-
-  document.getElementById('resultsCount').textContent=res.length;
-  document.getElementById('statsGrid').innerHTML=`
-    <div class="stat"><div class="stat-l">${L==='zh'?'有效頻道':'Active Ch.'}</div><div class="stat-v accent">${res.length}</div></div>
-    <div class="stat"><div class="stat-l">${L==='zh'?'篩除停更':'Inactive'}</div><div class="stat-v warn">${filtInactive}</div></div>
-    <div class="stat"><div class="stat-l">${L==='zh'?'訂閱不足':'Low Subs'}</div><div class="stat-v warn">${filtSmall}</div></div>
-    <div class="stat"><div class="stat-l">${L==='zh'?'平均 ER':'Avg ER'}</div><div class="stat-v purple">${avgER.toFixed(2)}%</div></div>
-    <div class="stat"><div class="stat-l">${L==='zh'?'最高 ER':'Top ER'}</div><div class="stat-v accent">${topER.toFixed(2)}%</div></div>
-    <div class="stat"><div class="stat-l">${L==='zh'?'今日用量':'Today Quota'}</div><div class="stat-v">${getUnits()}</div></div>
+  const avgER=res.length?res.reduce((s,r)=>s+r.er,0)/res.length:0,topER=res.length?Math.max(...res.map(r=>r.er)):0,maxSubs=res.length?Math.max(...res.map(r=>r.subscriberCount)):1;
+  set('resultsCount',res.length);
+  s('statsGrid').innerHTML=`
+    <div class="stat"><div class="stat-l">${S.statActive.replace('\n','<br>')}</div><div class="stat-v accent">${res.length}</div></div>
+    <div class="stat"><div class="stat-l">${S.statInactive.replace('\n','<br>')}</div><div class="stat-v warn">${filtInactive}</div></div>
+    <div class="stat"><div class="stat-l">${S.statLowSubs.replace('\n','<br>')}</div><div class="stat-v warn">${filtSmall}</div></div>
+    <div class="stat"><div class="stat-l">${S.statAvgER.replace('\n','<br>')}</div><div class="stat-v purple">${avgER.toFixed(2)}%</div></div>
+    <div class="stat"><div class="stat-l">${S.statTopER.replace('\n','<br>')}</div><div class="stat-v accent">${topER.toFixed(2)}%</div></div>
+    <div class="stat"><div class="stat-l">${S.statQuota.replace('\n','<br>')}</div><div class="stat-v">${getUnits()}</div></div>
   `;
-
-  document.getElementById('resultsBody').innerHTML = res.map(ch=>{
+  s('resultsBody').innerHTML=res.map(ch=>{
     const freshCls=ch.daysSince<=90?'fresh':ch.daysSince<=365?'stale':'dead';
-    let daysText;
-    if(ch.daysSince===9999) daysText=L==='zh'?'未知':'Unknown';
-    else if(ch.daysSince<30) daysText=L==='zh'?`${ch.daysSince}天前`:`${ch.daysSince}d ago`;
-    else if(ch.daysSince<365) daysText=L==='zh'?`${Math.round(ch.daysSince/30)}個月前`:`${Math.round(ch.daysSince/30)}mo ago`;
-    else daysText=L==='zh'?`${(ch.daysSince/365).toFixed(1)}年前`:`${(ch.daysSince/365).toFixed(1)}yr ago`;
-
+    const daysText=ch.daysSince===9999?S.daysUnknown:S.daysSfx(ch.daysSince);
     const erColor=ch.er>=10?'var(--g1)':ch.er>=3?'#a5b4fc':ch.er>=1?'var(--warn)':'var(--danger)';
-    const erPct=Math.min(ch.er/Math.max(topER,1)*100,100);
-    const subPct=Math.min(ch.subscriberCount/maxSubs*100,100);
+    const erPct=Math.min(ch.er/Math.max(topER,1)*100,100),subPct=Math.min(ch.subscriberCount/maxSubs*100,100);
     const isInactive=filterDays>0&&ch.daysSince>filterDays;
-    const inactiveLbl=L==='zh'?'停更':'Inactive';
-    const cacheLbl=L==='zh'?'快取':'Cached';
-
-    return `<tr class="${isInactive?'inactive-row':''}">
+    return`<tr class="${isInactive?'inactive-row':''}">
       <td style="color:var(--text3);font-family:var(--mono);font-size:12px">${ch.rank}</td>
-      <td>
-        <div class="ch-cell">
-          <div class="ch-avatar">
-            <img class="ch-img" src="${ch.thumbnail}" alt="" onerror="this.src='';this.style.display='none'"/>
-            <span class="ch-online ${freshCls}"></span>
-          </div>
-          <div class="ch-info">
-            <div class="ch-name">
-              <a href="https://www.youtube.com/channel/${ch.channelId}" target="_blank">${esc(ch.title)}</a>
-              ${isInactive?`<span class="badge-sm badge-inactive">${inactiveLbl}</span>`:''}
-              ${ch.fromCache?`<span class="badge-sm badge-cache">${cacheLbl}</span>`:''}
-            </div>
-            <div class="ch-handle">${esc(ch.customUrl||ch.channelId)}</div>
-            <div class="ch-date ${freshCls}">⏱ ${daysText}</div>
-          </div>
+      <td><div class="ch-cell">
+        <div class="ch-avatar">
+          <img class="ch-img" src="${ch.thumbnail}" alt="${esc(ch.title)}" onerror="this.style.display='none'"/>
+          <span class="ch-online ${freshCls}" title="${daysText}"></span>
         </div>
-      </td>
-      <td><span class="tier tier-${ch.tier}">${ch.tier}</span></td>
-      <td>
-        <div class="sub-cell">
-          <div class="sub-num">${fmt(ch.subscriberCount)}</div>
-          <div class="sub-bar"><div class="sub-fill" style="width:${subPct.toFixed(1)}%"></div></div>
-        </div>
-      </td>
-      <td>
-        <div class="er-cell">
-          <div class="er-top">
-            <span class="er-num" style="color:${erColor}">${ch.er.toFixed(2)}%</span>
-            <span class="er-raw">${L==='zh'?'原始':'Raw'} ${ch.rawEr?ch.rawEr.toFixed(1):0}% × ${ch.sf?(ch.sf*100).toFixed(0):0}%</span>
+        <div>
+          <div class="ch-name">
+            <a href="https://www.youtube.com/channel/${ch.channelId}" target="_blank" rel="noopener" title="${S.yt}">${esc(ch.title)}</a>
+            ${isInactive?`<span class="badge badge-inactive">${S.badgeInactive}</span>`:''}
+            ${ch.fromCache?`<span class="badge badge-cache">${S.badgeCache}</span>`:''}
           </div>
-          <div class="er-bar"><div class="er-fill" style="width:${erPct.toFixed(1)}%;background:${erColor}"></div></div>
-          <div class="er-meta">
-            <span>V:${fmt(ch.avgViews)}</span>
-            <span>L:${fmt(ch.avgLikes)}</span>
-            <span class="cmt">C:${ch.avgCmt>0?fmt(ch.avgCmt):'—'}</span>
-          </div>
+          <div class="ch-handle">${esc(ch.customUrl||ch.channelId)}</div>
+          <div class="ch-updated ${freshCls}">${S.iconUpdated(daysText)}</div>
         </div>
-      </td>
+      </div></td>
+      <td><span class="tier tier-${ch.tier}" title="Tier ${ch.tier} · Score ${ch.score}">${ch.tier}</span></td>
+      <td><div class="sub-cell">
+        <div class="sub-num">${fmt(ch.subscriberCount)}</div>
+        <div class="sub-bar"><div class="sub-fill" style="width:${subPct.toFixed(1)}%"></div></div>
+      </div></td>
+      <td><div class="er-cell">
+        <div class="er-top">
+          <span class="er-num" style="color:${erColor}">${ch.er.toFixed(2)}%</span>
+          <span class="er-breakdown">${S.erRaw} ${ch.rawEr?ch.rawEr.toFixed(1):0}% × ${ch.sf?(ch.sf*100).toFixed(0):0}%</span>
+        </div>
+        <div class="er-bar"><div class="er-fill" style="width:${erPct.toFixed(1)}%;background:${erColor}"></div></div>
+        <div class="er-meta">
+          ${S.iconViews(fmt(ch.avgViews))}
+          ${S.iconLikes(fmt(ch.avgLikes))}
+          ${S.iconComments(ch.avgCmt>0?fmt(ch.avgCmt):'—')}
+        </div>
+      </div></td>
       <td style="font-family:var(--mono);font-size:13px;color:var(--text2)">${fmt(ch.avgViews)}</td>
       <td style="font-family:var(--mono);font-size:13px;color:${ch.avgCmt>0?'#a5b4fc':'var(--text3)'}">${ch.avgCmt>0?fmt(ch.avgCmt):'—'}</td>
-      <td class="ch-date ${freshCls}" style="font-family:var(--mono);font-size:11px;white-space:nowrap">${daysText}</td>
+      <td class="ch-updated ${freshCls}" style="font-family:var(--mono);font-size:11px;white-space:nowrap">${daysText}</td>
     </tr>`;
   }).join('');
-
-  document.getElementById('resultsEmpty').style.display='none';
-  document.getElementById('resultsPanel').style.display='block';
-
-  showStatus(
-    L==='zh'
-      ?`✅ ${res.length} 個頻道（ER×規模修正排序），篩除停更 ${filtInactive}・訂閱不足 ${filtSmall}・API ${getUnits()} units`
-      :`✅ ${res.length} channels (sorted by ER×Scale), filtered: ${filtInactive} inactive · ${filtSmall} low-subs · API ${getUnits()} units`,
-    'success'
-  );
+  s('resultsEmpty').style.display='none';
+  s('resultsPanel').style.display='block';
+  showStatus(S.statusDone(res.length,filtInactive,filtSmall,getUnits()),'success');
 }
 
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════
 //  SORT
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════
 function st(col){
-  sortAsc = sortCol===col ? !sortAsc : false;
-  sortCol = col;
-  document.querySelectorAll('thead th').forEach(t=>{ t.classList.remove('sorted'); const i=t.querySelector('.si'); if(i) i.textContent='↕'; });
-  const th=document.getElementById('th-'+col);
-  if(th){ th.classList.add('sorted'); const i=th.querySelector('.si'); if(i) i.textContent=sortAsc?'↑':'↓'; }
+  sortAsc=sortCol===col?!sortAsc:false;sortCol=col;
+  document.querySelectorAll('thead th').forEach(th=>{th.classList.remove('sorted');const i=th.querySelector('.si');if(i)i.textContent='↕';});
+  const th=s('th-'+col);if(th){th.classList.add('sorted');const i=th.querySelector('.si');if(i)i.textContent=sortAsc?'↑':'↓';}
   renderResults();
 }
 
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════
 //  UTILS
-// ═══════════════════════════════════════════════════
-function fmt(n){ if(!n) return '-'; if(n>=1000000)return (n/1e6).toFixed(1)+'M'; if(n>=1000)return (n/1000).toFixed(1)+'K'; return n.toString() }
-function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;') }
-function showStatus(msg,type='loading'){
-  const d=document.getElementById('statusBar');
-  d.className='status-bar '+type;
-  d.innerHTML=(type==='loading'?'<span class="spinner"></span>':'')+`<span class="progress-text">${msg}</span>`;
-}
-function setRunning(on){
-  const btn=document.getElementById('runBtn');
-  const sp=document.getElementById('runSpinner');
-  btn.disabled=on; sp.style.display=on?'inline-block':'none';
-}
-function saveApiKey(){
-  const k=document.getElementById('apiKey').value.trim();
-  if(!k){ showStatus(currentLang==='zh'?'請輸入 API Key':'Please enter your API Key','error'); return; }
-  localStorage.setItem(APIKEY_STOR,k);
-  showStatus(currentLang==='zh'?'✅ API Key 已儲存':'✅ API Key saved','success');
-}
-function clearResults(){
-  allResults=[];
-  document.getElementById('resultsPanel').style.display='none';
-  document.getElementById('resultsEmpty').style.display='block';
-  document.getElementById('statusBar').style.display='none';
-}
+// ═══════════════════════════════════
+function fmt(n){if(!n&&n!==0)return'—';if(n>=1000000)return(n/1e6).toFixed(1)+'M';if(n>=1000)return(n/1000).toFixed(1)+'K';return n.toString();}
+function esc(str){return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function showStatus(msg,type='loading'){const d=s('statusBar');d.className='status-bar '+type;d.innerHTML=(type==='loading'?'<span class="spinner"></span>':'')+`<span class="progress-text">${msg}</span>`;}
+function setRunning(on){const btn=s('runBtn'),sp=s('runSpinner');btn.disabled=on;sp.style.display=on?'inline-flex':'none';}
+function saveApiKey(){const k=s('apiKey').value.trim();if(!k){showStatus(t('saveKeyErr'),'error');return;}localStorage.setItem(APIKEY_STOR,k);showStatus(t('saveKeyOk'),'success');}
+function clearResults(){allResults=[];s('resultsPanel').style.display='none';s('resultsEmpty').style.display='block';s('statusBar').style.display='none';}
 function exportCSV(){
-  if(!allResults.length){ showStatus(currentLang==='zh'?'❌ 沒有資料可匯出':'❌ No data to export','error'); return; }
+  if(!allResults.length){showStatus(t('noData'),'error');return;}
   const h=['Rank','Tier','Channel Name','Channel ID','Subscribers','Adjusted ER%','Raw ER%','Scale Factor%','Avg Views','Avg Likes','Avg Comments','Days Since Upload'];
-  const rows=allResults.map((ch,i)=>[
-    i+1,ch.tier,`"${ch.title.replace(/"/g,'""')}"`,ch.channelId,
-    ch.subscriberCount,ch.er.toFixed(4),ch.rawEr.toFixed(4),(ch.sf*100).toFixed(1),
-    ch.avgViews,ch.avgLikes,ch.avgCmt,ch.daysSince===9999?'N/A':ch.daysSince
-  ]);
+  const rows=allResults.map((ch,i)=>[i+1,ch.tier,`"${ch.title.replace(/"/g,'""')}"`,ch.channelId,ch.subscriberCount,ch.er.toFixed(4),ch.rawEr.toFixed(4),(ch.sf*100).toFixed(1),ch.avgViews,ch.avgLikes,ch.avgCmt,ch.daysSince===9999?'N/A':ch.daysSince]);
   const csv=[h,...rows].map(r=>r.join(',')).join('\n');
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'}));
-  a.download=`VGV_KOL_${new Date().toISOString().slice(0,10)}.csv`;
-  a.click();
-  showStatus(currentLang==='zh'?'✅ CSV 匯出完成':'✅ CSV exported successfully','success');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'}));a.download=`VGV_KOL_${new Date().toISOString().slice(0,10)}.csv`;a.click();
+  showStatus(t('csvDone'),'success');
 }
 </script>
 </body>
