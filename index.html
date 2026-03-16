@@ -234,6 +234,31 @@ tbody tr:hover td{background:rgba(255,255,255,.018)}
 ::-webkit-scrollbar-thumb:hover{background:var(--text3)}
 /* Icon bilingual label */
 .er-icon-lbl{font-size:9px;opacity:.6;font-style:normal;font-family:var(--mono);letter-spacing:0}
+
+/* ── SUBS RANGE SLIDER ── */
+.subs-display{display:flex;align-items:center;gap:6px;margin-bottom:8px;font-family:var(--mono)}
+.subs-badge{background:rgba(0,212,160,.1);border:1px solid rgba(0,212,160,.2);border-radius:6px;padding:3px 9px;font-size:12px;font-weight:600;color:var(--g1);min-width:60px;text-align:center}
+.subs-dash{color:var(--text3);font-size:12px}
+.range-wrap{position:relative;height:28px;margin:4px 0 2px}
+.range-track{position:absolute;top:50%;left:0;right:0;height:4px;background:var(--s3);border-radius:2px;transform:translateY(-50%);pointer-events:none}
+.range-fill{position:absolute;height:100%;background:linear-gradient(90deg,var(--g1),var(--g2));border-radius:2px}
+.range-input{position:absolute;width:100%;height:4px;background:transparent;-webkit-appearance:none;appearance:none;pointer-events:none;top:50%;transform:translateY(-50%)}
+.range-input::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:16px;height:16px;border-radius:50%;background:var(--g1);border:2px solid var(--bg);box-shadow:0 0 0 2px var(--g1);cursor:pointer;pointer-events:all;transition:transform .15s,box-shadow .15s}
+.range-input::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--g1);border:2px solid var(--bg);box-shadow:0 0 0 2px var(--g1);cursor:pointer;pointer-events:all;transition:transform .15s}
+.range-input::-webkit-slider-thumb:hover{transform:scale(1.2);box-shadow:0 0 0 4px rgba(0,212,160,.2)}
+.range-input#subsMax::-webkit-slider-thumb{background:var(--g2);box-shadow:0 0 0 2px var(--g2)}
+.range-input#subsMax::-webkit-slider-thumb:hover{box-shadow:0 0 0 4px rgba(0,184,230,.2)}
+.range-input#subsMax::-moz-range-thumb{background:var(--g2);box-shadow:0 0 0 2px var(--g2)}
+.range-ticks{display:flex;justify-content:space-between;padding:0 2px;margin-bottom:6px}
+.range-tick{font-size:8px;color:var(--text3);font-family:var(--mono);text-align:center;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:default}
+.range-tick.active{color:var(--g1)}
+.subs-manual{display:flex;align-items:center;gap:6px;margin-top:4px}
+.subs-manual-group{display:flex;flex-direction:column;gap:2px;flex:1}
+.subs-manual-label{font-size:8px;color:var(--text3);font-family:var(--mono);text-transform:uppercase;letter-spacing:1px}
+.subs-num-input{width:100%;background:var(--s2);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:5px 8px;font-size:11px;font-family:var(--mono);transition:.2s}
+.subs-num-input:focus{outline:0;border-color:var(--g1);box-shadow:0 0 0 2px rgba(0,212,160,.1)}
+.subs-num-input::placeholder{color:var(--text3)}
+.subs-manual-sep{color:var(--text3);font-size:14px;font-weight:300;align-self:flex-end;padding-bottom:4px}
 @media(max-width:640px){.topbar{flex-wrap:wrap;gap:10px}.stats-grid{grid-template-columns:1fr 1fr}.fields-2col{grid-template-columns:1fr}}
 </style>
 </head>
@@ -362,16 +387,42 @@ tbody tr:hover td{background:rgba(255,255,255,.018)}
               <select id="activeFilter"></select>
             </div>
 
-            <div class="field">
-              <label class="field-label" id="lblMinSubs"></label>
-              <select id="minSubs">
-                <option value="0"></option>
-                <option value="1000" selected>1,000+</option>
-                <option value="5000">5,000+</option>
-                <option value="10000">10,000+</option>
-                <option value="50000">50,000+</option>
-                <option value="100000">100,000+</option>
-              </select>
+            <!-- SUBS RANGE — spans full width -->
+            <div class="field" style="grid-column:1/-1">
+              <label class="field-label" id="lblSubsRange"></label>
+              <!-- Display row -->
+              <div class="subs-display">
+                <div class="subs-badge" id="subsMinBadge">0</div>
+                <div class="subs-dash">—</div>
+                <div class="subs-badge" id="subsMaxBadge" style="color:var(--g2)">∞</div>
+              </div>
+              <!-- Dual range track -->
+              <div class="range-wrap" id="rangeWrap">
+                <div class="range-track">
+                  <div class="range-fill" id="rangeFill"></div>
+                </div>
+                <input class="range-input" type="range" id="subsMin" min="0" max="18" value="0" step="1"
+                       oninput="onRangeInput('min')" onchange="renderResults()"/>
+                <input class="range-input" type="range" id="subsMax" min="0" max="18" value="18" step="1"
+                       oninput="onRangeInput('max')" onchange="renderResults()"/>
+              </div>
+              <!-- Tick labels -->
+              <div class="range-ticks" id="rangeTicks"></div>
+              <!-- Manual number input row -->
+              <div class="subs-manual">
+                <div class="subs-manual-group">
+                  <span class="subs-manual-label" id="lblSubsMin"></span>
+                  <input type="number" class="subs-num-input" id="subsMinNum" min="0" placeholder="0"
+                         oninput="onNumInput('min')" onblur="clampAndRender()"/>
+                </div>
+                <div class="subs-manual-sep">~</div>
+                <div class="subs-manual-group">
+                  <span class="subs-manual-label" id="lblSubsMax"></span>
+                  <input type="number" class="subs-num-input" id="subsMaxNum" min="0" placeholder="∞"
+                         oninput="onNumInput('max')" onblur="clampAndRender()"/>
+                </div>
+                <button class="btn btn-ghost btn-sm" onclick="resetSubsRange()" id="btnResetSubs" style="padding:4px 8px;font-size:10px;flex-shrink:0"></button>
+              </div>
             </div>
 
             <div class="field">
@@ -528,8 +579,11 @@ const STRINGS = {
     opt180:         '180天 / 6 months ✓',
     opt365:         '365天 / 1 year',
     opt0:           '不限 / No limit',
-    lblMinSubs:     '最低訂閱\nMin Subscribers',
-    optNoLimit:     '不限 / No limit',
+    lblSubsRange:   '訂閱數範圍\nSubscriber Range',
+    lblSubsMin:     '最低 Min',
+    lblSubsMax:     '最高 Max',
+    resetSubs:      '重置 Reset',
+    subsNoLimit:    '不限 ∞',
     lblRecentCount: '影片取樣\nVideo Sample',
     optV5:          '最近 5 支 / Recent 5',
     optV10:         '最近 10 支 / Recent 10 ✓',
@@ -630,8 +684,11 @@ const STRINGS = {
     opt180:         '6 months / 180天 ✓',
     opt365:         '1 year / 365天',
     opt0:           'No limit / 不限',
-    lblMinSubs:     'Min Subscribers\n最低訂閱',
-    optNoLimit:     'No limit / 不限',
+    lblSubsRange:   'Subscriber Range\n訂閱數範圍',
+    lblSubsMin:     'Min 最低',
+    lblSubsMax:     'Max 最高',
+    resetSubs:      'Reset 重置',
+    subsNoLimit:    'No Limit ∞',
     lblRecentCount: 'Video Sample\n影片取樣',
     optV5:          'Recent 5 / 最近 5 支',
     optV10:         'Recent 10 / 最近 10 支 ✓',
@@ -781,6 +838,8 @@ window.onload=()=>{
   applyLang();
   buildRegionGrid();
   buildCatBody();
+  buildRangeTicks();
+  updateRangeUI();
   updateUnitsUI();
 };
 
@@ -832,13 +891,15 @@ function applyLang(){
   // Field labels (multi-line)
   set('lblMaxResults',S.lblMaxResults.replace('\n','<br><span class="field-sublabel">').replace(/$/,'</span>'));
   set('lblActiveFilter',S.lblActiveFilter.replace('\n','<br><span class="field-sublabel">').replace(/$/,'</span>'));
-  set('lblMinSubs',S.lblMinSubs.replace('\n','<br><span class="field-sublabel">').replace(/$/,'</span>'));
+  set('lblSubsRange',S.lblSubsRange.replace('\n','<br><span class="field-sublabel">').replace(/$/,'</span>'));
+  set('lblSubsMin',S.lblSubsMin);
+  set('lblSubsMax',S.lblSubsMax);
+  set('btnResetSubs',S.resetSubs);
   set('lblRecentCount',S.lblRecentCount.replace('\n','<br><span class="field-sublabel">').replace(/$/,'</span>'));
   set('lblCache',S.lblCache.replace('\n','<br><span class="field-sublabel">').replace(/$/,'</span>'));
   // Rebuild selects
   s('maxResults').innerHTML=`<option value="20">${S.optMax20}</option><option value="50" selected>${S.optMax50}</option>`;
   s('activeFilter').innerHTML=`<option value="90">${S.opt90}</option><option value="180" selected>${S.opt180}</option><option value="365">${S.opt365}</option><option value="0">${S.opt0}</option>`;
-  s('minSubs').options[0].text=S.optNoLimit;
   s('recentCount').innerHTML=`<option value="5">${S.optV5}</option><option value="10" selected>${S.optV10}</option><option value="20">${S.optV20}</option>`;
   s('cacheHours').innerHTML=`<option value="24" selected>${S.optC24}</option><option value="6">${S.optC6}</option><option value="0">${S.optC0}</option>`;
   set('erFormulaTitle',S.erFormulaTitle);
@@ -875,6 +936,8 @@ function applyLang(){
   const kw=s('customKw');if(kw)kw.placeholder=S.kwPh;
   // Selected display empty
   if(selectedCats.size===0){const d=s('selectedDisplay');if(d){d.className='selected-box empty';d.innerHTML=S.emptySel;}}
+  // Refresh range UI labels
+  updateRangeUI();
 }
 
 // ═══════════════════════════════════
@@ -1036,14 +1099,112 @@ async function searchChannels(){
 }
 
 // ═══════════════════════════════════
+//  SUBS RANGE SLIDER
+// ═══════════════════════════════════
+// Log-scale steps: 0=0, 1=500, 2=1K, 3=2K, 4=5K, 5=10K, 6=20K,
+// 7=30K, 8=50K, 9=80K, 10=100K, 11=150K, 12=200K, 13=300K,
+// 14=500K, 15=750K, 16=1M, 17=2M, 18=∞
+const SUBS_STEPS=[0,500,1000,2000,5000,10000,20000,30000,50000,80000,100000,150000,200000,300000,500000,750000,1000000,2000000,Infinity];
+const SUBS_LABELS=['0','500','1K','2K','5K','10K','20K','30K','50K','80K','100K','150K','200K','300K','500K','750K','1M','2M','∞'];
+// Show only a subset as ticks to avoid crowding
+const TICK_SHOW=new Set([0,2,4,5,8,10,12,14,16,18]);
+
+function subsStepToVal(step){return SUBS_STEPS[Math.min(step,SUBS_STEPS.length-1)];}
+function subsValToStep(val){
+  if(val===0)return 0;
+  if(!isFinite(val)||val>=SUBS_STEPS[SUBS_STEPS.length-1])return SUBS_STEPS.length-1;
+  for(let i=0;i<SUBS_STEPS.length-1;i++){
+    if(val<=SUBS_STEPS[i+1]){
+      // snap to nearest step
+      return(Math.abs(val-SUBS_STEPS[i])<Math.abs(val-SUBS_STEPS[i+1]))?i:i+1;
+    }
+  }
+  return SUBS_STEPS.length-1;
+}
+function getSubsMin(){return subsStepToVal(parseInt(s('subsMin').value));}
+function getSubsMax(){return subsStepToVal(parseInt(s('subsMax').value));}
+function fmtSubsLabel(v){if(!isFinite(v)||v>=2000000)return'∞';if(v>=1000000)return(v/1000000).toFixed(v%1000000===0?0:1)+'M';if(v>=1000)return(v/1000).toFixed(v%1000===0?0:1)+'K';return String(v);}
+
+function buildRangeTicks(){
+  const ticks=s('rangeTicks');if(!ticks)return;
+  ticks.innerHTML=SUBS_LABELS.map((lbl,i)=>
+    TICK_SHOW.has(i)?`<span class="range-tick" id="tick-${i}">${lbl}</span>`:`<span class="range-tick"></span>`
+  ).join('');
+}
+
+function updateRangeUI(){
+  const minStep=parseInt(s('subsMin').value),maxStep=parseInt(s('subsMax').value);
+  const total=SUBS_STEPS.length-1;
+  const leftPct=minStep/total*100, rightPct=maxStep/total*100;
+  const fill=s('rangeFill');
+  if(fill){fill.style.left=leftPct+'%';fill.style.width=(rightPct-leftPct)+'%';}
+
+  // Badge display
+  const minVal=subsStepToVal(minStep),maxVal=subsStepToVal(maxStep);
+  const minLbl=fmtSubsLabel(minVal),maxLbl=fmtSubsLabel(maxVal);
+  set('subsMinBadge',minLbl);
+  set('subsMaxBadge',maxLbl==='∞'?'∞ <span style="font-size:9px;opacity:.6">'+t('subsNoLimit')+'</span>':maxLbl);
+
+  // Sync number inputs (only if not being edited)
+  const minNum=s('subsMinNum'),maxNum=s('subsMaxNum');
+  if(minNum&&document.activeElement!==minNum) minNum.value=isFinite(minVal)&&minVal>0?minVal:'';
+  if(maxNum&&document.activeElement!==maxNum) maxNum.value=isFinite(maxVal)?maxVal:'';
+
+  // Tick highlight
+  SUBS_LABELS.forEach((_,i)=>{
+    const tk=s('tick-'+i);if(tk)tk.className='range-tick'+(i>=minStep&&i<=maxStep?' active':'');
+  });
+}
+
+function onRangeInput(which){
+  let minS=parseInt(s('subsMin').value),maxS=parseInt(s('subsMax').value);
+  const GAP=1;
+  if(which==='min'&&minS>maxS-GAP){s('subsMin').value=maxS-GAP;minS=maxS-GAP;}
+  if(which==='max'&&maxS<minS+GAP){s('subsMax').value=minS+GAP;maxS=minS+GAP;}
+  updateRangeUI();
+}
+
+function onNumInput(which){
+  const minNum=s('subsMinNum'),maxNum=s('subsMaxNum');
+  if(which==='min'){
+    const v=parseInt(minNum.value)||0;
+    s('subsMin').value=subsValToStep(v);
+  } else {
+    const raw=maxNum.value.trim();
+    const v=raw===''||raw==='∞'?Infinity:parseInt(raw)||Infinity;
+    s('subsMax').value=subsValToStep(v);
+  }
+  onRangeInput(which);
+}
+
+function clampAndRender(){
+  const minV=getSubsMin(),maxV=getSubsMax();
+  if(isFinite(minV)&&isFinite(maxV)&&minV>maxV){
+    // swap
+    const tmpStep=parseInt(s('subsMin').value);
+    s('subsMin').value=s('subsMax').value;
+    s('subsMax').value=tmpStep;
+    onRangeInput('min');
+  }
+  renderResults();
+}
+
+function resetSubsRange(){
+  s('subsMin').value=0;s('subsMax').value=SUBS_STEPS.length-1;
+  s('subsMinNum').value='';s('subsMaxNum').value='';
+  updateRangeUI();renderResults();
+}
+
+// ═══════════════════════════════════
 //  RENDER
 // ═══════════════════════════════════
 function renderResults(){
   const S=STRINGS[currentLang];
-  const filterDays=parseInt(s('activeFilter').value)||0,minSubs=parseInt(s('minSubs').value)||0;
+  const filterDays=parseInt(s('activeFilter').value)||0;
+  const subsMinVal=getSubsMin(), subsMaxVal=getSubsMax();
   let res=[...allResults],filtInactive=0,filtSmall=0;
   if(filterDays>0){const b=res.length;res=res.filter(r=>r.daysSince<=filterDays);filtInactive=b-res.length;}
-  if(minSubs>0){const b=res.length;res=res.filter(r=>r.subscriberCount>=minSubs);filtSmall=b-res.length;}
+  if(subsMinVal>0||subsMaxVal<Infinity){const b=res.length;res=res.filter(r=>r.subscriberCount>=subsMinVal&&r.subscriberCount<=subsMaxVal);filtSmall=b-res.length;}
   res.sort((a,b)=>{const av=a[sortCol],bv=b[sortCol];if(typeof av==='string')return sortAsc?av.localeCompare(bv):bv.localeCompare(av);return sortAsc?av-bv:bv-av;});
   res.forEach((r,i)=>r.rank=i+1);
   const avgER=res.length?res.reduce((s,r)=>s+r.er,0)/res.length:0,topER=res.length?Math.max(...res.map(r=>r.er)):0,maxSubs=res.length?Math.max(...res.map(r=>r.subscriberCount)):1;
